@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eaglercraft Embedded Client & Terminal Controller</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 95vh;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #39ff14;
+        }
+        #game-container {
+            width: 854px;
+            height: 480px;
+            border: 3px solid #333;
+            background-color: #000;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #terminal-panel {
+            width: 854px;
+            margin-top: 15px;
+            background-color: #1e1e1e;
+            border: 2px solid #39ff14;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+        .instruction {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        #input-row {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            background-color: #000;
+            border: 1px solid #39ff14;
+            color: #39ff14;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        button {
+            background-color: #39ff14;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #fff;
+        }
+        #status-log {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #ffcc00;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Eaglercraft 1.8.8 Terminal Client Bridge</h2>
+    
+    <!-- Embedded Full Eaglercraft Web client Instance -->
+    <div id="game-container">
+        <iframe id="eagler-frame" src="http://test.tuffis.online/" allow="autoplay; gamepad; keyboard;"></iframe>
+    </div>
+
+    <!-- The External Control Terminal -->
+    <div id="terminal-panel">
+        <div class="instruction">
+            <strong>How to use:</strong> Join your server (e.g., ArchMC) inside the frame above. Once spawned in-game, type commands or chat strings below and press Send.
+        </div>
+        <div id="input-row">
+            <input type="text" id="terminal-cmd" placeholder="Type /register, /login, or server chat commands here..." onkeydown="checkKey(event)">
+            <button onclick="injectCommand()">Send to Client</button>
+        </div>
+        <div id="status-log" id="log">Ready to bridge payloads...</div>
+    </div>
+
+    <script>
+        const frame = document.getElementById('eagler-frame');
+        const cmdInput = document.getElementById('terminal-cmd');
+        const statusLog = document.getElementById('status-log');
+
+        function injectCommand() {
+            const commandText = cmdInput.value.trim();
+            if (!commandText) return;
+
+            statusLog.textContent = `Processing packet transmission: "${commandText}"`;
+
+            try {
+                // Cross-Origin / Same-Origin Context Execution Check
+                // Attempt direct pipeline injection into TeaVM runtime engine via the iframe window context
+                const iframeWindow = frame.contentWindow;
+
+                /* 
+                  TECHNICAL EXPLANATION:
+                  Eaglercraft 1.8.8 uses an asset package where JavaScript keyboard event hooks handle strings.
+                  Instead of interacting with internal networking objects, we simulate the actual user opening 
+                  the game's chat window ('t' key), pasting the command string, and hitting 'Enter'.
+                */
+                
+                // 1. Simulate pressing 'T' key to open the in-game chat prompt inside Minecraft
+                simulateKey(iframeWindow, 84, 't');
+
+                // 2. Wait 150ms for the UI animation frame delay inside Minecraft, then type out and push the string
+                setTimeout(() => {
+                    // Injecting text characters sequentially or directly altering the clipboard cache if hooks are present
+                    // For headless execution environments or local deployments:
+                    if(iframeWindow.main && iframeWindow.main.arguments) {
+                         // Alternate path if running a custom local unpack:
+                         // iframeWindow.EaglercraftX.sendChat(commandText);
+                    }
+                    
+                    // Fallback to firing keyboard input streams programmatically down into the active Canvas
+                    for (let i = 0; i < commandText.length; i++) {
+                        simulateCharInput(iframeWindow, commandText.charAt(i));
+                    }
+
+                    // 3. Fire the 'Enter' key event (KeyCode 13) to finalize submission over the WebSocket relay
+                    setTimeout(() => {
+                        simulateKey(iframeWindow, 13, 'Enter');
+                        statusLog.textContent = `Command successfully dispatched to client instance.`;
+                        cmdInput.value = '';
+                        cmdInput.focus();
+                    }, 100);
+
+                }, 150);
+
+            } catch (e) {
+                // Browser Cross-Origin Resource Sharing (CORS) Security Catch
+                statusLog.textContent = "Security Warning: Embed requires running locally or on the same domain deployment to pass window payloads.";
+                console.error("CORS blocking window injection:", e);
+            }
+        }
+
+        // Low-level DOM keyboard event generator targeting the embedded canvas engine
+        function simulateKey(targetWindow, keyCode, keyName) {
+            const targetDoc = targetWindow.document;
+            const targetEl = targetDoc.querySelector('canvas') || targetDoc.body;
+
+            const opts = { bubbles: true, cancelable: true, keyCode: keyCode, key: keyName, which: keyCode };
+            targetEl.dispatchEvent(new KeyboardEvent('keydown', opts));
+            targetEl.dispatchEvent(new KeyboardEvent('keypress', opts));
+            setTimeout(() => {
+                targetEl.dispatchEvent(new KeyboardEvent('keyup', opts));
+            }, 20);
+        }
+
+        function simulateCharInput(targetWindow, char) {
+            const targetDoc = targetWindow.document;
+            const targetEl = targetDoc.querySelector('canvas') || targetDoc.body;
+            const opts = { bubbles: true, cancelable: true, key: char, char: char };
+            targetEl.dispatchEvent(new KeyboardEvent('keypress', opts));
+        }
+
+        function checkKey(e) {
+            if (e.key === 'Enter') injectCommand();
+        }
+    </script>
+</body>
+</html>

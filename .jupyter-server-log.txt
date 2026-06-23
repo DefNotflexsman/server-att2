@@ -1,0 +1,113 @@
+Launching jupyter-lab
+[W 2026-06-23 01:49:29.486 ServerApp] ServerApp.token config is deprecated in 2.0. Use IdentityProvider.token.
+[I 2026-06-23 01:49:29.540 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2026-06-23 01:49:29.540 ServerApp] jupyter_offlinenotebook | extension was successfully linked.
+[I 2026-06-23 01:49:29.540 ServerApp] jupyter_resource_usage | extension was successfully linked.
+[I 2026-06-23 01:49:29.543 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[W 2026-06-23 01:49:29.544 LabApp] 'base_url' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2026-06-23 01:49:29.544 LabApp] 'token' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2026-06-23 01:49:29.544 LabApp] 'trust_xheaders' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2026-06-23 01:49:29.544 LabApp] 'allow_origin' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2026-06-23 01:49:29.544 LabApp] 'allow_origin_pat' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[I 2026-06-23 01:49:29.546 ServerApp] jupyterlab | extension was successfully linked.
+[I 2026-06-23 01:49:29.580 ServerApp] notebook | extension was successfully linked.
+[I 2026-06-23 01:49:29.581 ServerApp] Writing Jupyter server cookie secret to /home/jovyan/.local/share/jupyter/runtime/jupyter_cookie_secret
+[I 2026-06-23 01:49:29.780 ServerApp] notebook_shim | extension was successfully linked.
+[I 2026-06-23 01:49:29.793 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2026-06-23 01:49:29.795 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2026-06-23 01:49:29.795 ServerApp] jupyter_offlinenotebook | extension was successfully loaded.
+[I 2026-06-23 01:49:29.795 ServerApp] jupyter_resource_usage | extension was successfully loaded.
+[I 2026-06-23 01:49:29.796 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2026-06-23 01:49:29.798 LabApp] JupyterLab extension loaded from /srv/conda/envs/notebook/lib/python3.10/site-packages/jupyterlab
+[I 2026-06-23 01:49:29.798 LabApp] JupyterLab application directory is /srv/conda/envs/notebook/share/jupyter/lab
+[I 2026-06-23 01:49:29.799 LabApp] Extension Manager is 'pypi'.
+[I 2026-06-23 01:49:29.830 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2026-06-23 01:49:29.835 ServerApp] notebook | extension was successfully loaded.
+[I 2026-06-23 01:49:29.835 ServerApp] Will shut down after 600 seconds with no kernels.
+[I 2026-06-23 01:49:29.835 ServerApp] Serving notebooks from local directory: /home/jovyan
+[I 2026-06-23 01:49:29.835 ServerApp] Jupyter Server 2.17.0 is running at:
+[I 2026-06-23 01:49:29.835 ServerApp] http://jupyter-pygithub-pygithub-klsv7xoz:8888/user/pygithub-pygithub-klsv7xoz/lab?token=...
+[I 2026-06-23 01:49:29.835 ServerApp]     http://127.0.0.1:8888/user/pygithub-pygithub-klsv7xoz/lab?token=...
+[I 2026-06-23 01:49:29.835 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 2026-06-23 01:49:29.838 ServerApp] No web browser found: Error('could not locate runnable browser').
+[I 2026-06-23 01:49:30.078 ServerApp] Skipped non-installed server(s): basedpyright, bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyrefly, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+[I 2026-06-23 01:49:32.296 ServerApp] 302 GET /user/pygithub-pygithub-klsv7xoz/?token=[secret] (@47.158.31.28) 0.86ms
+[I 2026-06-23 01:49:46.764 LabApp] Build is up to date
+[I 2026-06-23 01:56:41.563 ServerApp] New terminal with automatic name: 1
+[W 2026-06-23 01:56:42.447 ServerApp] The websocket_ping_timeout (90000) cannot be longer than the websocket_ping_interval (30000).
+    Setting websocket_ping_timeout=30000
+[W 2026-06-23 02:20:29.653 ServerApp] 500 PATCH /user/pygithub-pygithub-klsv7xoz/api/contents/scripts?1782181229071 (47.158.31.28): Unknown error renaming file: scripts [Errno 39] Directory not empty: 'ReplayData'
+[W 2026-06-23 02:20:29.654 ServerApp] wrote error: "Unknown error renaming file: scripts [Errno 39] Directory not empty: 'ReplayData'"
+    Traceback (most recent call last):
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 816, in move
+        os.rename(src, real_dst)
+    OSError: [Errno 18] Invalid cross-device link: '/home/jovyan/scripts' -> '/home/jovyan/requirements/scripts'
+    
+    During handling of the above exception, another exception occurred:
+    
+    Traceback (most recent call last):
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/filemanager.py", line 1071, in rename_file
+        await run_sync(shutil.move, old_os_path, new_os_path)
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/anyio/to_thread.py", line 56, in run_sync
+        return await get_async_backend().run_sync_in_worker_thread(
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 2485, in run_sync_in_worker_thread
+        return await future
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 976, in run
+        result = context.run(func, *args)
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 834, in move
+        rmtree(src)
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 725, in rmtree
+        _rmtree_safe_fd(fd, path, onerror)
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 658, in _rmtree_safe_fd
+        _rmtree_safe_fd(dirfd, fullname, onerror)
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 664, in _rmtree_safe_fd
+        onerror(os.rmdir, fullname, sys.exc_info())
+      File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 662, in _rmtree_safe_fd
+        os.rmdir(entry.name, dir_fd=topfd)
+    OSError: [Errno 39] Directory not empty: 'ReplayData'
+    
+    The above exception was the direct cause of the following exception:
+    
+    Traceback (most recent call last):
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/tornado/web.py", line 1848, in _execute
+        result = await result
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/auth/decorator.py", line 73, in inner
+        return await out
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/handlers.py", line 206, in patch
+        model = await ensure_async(cm.update(model, path))
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 197, in ensure_async
+        result = await obj
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/manager.py", line 917, in update
+        await self.rename(path, new_path)
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/manager.py", line 904, in rename
+        await self.rename_file(old_path, new_path)
+      File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/filemanager.py", line 1077, in rename_file
+        raise web.HTTPError(500, f"Unknown error renaming file: {old_path} {e}") from e
+    tornado.web.HTTPError: HTTP 500: Internal Server Error (Unknown error renaming file: scripts [Errno 39] Directory not empty: 'ReplayData')
+[E 2026-06-23 02:20:29.663 ServerApp] {
+      "Host": "hub.gesis.mybinder.org",
+      "Accept": "*/*",
+      "Referer": "https://hub.gesis.mybinder.org/user/pygithub-pygithub-klsv7xoz/lab",
+      "User-Agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    }
+[E 2026-06-23 02:20:29.663 ServerApp] 500 PATCH /user/pygithub-pygithub-klsv7xoz/api/contents/scripts?1782181229071 (24580aedf48b4a48b0ed9446ccd037f9@47.158.31.28) 278.22ms referer=https://hub.gesis.mybinder.org/user/pygithub-pygithub-klsv7xoz/lab
+[W 2026-06-23 02:20:59.837 ServerApp] delete /github
+[I 2026-06-23 02:22:39.954 ServerApp] Uploading file to /websocket_client.html
+[I 2026-06-23 02:22:40.020 ServerApp] Uploading file to /time.py
+[I 2026-06-23 02:22:40.031 ServerApp] Uploading file to /the loot.md
+[I 2026-06-23 02:22:40.042 ServerApp] Uploading file to /spigot.java
+[I 2026-06-23 02:22:40.208 ServerApp] Uploading file to /pv_http.js
+[I 2026-06-23 02:22:40.218 ServerApp] Uploading file to /magic.html
+[I 2026-06-23 02:22:40.221 ServerApp] Uploading file to /fetch-server.js
+[I 2026-06-23 02:22:40.224 ServerApp] Uploading file to /leaderboard-fast-indexing.sql
+[I 2026-06-23 02:22:40.225 ServerApp] Uploading file to /discordbot.js
+[I 2026-06-23 02:22:40.231 ServerApp] Uploading file to /error_summary.txt
+[I 2026-06-23 02:22:40.235 ServerApp] Uploading file to /latest.log
+[I 2026-06-23 02:22:40.236 ServerApp] Uploading file to /fetch-player-profiles.sql
+[I 2026-06-23 02:22:40.304 ServerApp] Uploading file to /database.sql
+[I 2026-06-23 02:22:40.307 ServerApp] Uploading file to /data.py
+[I 2026-06-23 02:22:40.309 ServerApp] Uploading file to /controller.html
+[I 2026-06-23 02:22:40.316 ServerApp] Uploading file to /automate-errorfinder-admin.py
+[I 2026-06-23 02:22:40.378 ServerApp] Uploading file to /api-trace.py
+[I 2026-06-23 02:24:26.968 ServerApp] Creating new file in 
+[I 2026-06-23 02:24:36.307 ServerApp] Saving file at /index.html.txt

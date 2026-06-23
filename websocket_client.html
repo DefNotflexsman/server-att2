@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSS Connection Stream Client</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121214; color: #e1e1e6; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #202024; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input[type="text"] { flex: 1; padding: 10px; background: #121214; border: 1px solid #41414d; color: #fff; border-radius: 4px; font-size: 14px; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-connect { background: #04d361; color: #000; }
+        .btn-connect.connected { background: #f75a68; color: #fff; }
+        .btn-send { background: #8257e5; color: #fff; }
+        button:disabled { background: #41414d; color: #8d8d99; cursor: not-allowed; }
+        #log { background: #121214; border: 1px solid #41414d; height: 350px; overflow-y: auto; padding: 15px; font-family: monospace; border-radius: 4px; font-size: 13px; line-height: 1.5; }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #202024; padding-bottom: 5px; }
+        .info { color: #61dafb; }
+        .success { color: #04d361; }
+        .error { color: #f75a68; }
+        .incoming { color: #ffdb55; }
+        .outgoing { color: #a482f4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚡️ Secure WebSocket (WSS) Client</h2>
+    
+    <!-- Connection Row -->
+    <div class="input-group">
+        <input type="text" id="wssUrl" value="wss://rubynetwork.com" placeholder="wss://address:port">
+        <button id="connectBtn" class="btn-connect" onclick="toggleConnection()">Connect</button>
+    </div>
+
+    <!-- Data Injection Row -->
+    <div class="input-group">
+        <input type="text" id="messageInput" placeholder="Type data payload to send to server..." disabled>
+        <button id="sendBtn" class="btn-send" onclick="sendMessage()" disabled>Send Packet</button>
+    </div>
+
+    <!-- Stream Terminal -->
+    <h3>Console Stream Log</h3>
+    <div id="log"></div>
+</div>
+
+<script>
+    let ws = null;
+    const wssUrlInput = document.getElementById('wssUrl');
+    const connectBtn = document.getElementById('connectBtn');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const logContainer = document.getElementById('log');
+
+    function writeLog(text, type = 'info') {
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function toggleConnection() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            writeLog("Disconnecting client from server...", "info");
+            ws.close();
+            return;
+        }
+
+        const url = wssUrlInput.value.trim();
+        if (!url) return alert("Please enter a valid target URL");
+
+        writeLog(`Attempting handshake with: ${url}`, "info");
+        
+        try {
+            ws = new WebSocket(url);
+            
+            ws.onopen = () => {
+                writeLog("SUCCESS: Connection established and stream active!", "success");
+                connectBtn.innerText = "Disconnect";
+                connectBtn.classList.add('connected');
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                wssUrlInput.disabled = true;
+            };
+
+            ws.onmessage = (event) => {
+                writeLog(`RCVD: ${event.data}`, "incoming");
+            };
+
+            ws.onerror = (error) => {
+                writeLog("ERROR: Network handshake failed. Check endpoint parameters or Origin rules.", "error");
+                console.error(error);
+            };
+
+            ws.onclose = (event) => {
+                writeLog(`CLOSED: Connection broken. Code: ${event.code} | Reason: ${event.reason || 'None provided'}`, "error");
+                connectBtn.innerText = "Connect";
+                connectBtn.classList.remove('connected');
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                wssUrlInput.disabled = false;
+                ws = null;
+            };
+
+        } catch (e) {
+            writeLog(`CRITICAL: ${e.message}`, "error");
+        }
+    }
+
+    function sendMessage() {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        const msg = messageInput.value;
+        if (!msg) return;
+        
+        ws.send(msg);
+        writeLog(`SENT: ${msg}`, "outgoing");
+        messageInput.value = '';
+    }
+
+    // Allow Enter key to trigger transmission
+    messageInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+
+</body>
+</html>

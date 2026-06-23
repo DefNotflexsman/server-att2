@@ -1,0 +1,13 @@
+{
+  "base_url": "/user/pygithub-pygithub-klsv7xoz/",
+  "hostname": "0.0.0.0",
+  "password": false,
+  "pid": 19,
+  "port": 8888,
+  "root_dir": "/home/jovyan",
+  "secure": false,
+  "sock": "",
+  "token": "NyF0fXUURTuy7t268IgxTQ",
+  "url": "http://jupyter-pygithub-pygithub-klsv7xoz:8888/user/pygithub-pygithub-klsv7xoz/",
+  "version": "2.17.0"
+}
