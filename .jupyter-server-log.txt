@@ -116,3 +116,5 @@ Launching jupyter-lab
 [I 2026-06-23 02:35:06.309 ServerApp] Saving file at /server-att2/glock.py
 [I 2026-06-23 02:36:14.284 ServerApp] Saving file at /server-att2/glock.py
 [W 2026-06-23 02:40:08.718 TerminalsExtensionApp] WebSocket ping timeout after 90002 ms.
+[W 2026-06-23 02:45:38.523 ServerApp] delete /server-att1
+[I 2026-06-23 02:45:49.679 ServerApp] New terminal with automatic name: 2
