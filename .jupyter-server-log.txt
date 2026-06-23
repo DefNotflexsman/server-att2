@@ -111,3 +111,8 @@ Launching jupyter-lab
 [I 2026-06-23 02:22:40.378 ServerApp] Uploading file to /api-trace.py
 [I 2026-06-23 02:24:26.968 ServerApp] Creating new file in 
 [I 2026-06-23 02:24:36.307 ServerApp] Saving file at /index.html.txt
+[I 2026-06-23 02:32:37.177 ServerApp] Creating new file in /server-att2
+[I 2026-06-23 02:34:06.855 ServerApp] Saving file at /server-att2/glock.py
+[I 2026-06-23 02:35:06.309 ServerApp] Saving file at /server-att2/glock.py
+[I 2026-06-23 02:36:14.284 ServerApp] Saving file at /server-att2/glock.py
+[W 2026-06-23 02:40:08.718 TerminalsExtensionApp] WebSocket ping timeout after 90002 ms.
