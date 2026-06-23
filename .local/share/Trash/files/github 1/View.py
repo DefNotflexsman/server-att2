@@ -50,8 +50,8 @@ if TYPE_CHECKING:
 
 
 class View(NonCompletableGithubObject):
-    """
-    This class represents the total number of views and breakdown per day or week for a GitHub repository.
+    """This class represents the total number of views and breakdown per day or
+    week for a GitHub repository.
 
     The reference can be found here
     https://docs.github.com/en/rest/metrics/traffic#get-page-views
@@ -59,7 +59,6 @@ class View(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/view-traffic
-
     """
 
     def _initAttributes(self) -> None:
@@ -93,4 +92,6 @@ class View(NonCompletableGithubObject):
         if "uniques" in attributes:  # pragma no branch
             self._uniques = self._makeIntAttribute(attributes["uniques"])
         if "views" in attributes:  # pragma no branch
-            self._views = self._makeListOfClassesAttribute(github.Traffic.Traffic, attributes["views"])
+            self._views = self._makeListOfClassesAttribute(
+                github.Traffic.Traffic, attributes["views"]
+            )

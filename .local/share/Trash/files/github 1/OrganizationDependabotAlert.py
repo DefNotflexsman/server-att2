@@ -36,8 +36,7 @@ if TYPE_CHECKING:
 
 
 class OrganizationDependabotAlert(DependabotAlert):
-    """
-    This class represents a Dependabot alert on an organization.
+    """This class represents a Dependabot alert on an organization.
 
     The reference can be found here
     https://docs.github.com/en/rest/dependabot/alerts#list-dependabot-alerts-for-an-organization
@@ -45,7 +44,6 @@ class OrganizationDependabotAlert(DependabotAlert):
     The OpenAPI schema can be found at
 
     - /components/schemas/dependabot-alert-with-repository
-
     """
 
     def _initAttributes(self) -> None:
@@ -59,4 +57,6 @@ class OrganizationDependabotAlert(DependabotAlert):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         super()._useAttributes(attributes)
         if "repository" in attributes:
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )

@@ -55,7 +55,13 @@ import github.Organization
 import github.ProjectColumn
 import github.PullRequest
 from github import Consts
-from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet, Opt, _NotSetType
+from github.GithubObject import (
+    Attribute,
+    NonCompletableGithubObject,
+    NotSet,
+    Opt,
+    _NotSetType,
+)
 
 if TYPE_CHECKING:
     from github.Issue import Issue
@@ -71,8 +77,7 @@ if TYPE_CHECKING:
 
 
 class ProjectCard(NonCompletableGithubObject):
-    """
-    This class represents Project Cards.
+    """This class represents Project Cards.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/projects#cards
@@ -80,7 +85,6 @@ class ProjectCard(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/project-card
-
     """
 
     def _initAttributes(self) -> None:
@@ -158,13 +162,17 @@ class ProjectCard(NonCompletableGithubObject):
         ...
 
     @overload
-    def get_content(self, content_type: Literal["Issue"] | _NotSetType = NotSet) -> Issue | None:
+    def get_content(
+        self, content_type: Literal["Issue"] | _NotSetType = NotSet
+    ) -> Issue | None:
         ...
 
     # Note that the content_url for any card will be an "issue" URL, from
     # which you can retrieve either an Issue or a PullRequest. Unfortunately
     # the API doesn't make it clear which you are dealing with.
-    def get_content(self, content_type: Opt[str] = NotSet) -> PullRequest | Issue | None:
+    def get_content(
+        self, content_type: Opt[str] = NotSet
+    ) -> PullRequest | Issue | None:
         """
         :calls: `GET /repos/{owner}/{repo}/pulls/{pull_number} <https://docs.github.com/en/rest/reference/pulls#get-a-pull-request>`_
         :calls: `GET /repos/{owner}/{repo}/issues/{pull_number} <https://docs.github.com/en/rest/reference/pulls#get-a-pull-request>`_
@@ -189,10 +197,14 @@ class ProjectCard(NonCompletableGithubObject):
         :calls: `POST /projects/columns/cards/{card_id}/moves <https://docs.github.com/en/rest/reference/projects#cards>`_
         """
         assert isinstance(position, str), position
-        assert isinstance(column, github.ProjectColumn.ProjectColumn) or isinstance(column, int), column
+        assert isinstance(column, github.ProjectColumn.ProjectColumn) or isinstance(
+            column, int
+        ), column
         post_parameters = {
             "position": position,
-            "column_id": column.id if isinstance(column, github.ProjectColumn.ProjectColumn) else column,
+            "column_id": column.id
+            if isinstance(column, github.ProjectColumn.ProjectColumn)
+            else column,
         }
         status, _, _ = self._requester.requestJson(
             "POST",
@@ -219,7 +231,9 @@ class ProjectCard(NonCompletableGithubObject):
         """
         assert note is NotSet or isinstance(note, str), note
         assert archived is NotSet or isinstance(archived, bool), archived
-        patch_parameters: dict[str, Any] = NotSet.remove_unset_items({"note": note, "archived": archived})
+        patch_parameters: dict[str, Any] = NotSet.remove_unset_items(
+            {"note": note, "archived": archived}
+        )
         headers, data = self._requester.requestJsonAndCheck(
             "PATCH",
             self.url,
@@ -240,7 +254,9 @@ class ProjectCard(NonCompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "creator" in attributes:  # pragma no branch
-            self._creator = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["creator"])
+            self._creator = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["creator"]
+            )
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "node_id" in attributes:  # pragma no branch

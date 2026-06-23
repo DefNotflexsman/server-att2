@@ -39,7 +39,14 @@ import github.GitCommit
 import github.GithubApp
 import github.PullRequest
 import github.Repository
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_defined, is_optional
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_defined,
+    is_optional,
+)
 from github.PaginatedList import PaginatedList
 
 if TYPE_CHECKING:
@@ -51,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class CheckSuite(CompletableGithubObject):
-    """
-    This class represents check suites.
+    """This class represents check suites.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/checks#check-suites
@@ -61,7 +67,6 @@ class CheckSuite(CompletableGithubObject):
 
     - /components/schemas/check-run/properties/check_suite
     - /components/schemas/check-suite
-
     """
 
     def _initAttributes(self) -> None:
@@ -236,7 +241,9 @@ class CheckSuite(CompletableGithubObject):
         :rtype: bool
         """
         request_headers = {"Accept": "application/vnd.github.v3+json"}
-        status, _, _ = self._requester.requestJson("POST", f"{self.url}/rerequest", headers=request_headers)
+        status, _, _ = self._requester.requestJson(
+            "POST", f"{self.url}/rerequest", headers=request_headers
+        )
         return status == 201
 
     def get_check_runs(
@@ -271,11 +278,15 @@ class CheckSuite(CompletableGithubObject):
         if "after" in attributes:  # pragma no branch
             self._after = self._makeStringAttribute(attributes["after"])
         if "app" in attributes:  # pragma no branch
-            self._app = self._makeClassAttribute(github.GithubApp.GithubApp, attributes["app"])
+            self._app = self._makeClassAttribute(
+                github.GithubApp.GithubApp, attributes["app"]
+            )
         if "before" in attributes:  # pragma no branch
             self._before = self._makeStringAttribute(attributes["before"])
         if "check_runs_url" in attributes:  # pragma no branch
-            self._check_runs_url = self._makeStringAttribute(attributes["check_runs_url"])
+            self._check_runs_url = self._makeStringAttribute(
+                attributes["check_runs_url"]
+            )
         if "conclusion" in attributes:  # pragma no branch
             self._conclusion = self._makeStringAttribute(attributes["conclusion"])
         if "created_at" in attributes:  # pragma no branch
@@ -287,7 +298,9 @@ class CheckSuite(CompletableGithubObject):
             # The GitCommit object only looks for 'sha'
             if "id" in attributes["head_commit"]:
                 attributes["head_commit"]["sha"] = attributes["head_commit"]["id"]
-            self._head_commit = self._makeClassAttribute(github.GitCommit.GitCommit, attributes["head_commit"])
+            self._head_commit = self._makeClassAttribute(
+                github.GitCommit.GitCommit, attributes["head_commit"]
+            )
         if "head_sha" in attributes:  # pragma no branch
             self._head_sha = self._makeStringAttribute(attributes["head_sha"])
         if "id" in attributes:  # pragma no branch
@@ -297,7 +310,9 @@ class CheckSuite(CompletableGithubObject):
             if id.isnumeric():
                 self._id = self._makeIntAttribute(int(id))
         if "latest_check_runs_count" in attributes:  # pragma no branch
-            self._latest_check_runs_count = self._makeIntAttribute(attributes["latest_check_runs_count"])
+            self._latest_check_runs_count = self._makeIntAttribute(
+                attributes["latest_check_runs_count"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "pull_requests" in attributes:  # pragma no branch
@@ -305,11 +320,15 @@ class CheckSuite(CompletableGithubObject):
                 github.PullRequest.PullRequest, attributes["pull_requests"]
             )
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "rerequestable" in attributes:  # pragma no branch
             self._rerequestable = self._makeBoolAttribute(attributes["rerequestable"])
         if "runs_rerequestable" in attributes:  # pragma no branch
-            self._runs_rerequestable = self._makeBoolAttribute(attributes["runs_rerequestable"])
+            self._runs_rerequestable = self._makeBoolAttribute(
+                attributes["runs_rerequestable"]
+            )
         if "status" in attributes:  # pragma no branch
             self._status = self._makeStringAttribute(attributes["status"])
         if "updated_at" in attributes:  # pragma no branch

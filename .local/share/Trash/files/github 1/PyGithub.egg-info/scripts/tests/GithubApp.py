@@ -48,8 +48,12 @@ class GithubApp(Framework.TestCase):
         app = self.app
         self.assertEqual(app.client_id, "Iv1.05c79e9ad1f6bdfa")
         self.assertIsNone(app.client_secret)
-        self.assertEqual(app.created_at, datetime(2018, 7, 30, 9, 30, 17, tzinfo=timezone.utc))
-        self.assertEqual(app.description, "Automate your workflow from idea to production")
+        self.assertEqual(
+            app.created_at, datetime(2018, 7, 30, 9, 30, 17, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            app.description, "Automate your workflow from idea to production"
+        )
         self.assertListEqual(
             app.events,
             [
@@ -121,7 +125,9 @@ class GithubApp(Framework.TestCase):
             },
         )
         self.assertEqual(app.slug, "github-actions")
-        self.assertEqual(app.updated_at, datetime(2024, 4, 10, 20, 33, 16, tzinfo=timezone.utc))
+        self.assertEqual(
+            app.updated_at, datetime(2024, 4, 10, 20, 33, 16, tzinfo=timezone.utc)
+        )
         self.assertEqual(app.url, "/apps/github-actions")
         self.assertIsNone(app.webhook_secret)
 
@@ -140,7 +146,9 @@ class GithubApp(Framework.TestCase):
                 "please use github.GithubIntegration(auth=github.Auth.AppAuth(...)).get_app() instead",
             )
 
-        self.assertEqual(app.created_at, datetime(2020, 8, 1, 17, 23, 46, tzinfo=timezone.utc))
+        self.assertEqual(
+            app.created_at, datetime(2020, 8, 1, 17, 23, 46, tzinfo=timezone.utc)
+        )
         self.assertEqual(app.description, "Sample App to test PyGithub")
         self.assertListEqual(
             app.events,
@@ -167,5 +175,7 @@ class GithubApp(Framework.TestCase):
             },
         )
         self.assertEqual(app.slug, "pygithubtest")
-        self.assertEqual(app.updated_at, datetime(2020, 8, 1, 17, 44, 31, tzinfo=timezone.utc))
+        self.assertEqual(
+            app.updated_at, datetime(2020, 8, 1, 17, 44, 31, tzinfo=timezone.utc)
+        )
         self.assertEqual(app.url, "/apps/pygithubtest")

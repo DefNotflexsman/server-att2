@@ -51,8 +51,7 @@ if TYPE_CHECKING:
 
 
 class CodeScanAlert(NonCompletableGithubObject):
-    """
-    This class represents alerts from code scanning.
+    """This class represents alerts from code scanning.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/code-scanning.
@@ -61,7 +60,6 @@ class CodeScanAlert(NonCompletableGithubObject):
 
     - /components/schemas/code-scanning-alert
     - /components/schemas/code-scanning-alert-items
-
     """
 
     def _initAttributes(self) -> None:
@@ -167,7 +165,9 @@ class CodeScanAlert(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "assignees" in attributes:  # pragma no branch
-            self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["assignees"])
+            self._assignees = self._makeListOfClassesAttribute(
+                github.NamedUser.NamedUser, attributes["assignees"]
+            )
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "dismissal_approved_by" in attributes:  # pragma no branch
@@ -181,11 +181,17 @@ class CodeScanAlert(NonCompletableGithubObject):
         if "dismissed_at" in attributes:  # pragma no branch
             self._dismissed_at = self._makeDatetimeAttribute(attributes["dismissed_at"])
         if "dismissed_by" in attributes:  # pragma no branch
-            self._dismissed_by = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["dismissed_by"])
+            self._dismissed_by = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["dismissed_by"]
+            )
         if "dismissed_comment" in attributes:  # pragma no branch
-            self._dismissed_comment = self._makeStringAttribute(attributes["dismissed_comment"])
+            self._dismissed_comment = self._makeStringAttribute(
+                attributes["dismissed_comment"]
+            )
         if "dismissed_reason" in attributes:  # pragma no branch
-            self._dismissed_reason = self._makeStringAttribute(attributes["dismissed_reason"])
+            self._dismissed_reason = self._makeStringAttribute(
+                attributes["dismissed_reason"]
+            )
         if "fixed_at" in attributes:  # pragma no branch
             self._fixed_at = self._makeDatetimeAttribute(attributes["fixed_at"])
         if "html_url" in attributes:  # pragma no branch
@@ -200,11 +206,15 @@ class CodeScanAlert(NonCompletableGithubObject):
         if "number" in attributes:  # pragma no branch
             self._number = self._makeIntAttribute(attributes["number"])
         if "rule" in attributes:  # pragma no branch
-            self._rule = self._makeClassAttribute(github.CodeScanRule.CodeScanRule, attributes["rule"])
+            self._rule = self._makeClassAttribute(
+                github.CodeScanRule.CodeScanRule, attributes["rule"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "tool" in attributes:  # pragma no branch
-            self._tool = self._makeClassAttribute(github.CodeScanTool.CodeScanTool, attributes["tool"])
+            self._tool = self._makeClassAttribute(
+                github.CodeScanTool.CodeScanTool, attributes["tool"]
+            )
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:  # pragma no branch

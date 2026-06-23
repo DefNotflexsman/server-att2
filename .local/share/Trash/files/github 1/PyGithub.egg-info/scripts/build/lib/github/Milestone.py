@@ -50,7 +50,13 @@ import github.Label
 import github.NamedUser
 import github.Organization
 import github.PaginatedList
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_defined
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_defined,
+)
 from github.PaginatedList import PaginatedList
 
 if TYPE_CHECKING:
@@ -59,8 +65,7 @@ if TYPE_CHECKING:
 
 
 class Milestone(CompletableGithubObject):
-    """
-    This class represents Milestones.
+    """This class represents Milestones.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#milestones
@@ -70,7 +75,6 @@ class Milestone(CompletableGithubObject):
     - /components/schemas/issue-event-milestone
     - /components/schemas/milestone
     - /components/schemas/nullable-milestone
-
     """
 
     def _initAttributes(self) -> None:
@@ -92,7 +96,9 @@ class Milestone(CompletableGithubObject):
         self._url: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value})
+        return self.get__repr__(
+            {"number": self._number.value, "title": self._title.value}
+        )
 
     @property
     def _identity(self) -> int:
@@ -185,7 +191,11 @@ class Milestone(CompletableGithubObject):
         headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
     def edit(
-        self, title: str, state: Opt[str] = NotSet, description: Opt[str] = NotSet, due_on: Opt[date] = NotSet
+        self,
+        title: str,
+        state: Opt[str] = NotSet,
+        description: Opt[str] = NotSet,
+        due_on: Opt[date] = NotSet,
     ) -> None:
         """
         :calls: `PATCH /repos/{owner}/{repo}/milestones/{milestone_number} <https://docs.github.com/en/rest/reference/issues#milestones>`_
@@ -205,14 +215,18 @@ class Milestone(CompletableGithubObject):
         if is_defined(due_on):
             post_parameters["due_on"] = due_on.strftime("%Y-%m-%d")
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
 
     def get_labels(self) -> PaginatedList[Label]:
         """
         :calls: `GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        return PaginatedList(github.Label.Label, self._requester, f"{self.url}/labels", None)
+        return PaginatedList(
+            github.Label.Label, self._requester, f"{self.url}/labels", None
+        )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "closed_at" in attributes:  # pragma no branch
@@ -222,7 +236,9 @@ class Milestone(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "creator" in attributes:  # pragma no branch
-            self._creator = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["creator"])
+            self._creator = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["creator"]
+            )
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "due_on" in attributes:  # pragma no branch

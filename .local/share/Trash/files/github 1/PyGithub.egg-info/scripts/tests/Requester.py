@@ -81,7 +81,9 @@ class Requester(Framework.TestCase):
         kwargs = requester.kwargs
 
         # assert kwargs consists of ALL constructor arguments
-        self.assertEqual(kwargs.keys(), github.Requester.Requester.__init__.__annotations__.keys())
+        self.assertEqual(
+            kwargs.keys(), github.Requester.Requester.__init__.__annotations__.keys()
+        )
         self.assertEqual(
             kwargs,
             dict(
@@ -172,7 +174,12 @@ class Requester(Framework.TestCase):
                 api_version=version,
             )
 
-        for api_version in [None, Consts.API_VERSION_2022_11_28, Consts.API_VERSION_2026_03_10, "version"]:
+        for api_version in [
+            None,
+            Consts.API_VERSION_2022_11_28,
+            Consts.API_VERSION_2026_03_10,
+            "version",
+        ]:
             r = requester(api_version)
             self.assertEqual(r.api_version, api_version)
 
@@ -197,7 +204,9 @@ class Requester(Framework.TestCase):
             if api_version is None:
                 self.assertNotIn(Consts.headerApiVersion, request_headers)
             else:
-                self.assertEqual(request_headers.get(Consts.headerApiVersion), api_version)
+                self.assertEqual(
+                    request_headers.get(Consts.headerApiVersion), api_version
+                )
 
     def testWithApiVersion(self):
         r = gr.Requester(
@@ -233,41 +242,66 @@ class Requester(Framework.TestCase):
         self.assertIsNone(r6.api_version)
 
     def testGetParametersOfUrl(self):
-        self.assertEqual({}, gr.Requester.get_parameters_of_url("https://github.com/api"))
-        self.assertEqual({"per_page": ["10"]}, gr.Requester.get_parameters_of_url("https://github.com/api?per_page=10"))
         self.assertEqual(
-            {"per_page": ["10"], "page": ["2"]},
-            gr.Requester.get_parameters_of_url("https://github.com/api?per_page=10&page=2"),
+            {}, gr.Requester.get_parameters_of_url("https://github.com/api")
         )
         self.assertEqual(
-            {"item": ["1", "2", "3"]}, gr.Requester.get_parameters_of_url("https://github.com/api?item=1&item=2&item=3")
+            {"per_page": ["10"]},
+            gr.Requester.get_parameters_of_url("https://github.com/api?per_page=10"),
+        )
+        self.assertEqual(
+            {"per_page": ["10"], "page": ["2"]},
+            gr.Requester.get_parameters_of_url(
+                "https://github.com/api?per_page=10&page=2"
+            ),
+        )
+        self.assertEqual(
+            {"item": ["1", "2", "3"]},
+            gr.Requester.get_parameters_of_url(
+                "https://github.com/api?item=1&item=2&item=3"
+            ),
         )
 
     def testAddParametersToUrl(self):
-        self.assertEqual("https://github.com/api", gr.Requester.add_parameters_to_url("https://github.com/api", {}))
+        self.assertEqual(
+            "https://github.com/api",
+            gr.Requester.add_parameters_to_url("https://github.com/api", {}),
+        )
         self.assertEqual(
             "https://github.com/api?per_page=10",
-            gr.Requester.add_parameters_to_url("https://github.com/api", {"per_page": 10}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api", {"per_page": 10}
+            ),
         )
         self.assertEqual(
             "https://github.com/api?page=2&per_page=10",
-            gr.Requester.add_parameters_to_url("https://github.com/api", {"per_page": 10, "page": 2}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api", {"per_page": 10, "page": 2}
+            ),
         )
         self.assertEqual(
             "https://github.com/api?page=2&per_page=10",
-            gr.Requester.add_parameters_to_url("https://github.com/api?per_page=10", {"page": 2}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api?per_page=10", {"page": 2}
+            ),
         )
         self.assertEqual(
             "https://github.com/api?page=2&per_page=10",
-            gr.Requester.add_parameters_to_url("https://github.com/api?per_page=10&page=1", {"page": 2}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api?per_page=10&page=1", {"page": 2}
+            ),
         )
         self.assertEqual(
             "https://github.com/api?item=3&item=4",
-            gr.Requester.add_parameters_to_url("https://github.com/api?item=1&item=2&item=3", {"item": [3, 4]}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api?item=1&item=2&item=3", {"item": [3, 4]}
+            ),
         )
         self.assertEqual(
             "https://github.com/api?all=true&participating=false",
-            gr.Requester.add_parameters_to_url("https://github.com/api", {"all": True, "participating": False}),
+            gr.Requester.add_parameters_to_url(
+                "https://github.com/api", {"all": True, "participating": False}
+            ),
         )
 
     def testCloseGithub(self):
@@ -356,20 +390,38 @@ class Requester(Framework.TestCase):
         assert self.g.requester.__hostnameHasDomain("api.github.com", "github.com")
         assert self.g.requester.__hostnameHasDomain("ghe.local", "ghe.local")
         assert self.g.requester.__hostnameHasDomain("api.ghe.local", "ghe.local")
-        assert self.g.requester.__hostnameHasDomain("api.prod.ghe.local", "prod.ghe.local")
-        assert self.g.requester.__hostnameHasDomain("github.com", ["github.com", "githubusercontent.com"])
-        assert self.g.requester.__hostnameHasDomain("api.github.com", ["github.com", "githubusercontent.com"])
-        assert self.g.requester.__hostnameHasDomain("githubusercontent.com", ["github.com", "githubusercontent.com"])
+        assert self.g.requester.__hostnameHasDomain(
+            "api.prod.ghe.local", "prod.ghe.local"
+        )
+        assert self.g.requester.__hostnameHasDomain(
+            "github.com", ["github.com", "githubusercontent.com"]
+        )
+        assert self.g.requester.__hostnameHasDomain(
+            "api.github.com", ["github.com", "githubusercontent.com"]
+        )
+        assert self.g.requester.__hostnameHasDomain(
+            "githubusercontent.com", ["github.com", "githubusercontent.com"]
+        )
         assert self.g.requester.__hostnameHasDomain(
             "objects.githubusercontent.com", ["github.com", "githubusercontent.com"]
         )
-        assert self.g.requester.__hostnameHasDomain("maliciousgithub.com", "github.com") is False
-        assert self.g.requester.__hostnameHasDomain("abc.def", ["github.com", "githubusercontent.com"]) is False
+        assert (
+            self.g.requester.__hostnameHasDomain("maliciousgithub.com", "github.com")
+            is False
+        )
+        assert (
+            self.g.requester.__hostnameHasDomain(
+                "abc.def", ["github.com", "githubusercontent.com"]
+            )
+            is False
+        )
 
     def testAssertUrlAllowed(self):
         # default github.com requester
         requester = self.g.requester
-        self.assertEqual(set(requester.__domains), {"github.com", "githubusercontent.com"})
+        self.assertEqual(
+            set(requester.__domains), {"github.com", "githubusercontent.com"}
+        )
 
         for allowed in [
             "https://api.github.com/request",
@@ -385,7 +437,10 @@ class Requester(Framework.TestCase):
         for not_allowed, arg in [
             ("https://prod.ghe.local/github-api/request", "prod.ghe.local"),
             ("https://api.prod.ghe.local/github-api/request", "api.prod.ghe.local"),
-            ("https://uploads.prod.ghe.local/github-api/path", "uploads.prod.ghe.local"),
+            (
+                "https://uploads.prod.ghe.local/github-api/path",
+                "uploads.prod.ghe.local",
+            ),
             ("https://status.prod.ghe.local/github-api/path", "status.prod.ghe.local"),
             ("https://example.com/", "example.com"),
         ]:
@@ -394,7 +449,9 @@ class Requester(Framework.TestCase):
             self.assertEqual(exc.exception.args, (arg,))
 
         # custom (Enterprise) requester with prefix
-        requester = github.Github(base_url="https://prod.ghe.local/github-api/").requester
+        requester = github.Github(
+            base_url="https://prod.ghe.local/github-api/"
+        ).requester
         self.assertEqual(set(requester.__domains), {"prod.ghe.local"})
 
         for allowed in [
@@ -412,7 +469,10 @@ class Requester(Framework.TestCase):
             ("https://uploads.github.com/path", "uploads.github.com"),
             ("https://status.github.com/path", "status.github.com"),
             ("https://githubusercontent.com/path", "githubusercontent.com"),
-            ("https://objects.githubusercontent.com/path", "objects.githubusercontent.com"),
+            (
+                "https://objects.githubusercontent.com/path",
+                "objects.githubusercontent.com",
+            ),
             (
                 "https://release-assets.githubusercontent.com/path",
                 "release-assets.githubusercontent.com",
@@ -424,8 +484,12 @@ class Requester(Framework.TestCase):
             self.assertEqual(exc.exception.args, (arg,))
 
         # custom (Enterprise) requester with api subdomain and prefix
-        requester = github.Github(base_url="https://api.prod.ghe.local/github-api/").requester
-        self.assertEqual(set(requester.__domains), {"api.prod.ghe.local", "prod.ghe.local"})
+        requester = github.Github(
+            base_url="https://api.prod.ghe.local/github-api/"
+        ).requester
+        self.assertEqual(
+            set(requester.__domains), {"api.prod.ghe.local", "prod.ghe.local"}
+        )
 
         for allowed in [
             "https://api.prod.ghe.local/github-api/request",
@@ -443,7 +507,10 @@ class Requester(Framework.TestCase):
             ("https://uploads.github.com/path", "uploads.github.com"),
             ("https://status.github.com/path", "status.github.com"),
             ("https://githubusercontent.com/path", "githubusercontent.com"),
-            ("https://objects.githubusercontent.com/path", "objects.githubusercontent.com"),
+            (
+                "https://objects.githubusercontent.com/path",
+                "objects.githubusercontent.com",
+            ),
             (
                 "https://release-assets.githubusercontent.com/path",
                 "release-assets.githubusercontent.com",
@@ -459,19 +526,33 @@ class Requester(Framework.TestCase):
         requester = self.g.requester
         assert "/api/v3/request", requester.__makeAbsoluteUrl("/request")
         assert "/api/v3/request", requester.__makeAbsoluteUrl("/request?param=value")
-        assert "/api/v3/request", requester.__makeAbsoluteUrl("https://github.com/api/v3/request")
-        assert "/api/v3/request", requester.__makeAbsoluteUrl("https://github.com/api/v3/request?param=value")
-        assert "/request", requester.__makeAbsoluteUrl("https://github.com/request?param=value")
+        assert "/api/v3/request", requester.__makeAbsoluteUrl(
+            "https://github.com/api/v3/request"
+        )
+        assert "/api/v3/request", requester.__makeAbsoluteUrl(
+            "https://github.com/api/v3/request?param=value"
+        )
+        assert "/request", requester.__makeAbsoluteUrl(
+            "https://github.com/request?param=value"
+        )
 
         # custom (Enterprise) requester with different prefix
-        requester = github.Github(base_url="https://api.enterprise.ghe.com/github-api/").requester
+        requester = github.Github(
+            base_url="https://api.enterprise.ghe.com/github-api/"
+        ).requester
         assert "/github-api/request", requester.__makeAbsoluteUrl("/request")
-        assert "/github-api/request", requester.__makeAbsoluteUrl("/request?param=value")
-        assert "/github-api/request", requester.__makeAbsoluteUrl("https://api.enterprise.ghe.com/github-api/request")
+        assert "/github-api/request", requester.__makeAbsoluteUrl(
+            "/request?param=value"
+        )
+        assert "/github-api/request", requester.__makeAbsoluteUrl(
+            "https://api.enterprise.ghe.com/github-api/request"
+        )
         assert "/github-api/request", requester.__makeAbsoluteUrl(
             "https://api.enterprise.ghe.com/github-api/request?param=value"
         )
-        assert "/request", requester.__makeAbsoluteUrl("https://github.com/request?param=value")
+        assert "/request", requester.__makeAbsoluteUrl(
+            "https://github.com/request?param=value"
+        )
 
     PrimaryRateLimitErrors = [
         "API rate limit exceeded for x.x.x.x. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
@@ -487,23 +568,37 @@ class Requester(Framework.TestCase):
 
     def testIsRateLimitError(self):
         for message in self.PrimaryRateLimitErrors + self.SecondaryRateLimitErrors:
-            self.assertTrue(github.Requester.Requester.isRateLimitError(message), message)
+            self.assertTrue(
+                github.Requester.Requester.isRateLimitError(message), message
+            )
         for message in self.OtherErrors:
-            self.assertFalse(github.Requester.Requester.isRateLimitError(message), message)
+            self.assertFalse(
+                github.Requester.Requester.isRateLimitError(message), message
+            )
 
     def testIsPrimaryRateLimitError(self):
         for message in self.PrimaryRateLimitErrors:
-            self.assertTrue(github.Requester.Requester.isPrimaryRateLimitError(message), message)
+            self.assertTrue(
+                github.Requester.Requester.isPrimaryRateLimitError(message), message
+            )
         for message in self.OtherErrors + self.SecondaryRateLimitErrors:
-            self.assertFalse(github.Requester.Requester.isPrimaryRateLimitError(message), message)
+            self.assertFalse(
+                github.Requester.Requester.isPrimaryRateLimitError(message), message
+            )
 
     def testIsSecondaryRateLimitError(self):
         for message in self.SecondaryRateLimitErrors:
-            self.assertTrue(github.Requester.Requester.isSecondaryRateLimitError(message), message)
+            self.assertTrue(
+                github.Requester.Requester.isSecondaryRateLimitError(message), message
+            )
         for message in self.OtherErrors + self.PrimaryRateLimitErrors:
-            self.assertFalse(github.Requester.Requester.isSecondaryRateLimitError(message), message)
+            self.assertFalse(
+                github.Requester.Requester.isSecondaryRateLimitError(message), message
+            )
 
-    def assertException(self, exception, exception_type, message, status, data, headers, string):
+    def assertException(
+        self, exception, exception_type, message, status, data, headers, string
+    ):
         self.assertIsInstance(exception, exception_type)
         if message is None:
             self.assertIsNone(exception.message)
@@ -518,7 +613,9 @@ class Requester(Framework.TestCase):
         self.assertEqual(str(exception), string)
 
     def testShouldCreateBadCredentialsException(self):
-        exc = self.g._Github__requester.createException(401, {"header": "value"}, {"message": "Bad credentials"})
+        exc = self.g._Github__requester.createException(
+            401, {"header": "value"}, {"message": "Bad credentials"}
+        )
         self.assertException(
             exc,
             github.BadCredentialsException,
@@ -570,7 +667,9 @@ class Requester(Framework.TestCase):
     def testShouldCreateRateLimitExceededException(self):
         for message in self.PrimaryRateLimitErrors + self.SecondaryRateLimitErrors:
             with self.subTest(message=message):
-                exc = self.g._Github__requester.createException(403, {"header": "value"}, {"message": message})
+                exc = self.g._Github__requester.createException(
+                    403, {"header": "value"}, {"message": message}
+                )
                 self.assertException(
                     exc,
                     github.RateLimitExceededException,
@@ -582,7 +681,9 @@ class Requester(Framework.TestCase):
                 )
 
     def testShouldCreateUnknownObjectException(self):
-        exc = self.g._Github__requester.createException(404, {"header": "value"}, {"message": "Not Found"})
+        exc = self.g._Github__requester.createException(
+            404, {"header": "value"}, {"message": "Not Found"}
+        )
         self.assertException(
             exc,
             github.UnknownObjectException,
@@ -595,7 +696,9 @@ class Requester(Framework.TestCase):
 
     def testShouldCreateUnknownObjectException2(self):
         exc = self.g._Github__requester.createException(
-            404, {"header": "value"}, {"message": "No object found for the path some-nonexistent-file"}
+            404,
+            {"header": "value"},
+            {"message": "No object found for the path some-nonexistent-file"},
         )
         self.assertException(
             exc,
@@ -608,7 +711,9 @@ class Requester(Framework.TestCase):
         )
 
     def testShouldCreateUnknownObjectException3(self):
-        exc = self.g._Github__requester.createException(404, {"header": "value"}, {"message": "Branch Not Found"})
+        exc = self.g._Github__requester.createException(
+            404, {"header": "value"}, {"message": "Branch Not Found"}
+        )
         self.assertException(
             exc,
             github.UnknownObjectException,
@@ -639,13 +744,17 @@ class Requester(Framework.TestCase):
         for status in range(400, 600):
             with self.subTest(status=status):
                 exc = self.g._Github__requester.createException(status, {}, {})
-                self.assertException(exc, github.GithubException, None, status, {}, {}, f"{status} {{}}")
+                self.assertException(
+                    exc, github.GithubException, None, status, {}, {}, f"{status} {{}}"
+                )
 
     def testShouldCreateExceptionWithoutOutput(self):
         for status in range(400, 600):
             with self.subTest(status=status):
                 exc = self.g._Github__requester.createException(status, {}, None)
-                self.assertException(exc, github.GithubException, None, status, None, {}, f"{status}")
+                self.assertException(
+                    exc, github.GithubException, None, status, None, {}, f"{status}"
+                )
 
 
 class RequesterThrottleTestCase(Framework.TestCase):
@@ -663,9 +772,9 @@ class RequesterThrottleTestCase(Framework.TestCase):
 
     @contextlib.contextmanager
     def mock_sleep(self):
-        with mock.patch("github.Requester.time.sleep", side_effect=self.sleep) as sleep_mock, mock.patch(
-            "github.Requester.datetime"
-        ) as datetime_mock:
+        with mock.patch(
+            "github.Requester.time.sleep", side_effect=self.sleep
+        ) as sleep_mock, mock.patch("github.Requester.datetime") as datetime_mock:
             datetime_mock.now = self.now
             yield sleep_mock
 
@@ -696,7 +805,9 @@ class RequesterThrottled(RequesterThrottleTestCase):
                 releases = [release for release in repository.get_releases()]
                 self.assertEqual(len(releases), 30)
 
-        self.assertEqual(sleep_mock.call_args_list, [mock.call(1), mock.call(1), mock.call(1)])
+        self.assertEqual(
+            sleep_mock.call_args_list, [mock.call(1), mock.call(1), mock.call(1)]
+        )
 
     def testShouldDeferWrites(self):
         with self.mock_sleep() as sleep_mock:

@@ -45,36 +45,55 @@ from . import Framework
 class GitCommit(Framework.TestCase):
     def setUp(self):
         super().setUp()
-        self.commit = self.g.get_repo("PyGithub/PyGithub").get_git_commit("3d84a47a88f6757514cb3ee91b829f53ba09e7e0")
+        self.commit = self.g.get_repo("PyGithub/PyGithub").get_git_commit(
+            "3d84a47a88f6757514cb3ee91b829f53ba09e7e0"
+        )
 
     def testAttributes(self):
         self.assertEqual(self.commit.author.name, "Enrico Minack")
         self.assertEqual(self.commit.author.email, "github@enrico.minack.dev")
-        self.assertEqual(self.commit.author.date, datetime(2024, 12, 18, 10, 40, 19, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.commit.author.date,
+            datetime(2024, 12, 18, 10, 40, 19, tzinfo=timezone.utc),
+        )
         self.assertIsNone(self.commit.comment_count)
         self.assertEqual(self.commit.committer.name, "GitHub")
         self.assertEqual(self.commit.committer.email, "noreply@github.com")
-        self.assertEqual(self.commit.committer.date, datetime(2024, 12, 18, 10, 40, 19, tzinfo=timezone.utc))
         self.assertEqual(
-            self.commit.html_url, "https://github.com/PyGithub/PyGithub/commit/3d84a47a88f6757514cb3ee91b829f53ba09e7e0"
+            self.commit.committer.date,
+            datetime(2024, 12, 18, 10, 40, 19, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.commit.html_url,
+            "https://github.com/PyGithub/PyGithub/commit/3d84a47a88f6757514cb3ee91b829f53ba09e7e0",
         )
         self.assertIsNone(self.commit.id)
         self.assertEqual(
             self.commit.message,
             "Get branches where commit is head (#3083)\n\nImplements `GET\r\n/repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head`\r\n\r\nhttps://docs.github.com/rest/commits/commits#list-branches-for-head-commit",
         )
-        self.assertEqual(self.commit.node_id, "C_kwDOADYVqtoAKDNkODRhNDdhODhmNjc1NzUxNGNiM2VlOTFiODI5ZjUzYmEwOWU3ZTA")
+        self.assertEqual(
+            self.commit.node_id,
+            "C_kwDOADYVqtoAKDNkODRhNDdhODhmNjc1NzUxNGNiM2VlOTFiODI5ZjUzYmEwOWU3ZTA",
+        )
         self.assertEqual(len(self.commit.parents), 1)
-        self.assertEqual(self.commit.parents[0].sha, "a50ae51b2c351b889055568bcaa9ab6000f1677f")
+        self.assertEqual(
+            self.commit.parents[0].sha, "a50ae51b2c351b889055568bcaa9ab6000f1677f"
+        )
         self.assertEqual(self.commit.sha, "3d84a47a88f6757514cb3ee91b829f53ba09e7e0")
         self.assertIsNone(self.commit.timestamp)
-        self.assertEqual(self.commit.tree.sha, "d9e2468f2db35e158eb65e91b249dde20ca88c86")
+        self.assertEqual(
+            self.commit.tree.sha, "d9e2468f2db35e158eb65e91b249dde20ca88c86"
+        )
         self.assertIsNone(self.commit.tree_id)
         self.assertEqual(
             self.commit.url,
             "https://api.github.com/repos/PyGithub/PyGithub/git/commits/3d84a47a88f6757514cb3ee91b829f53ba09e7e0",
         )
-        self.assertEqual(repr(self.commit), 'GitCommit(sha="3d84a47a88f6757514cb3ee91b829f53ba09e7e0")')
+        self.assertEqual(
+            repr(self.commit),
+            'GitCommit(sha="3d84a47a88f6757514cb3ee91b829f53ba09e7e0")',
+        )
         self.assertEqual(repr(self.commit.author), 'GitAuthor(name="Enrico Minack")')
         self.assertEqual(
             self.commit.verification.payload,
@@ -111,4 +130,7 @@ class GitCommit(Framework.TestCase):
             "-----END PGP SIGNATURE-----\n",
         )
         self.assertEqual(self.commit.verification.verified, True)
-        self.assertEqual(self.commit.verification.verified_at, datetime(2024, 12, 18, 10, 45, 21, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.commit.verification.verified_at,
+            datetime(2024, 12, 18, 10, 45, 21, tzinfo=timezone.utc),
+        )

@@ -51,14 +51,19 @@ class RepositoryAdvisory(Framework.TestCase):
             self.advisory.created_at,
             datetime(2023, 3, 28, 21, 41, 40, tzinfo=timezone.utc),
         )
-        self.assertListKeyEqual(self.advisory.credits, lambda e: (e.login, e.type), [("octocat", "analyst")])
+        self.assertListKeyEqual(
+            self.advisory.credits, lambda e: (e.login, e.type), [("octocat", "analyst")]
+        )
         self.assertListKeyEqual(
             self.advisory.credits_detailed,
             lambda e: (e.user.login, e.type),
             [("octocat", "analyst")],
         )
         self.assertEqual(self.advisory.cve_id, "CVE-2023-00000")
-        self.assertEqual(self.advisory.cvss.vector_string, "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:C/C:H/I:H/A:H")
+        self.assertEqual(
+            self.advisory.cvss.vector_string,
+            "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:C/C:H/I:H/A:H",
+        )
         self.assertIsNone(self.advisory.cvss_severities)
         self.assertListEqual(self.advisory.cwe_ids, ["CWE-400", "CWE-501"])
         self.assertListKeyEqual(
@@ -80,7 +85,10 @@ class RepositoryAdvisory(Framework.TestCase):
         )
         self.assertEqual(
             self.advisory.identifiers,
-            [{"value": "GHSA-wmmh-r9w4-hpxx", "type": "GHSA"}, {"value": "CVE-2023-00000", "type": "CVE"}],
+            [
+                {"value": "GHSA-wmmh-r9w4-hpxx", "type": "GHSA"},
+                {"value": "CVE-2023-00000", "type": "CVE"},
+            ],
         )
         self.assertIsNone(self.advisory.private_fork)
         self.assertEqual(self.advisory.published_at, None)

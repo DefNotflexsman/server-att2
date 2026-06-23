@@ -154,7 +154,9 @@ def as_python_type(
             if not isinstance(classes_of_schema, list):
                 raise ValueError(f"Expected list of types for schema: {schema}")
             if len(classes_of_schema) == 0:
-                raise ValueError(f"Expected non-empty list of types for schema: {schema}")
+                raise ValueError(
+                    f"Expected non-empty list of types for schema: {schema}"
+                )
             if len(classes_of_schema) == 1:
                 class_name = classes_of_schema[0]
                 if class_name not in classes:
@@ -167,7 +169,11 @@ def as_python_type(
                     if class_name not in classes:
                         print(f"Class not found in index: {class_name}")
             return PythonType.union(
-                *[GithubClass(**classes.get(cls)) for cls in sorted(classes_of_schema) if cls in classes]
+                *[
+                    GithubClass(**classes.get(cls))
+                    for cls in sorted(classes_of_schema)
+                    if cls in classes
+                ]
             )
         if collect_new_schemas is not None:
             if schema.split("/")[-1].startswith("_"):
@@ -177,7 +183,9 @@ def as_python_type(
         if verbose:
             # here we use dot-notation to ease usage with jq
             print(f"Schema not implemented: {schema or '.'.join([''] + schema_path)}")
-        return PythonType(type="dict", inner_types=[PythonType("str"), PythonType("Any")])
+        return PythonType(
+            type="dict", inner_types=[PythonType("str"), PythonType("Any")]
+        )
 
     if data_type is None:
         if verbose:
@@ -222,7 +230,9 @@ def as_python_type(
     return PythonType(type=formats.get(format) or formats.get(None))
 
 
-def string_as_python_type(type: str, classes: dict[str, dict]) -> PythonType | GithubClass | None:
+def string_as_python_type(
+    type: str, classes: dict[str, dict]
+) -> PythonType | GithubClass | None:
     type = type.strip()
     if type == "None":
         return PythonType("None")
@@ -266,10 +276,16 @@ def pagination_list_property(properties: dict[str, Any]) -> str | None:
     # canonical "items" array identifies the paginated items.
     #
     # Returns the name of the paginated array property, or None if this is not a pagination object.
-    total_count_items = [n for n, p in properties.items() if n.startswith("total_") and p.get("type") == "integer"]
+    total_count_items = [
+        n
+        for n, p in properties.items()
+        if n.startswith("total_") and p.get("type") == "integer"
+    ]
     if len(total_count_items) != 1:
         return None
-    list_items = [n for n, p in properties.items() if p.get("type") == "array" and "items" in p]
+    list_items = [
+        n for n, p in properties.items() if p.get("type") == "array" and "items" in p
+    ]
     if len(list_items) == 1:
         return list_items[0]
     if len(list_items) > 1 and "items" in list_items:
@@ -285,7 +301,9 @@ def is_pagination_object(schema: dict[str, Any]) -> bool:
     )
 
 
-def get_paginated_property(schema: dict[str, Any], schema_path: list[str]) -> (dict[str, Any], list[str]):
+def get_paginated_property(
+    schema: dict[str, Any], schema_path: list[str]
+) -> (dict[str, Any], list[str]):
     # assumes is_pagination_object returns True for this schema
     props = schema.get("properties")
     list_item = pagination_list_property(props)
@@ -307,12 +325,22 @@ def responses_as_python_type(
         if status.isnumeric() and int(status) < 400 and "content" in response
         for schema, inner_schema_path in [
             (
-                resolve_schema(response, spec).get("content").get("application/json", {}).get("schema", {}),
+                resolve_schema(response, spec)
+                .get("content")
+                .get("application/json", {})
+                .get("schema", {}),
                 schema_path + [str(status), "content", '"application/json"', "schema"],
             )
         ]
         for data_type in [
-            as_python_type(schema, inner_schema_path, schema_to_class, classes, spec, paginated=paginated)
+            as_python_type(
+                schema,
+                inner_schema_path,
+                schema_to_class,
+                classes,
+                spec,
+                paginated=paginated,
+            )
         ]
     ]
     schemas = sorted(schemas, key=lambda e: e[0])
@@ -321,7 +349,9 @@ def responses_as_python_type(
     elif len(schemas) > 1:
         schema_names = {str(schema) for status, schema in schemas}
         if len(schema_names) > 1:
-            print(f"Found multiple python types for responses: {', '.join(schema_names)}")
+            print(
+                f"Found multiple python types for responses: {', '.join(schema_names)}"
+            )
     schema = schemas[0][1]
 
     return schema
@@ -341,7 +371,11 @@ class PythonType:
         types = [
             inner
             for type in types
-            for inner in (type.inner_types if isinstance(type, PythonType) and type.type == "union" else [type])
+            for inner in (
+                type.inner_types
+                if isinstance(type, PythonType) and type.type == "union"
+                else [type]
+            )
         ]
 
         # make types distinct, preserve order
@@ -361,7 +395,9 @@ class PythonType:
 
     def __repr__(self):
         return (
-            f"{self.type}[{', '.join([str(inner) for inner in self.inner_types])}]" if self.inner_types else self.type
+            f"{self.type}[{', '.join([str(inner) for inner in self.inner_types])}]"
+            if self.inner_types
+            else self.type
         )
 
     def __lt__(self, other) -> bool:
@@ -399,13 +435,17 @@ class GithubClass:
     def as_nullable(self) -> PythonType:
         return PythonType.union(self, None)
 
-    def with_filename(self, github_parent_path: str, filename: str | None) -> GithubClass:
+    def with_filename(
+        self, github_parent_path: str, filename: str | None
+    ) -> GithubClass:
         if filename:
             if github_parent_path and not github_parent_path.endswith("/"):
                 github_parent_path = f"{github_parent_path}/"
             test_filename = f"{github_parent_path}tests/{filename}"
             filename = f"{github_parent_path}{self.package}/{filename}"
-            return dataclasses.replace(self, filename=filename, test_filename=test_filename)
+            return dataclasses.replace(
+                self, filename=filename, test_filename=test_filename
+            )
         return self
 
     @property
@@ -418,7 +458,9 @@ class GithubClass:
 
     @staticmethod
     def from_class_name(
-        class_name: str, index: dict[str, Any] | None = None, github_parent_path: str = ""
+        class_name: str,
+        index: dict[str, Any] | None = None,
+        github_parent_path: str = "",
     ) -> GithubClass:
         if github_parent_path and not github_parent_path.endswith("/"):
             github_parent_path = f"{github_parent_path}/"
@@ -427,7 +469,11 @@ class GithubClass:
             package, module, class_name = full_class_name.split(".", 2)
             if index is not None:
                 clazz = GithubClass.from_class_name(class_name, index)
-                if clazz.package != package or clazz.module != module or clazz.name != class_name:
+                if (
+                    clazz.package != package
+                    or clazz.module != module
+                    or clazz.name != class_name
+                ):
                     raise ValueError(f"Class mismatch: {full_class_name} vs {clazz}")
                 return clazz
             else:
@@ -457,7 +503,8 @@ class GithubClass:
                 return GithubClass(**cls)
             else:
                 return GithubClass.from_class_name(
-                    f"github.{class_name}.{class_name}", github_parent_path=github_parent_path
+                    f"github.{class_name}.{class_name}",
+                    github_parent_path=github_parent_path,
                 )
 
 
@@ -466,14 +513,12 @@ _PROPERTY_NAME_SPECIAL_CHARS = {"+": "plus", "-": "minus", "1": "one"}
 
 
 def to_python_name(name: str) -> str:
-    """
-    Turn an OpenAPI property name into a valid Python identifier.
+    """Turn an OpenAPI property name into a valid Python identifier.
 
     Names that already are valid identifiers are returned unchanged. Names with characters that are
     not allowed in Python identifiers (e.g. the reaction rollup properties ``+1`` and ``-1``) are
     translated: known special characters become readable words (``+`` -> ``plus``, ``1`` -> ``one``)
     and any other invalid character becomes an underscore. So ``+1`` becomes ``plus_one``.
-
     """
     if name.isidentifier():
         return name
@@ -502,8 +547,13 @@ class Property:
             object.__setattr__(self, "python_name", to_python_name(self.name))
 
     @staticmethod
-    def from_tuples(properties: dict[str, (PythonType | GithubClass | None, bool)]) -> list[Property]:
-        return [Property(name=n, data_type=t, deprecated=d) for n, (t, d) in properties.items()]
+    def from_tuples(
+        properties: dict[str, (PythonType | GithubClass | None, bool)]
+    ) -> list[Property]:
+        return [
+            Property(name=n, data_type=t, deprecated=d)
+            for n, (t, d) in properties.items()
+        ]
 
 
 class ParameterOrder(Enum):
@@ -555,10 +605,21 @@ class Parameter:
             data_type = data_type.as_nullable()
         param_type = schema.get("in") if param_type is None else param_type
         deprecated = schema.get("deprecated")
-        if deprecated is None and description and description.startswith("**Closing down notice**"):
+        if (
+            deprecated is None
+            and description
+            and description.startswith("**Closing down notice**")
+        ):
             deprecated = True
         return Parameter(
-            name, name, description, data_type, param_type, required, ParameterOrder.POSITIONAL, deprecated
+            name,
+            name,
+            description,
+            data_type,
+            param_type,
+            required,
+            ParameterOrder.POSITIONAL,
+            deprecated,
         )
 
 
@@ -592,7 +653,14 @@ class Method:
         docs_url = schema.get("externalDocs", {}).get("url")
         url_parameters_schema_path = schema_path + ["parameters"]
         url_parameters = [
-            Parameter.from_schema(n, s, url_parameters_schema_path, r if r is not None else False, index, spec)
+            Parameter.from_schema(
+                n,
+                s,
+                url_parameters_schema_path,
+                r if r is not None else False,
+                index,
+                spec,
+            )
             for s in schema.get("parameters", [])
             for s in [resolve_schema(s, spec)]
             for n, r in [(s.get("name"), s.get("required"))]
@@ -607,9 +675,20 @@ class Method:
         ]
         body_parameters = [
             Parameter.from_schema(
-                n, p, body_parameters_schema_path + [n], n in required, index, spec, param_type="body"
+                n,
+                p,
+                body_parameters_schema_path + [n],
+                n in required,
+                index,
+                spec,
+                param_type="body",
             )
-            for s in [schema.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {})]
+            for s in [
+                schema.get("requestBody", {})
+                .get("content", {})
+                .get("application/json", {})
+                .get("schema", {})
+            ]
             for s in [resolve_schema(s, spec)]
             for required in [s.get("required", [])]
             for n, p in s.get("properties", {}).items()
@@ -625,7 +704,17 @@ class Method:
             any(p.supports_pagination() for p in url_parameters),
         )
         deprecated = schema.get("deprecated")
-        return Method(name, summary, description, path, verb, docs_url, parameters, return_type, deprecated)
+        return Method(
+            name,
+            summary,
+            description,
+            path,
+            verb,
+            docs_url,
+            parameters,
+            return_type,
+            deprecated,
+        )
 
 
 class SimpleStringCollector(cst.CSTVisitor):
@@ -653,7 +742,10 @@ class FunctionCallCollector(cst.CSTVisitor):
     def visit_Call(self, node: cst.Call) -> bool | None:
         code = cst.Module([]).code_for_node
         func_name = code(node.func)
-        args = [(f"{code(arg.keyword)}=" if arg.keyword else "") + code(arg.value) for arg in node.args]
+        args = [
+            (f"{code(arg.keyword)}=" if arg.keyword else "") + code(arg.value)
+            for arg in node.args
+        ]
         self._calls.append((func_name, args))
 
 
@@ -675,7 +767,10 @@ def is_parameter_assertion(stmt: cst.BaseStatement, parameters: set[str]) -> boo
         return False
     call = stmt.test
 
-    if not (isinstance(call.func, cst.Name) and call.func.value in ["isinstance", "is_optional", "is_optional_list"]):
+    if not (
+        isinstance(call.func, cst.Name)
+        and call.func.value in ["isinstance", "is_optional", "is_optional_list"]
+    ):
         return False
 
     if not (len(call.args) == 2 and isinstance(call.args[0], cst.Arg)):
@@ -727,7 +822,11 @@ def get_request_parameters(stmt: cst.BaseStatement, var_name: str) -> cst.Dict |
 
 def get_class_docstring(node: cst.ClassDef) -> str | None:
     try:
-        if isinstance(node.body, IndentedBlock) and len(node.body.body) > 0 and is_comment(node.body.body[0]):
+        if (
+            isinstance(node.body, IndentedBlock)
+            and len(node.body.body) > 0
+            and is_comment(node.body.body[0])
+        ):
             return node.body.body[0].body[0].value.value
     except Exception as e:
         print(f"Extracting docstring of class {node.name.value} failed", e)
@@ -751,14 +850,20 @@ def merge_paths(paths: list[dict[str, Any]]) -> dict[str, Any]:
 class CstMethods(abc.ABC):
     @staticmethod
     def contains_decorator(seq: Sequence[cst.Decorator], decorator_name: str):
-        return any(d.decorator.value == decorator_name for d in seq if isinstance(d.decorator, cst.Name))
+        return any(
+            d.decorator.value == decorator_name
+            for d in seq
+            if isinstance(d.decorator, cst.Name)
+        )
 
     @classmethod
     def is_github_object_property(cls, func_def: cst.FunctionDef):
         return cls.contains_decorator(func_def.decorators, "property")
 
     @staticmethod
-    def get_decorators(decorators: Sequence[cst.Decorator], decorator_name: str) -> list[dict[str, Any]]:
+    def get_decorators(
+        decorators: Sequence[cst.Decorator], decorator_name: str
+    ) -> list[dict[str, Any]]:
         return [
             {
                 k: v
@@ -784,12 +889,19 @@ class CstMethods(abc.ABC):
         fields = name.rstrip("]").split("[", maxsplit=1)
         name = fields[0]
         index = fields[1]
-        sub = cst.Subscript(cst.Name(name), [cst.SubscriptElement(cst.Index(cst.Integer(index)))])
+        sub = cst.Subscript(
+            cst.Name(name), [cst.SubscriptElement(cst.Index(cst.Integer(index)))]
+        )
         return sub
 
     @classmethod
     def create_attribute(cls, names: list[str]) -> cst.Name | cst.Attribute:
-        names = [cls.create_subscript(name) if "[" in name and name.endswith("]") else cst.Name(name) for name in names]
+        names = [
+            cls.create_subscript(name)
+            if "[" in name and name.endswith("]")
+            else cst.Name(name)
+            for name in names
+        ]
         if len(names) == 1:
             return names[0]
         attr = cst.Attribute(names[0], names[1])
@@ -799,14 +911,19 @@ class CstMethods(abc.ABC):
 
     @classmethod
     def create_type(
-        cls, data_type: PythonType | GithubClass | None, short_class_name: bool = False, union_as_tuple: bool = False
+        cls,
+        data_type: PythonType | GithubClass | None,
+        short_class_name: bool = False,
+        union_as_tuple: bool = False,
     ) -> cst.BaseExpression:
         if data_type is None:
             return cst.Name("None")
         if isinstance(data_type, GithubClass):
             if short_class_name:
                 return cst.Name(data_type.name.split(".")[-1])
-            return cls.create_attribute([data_type.package, data_type.module] + data_type.name.split("."))
+            return cls.create_attribute(
+                [data_type.package, data_type.module] + data_type.name.split(".")
+            )
         if data_type.type == "union":
             if len(data_type.inner_types) == 0:
                 return cst.Name("None")
@@ -817,7 +934,9 @@ class CstMethods(abc.ABC):
                     elements=[
                         cst.Element(
                             value=cls.create_type(
-                                inner, short_class_name=short_class_name, union_as_tuple=union_as_tuple
+                                inner,
+                                short_class_name=short_class_name,
+                                union_as_tuple=union_as_tuple,
                             )
                         )
                         for inner in data_type.inner_types
@@ -830,7 +949,9 @@ class CstMethods(abc.ABC):
                     cls.create_type(data_type.inner_types[1], short_class_name),
                 )
                 for dt in data_type.inner_types[2:]:
-                    result = cst.BinaryOperation(result, cst.BitOr(), cls.create_type(dt, short_class_name))
+                    result = cst.BinaryOperation(
+                        result, cst.BitOr(), cls.create_type(dt, short_class_name)
+                    )
             return result
         if data_type.inner_types:
             elems = [
@@ -841,16 +962,22 @@ class CstMethods(abc.ABC):
         return cst.Name(data_type.type)
 
     @classmethod
-    def find_nodes(cls, node: cst.CSTNode, node_type: type[cst.CSTNode]) -> list[cst.CSTNode]:
+    def find_nodes(
+        cls, node: cst.CSTNode, node_type: type[cst.CSTNode]
+    ) -> list[cst.CSTNode]:
         if isinstance(node, node_type):
             return [node]
-        return [node for child in node.children for node in cls.find_nodes(child, node_type)]
+        return [
+            node for child in node.children for node in cls.find_nodes(child, node_type)
+        ]
 
     @staticmethod
     def parse_attribute(attr: cst.Attribute) -> list[str]:
         attrs = []
         while (
-            isinstance(attr, cst.Attribute) or isinstance(attr, cst.Subscript) and isinstance(attr.value, cst.Attribute)
+            isinstance(attr, cst.Attribute)
+            or isinstance(attr, cst.Subscript)
+            and isinstance(attr.value, cst.Attribute)
         ):
             if isinstance(attr, cst.Attribute):
                 attrs.insert(0, attr.attr.value)
@@ -931,7 +1058,11 @@ class CstTransformerBase(cst.CSTTransformer, CstMethods, abc.ABC):
         import_stmt = cst.SimpleStatementLine(
             [
                 cst.ImportFrom(
-                    cst.Name("datetime"), [cst.ImportAlias(cst.Name("datetime")), cst.ImportAlias(cst.Name("timezone"))]
+                    cst.Name("datetime"),
+                    [
+                        cst.ImportAlias(cst.Name("datetime")),
+                        cst.ImportAlias(cst.Name("timezone")),
+                    ],
                 )
             ]
         )
@@ -954,7 +1085,12 @@ class CstTransformerBase(cst.CSTTransformer, CstMethods, abc.ABC):
             and first_stmt.body[0].names[0].name.value == "annotations"
         ):
             import_stmt = cst.SimpleStatementLine(
-                [cst.ImportFrom(cst.Name("__future__"), [cst.ImportAlias(cst.Name("annotations"))])]
+                [
+                    cst.ImportFrom(
+                        cst.Name("__future__"),
+                        [cst.ImportAlias(cst.Name("annotations"))],
+                    )
+                ]
             )
             if (
                 isinstance(first_stmt, cst.SimpleStatementLine)
@@ -1010,13 +1146,17 @@ class IndexPythonClassesVisitor(CstVisitorBase):
         return self._classes
 
     @staticmethod
-    def process_class_def(node: cst.ClassDef, classes: dict[str, Any]) -> dict[str, Any]:
+    def process_class_def(
+        node: cst.ClassDef, classes: dict[str, Any]
+    ) -> dict[str, Any]:
         class_name_short = node.name.value
         class_docstring = get_class_docstring(node)
         class_docstring = class_docstring.strip('"\r\n ') if class_docstring else None
         class_schemas = []
         class_bases = [
-            val if isinstance(val, str) else Module([]).code_for_node(val).split(".")[-1]
+            val
+            if isinstance(val, str)
+            else Module([]).code_for_node(val).split(".")[-1]
             for base in node.bases
             for val in [base.value.value]
         ]
@@ -1102,9 +1242,20 @@ class IndexPythonClassesVisitor(CstVisitorBase):
         method_name = node.name.value
         decorators = self.get_decorators(node.decorators, "method_returns")
         path_property = next(
-            iter([decorator["schema_property"] for decorator in decorators if "schema_property" in decorator]), None
+            iter(
+                [
+                    decorator["schema_property"]
+                    for decorator in decorators
+                    if "schema_property" in decorator
+                ]
+            ),
+            None,
         )
-        returns = self.return_types(cst.Module([]).code_for_node(node.returns.annotation) if node.returns else None)
+        returns = self.return_types(
+            cst.Module([]).code_for_node(node.returns.annotation)
+            if node.returns
+            else None
+        )
 
         if self.is_github_object_property(node):
             # collect schemas of this property
@@ -1133,9 +1284,13 @@ class IndexPythonClassesVisitor(CstVisitorBase):
         visitor = SimpleStringCollector()
         node.body.visit(visitor)
         if visitor.strings:
-            string = [line for line in visitor.strings[0].splitlines() if ":calls:" in line]
+            string = [
+                line for line in visitor.strings[0].splitlines() if ":calls:" in line
+            ]
             if string:
-                fields = string[0].split(":calls:")[1].strip(" `").split(" ", maxsplit=2)
+                fields = (
+                    string[0].split(":calls:")[1].strip(" `").split(" ", maxsplit=2)
+                )
                 verb = fields[0] if len(fields) > 0 else None
                 path = fields[1] if len(fields) > 1 else None
                 path = f"{path}#{path_property}" if path_property else path
@@ -1184,8 +1339,12 @@ class IndexPythonClassesVisitor(CstVisitorBase):
                         # calls to PaginatedList(...) are equivalent to
                         # self.__requester.requestJsonAndCheck("GET", …, parameters=…, headers=…)
                         calls = [
-                            ("self.__requester.requestJsonAndCheck", ['"GET"', "…", "parameters=…", "headers=…"])
-                            if func in ["PaginatedList", "github.PaginatedList.PaginatedList"]
+                            (
+                                "self.__requester.requestJsonAndCheck",
+                                ['"GET"', "…", "parameters=…", "headers=…"],
+                            )
+                            if func
+                            in ["PaginatedList", "github.PaginatedList.PaginatedList"]
                             else (func, args)
                             for func, args in calls
                         ]
@@ -1193,7 +1352,10 @@ class IndexPythonClassesVisitor(CstVisitorBase):
                         # calls to self._requester.graphql_ are equivalent to
                         # self._requester.requestJsonAndCheck("POST", …, input=…)
                         calls = [
-                            ("self._requester.requestJsonAndCheck", ['"POST"', "…", "input=…"])
+                            (
+                                "self._requester.requestJsonAndCheck",
+                                ['"POST"', "…", "input=…"],
+                            )
                             if func.startswith("self._requester.graphql_")
                             else (func, args)
                             for func, args in calls
@@ -1226,22 +1388,33 @@ class IndexPythonClassesVisitor(CstVisitorBase):
                                 len(args) > 1
                                 and args[1].startswith("url=")
                                 or len(args) > 2
-                                and args[2].startswith(('{"url":', 'attributes={"url":'))
+                                and args[2].startswith(
+                                    ('{"url":', 'attributes={"url":')
+                                )
                             )
                             else (func, args, None)
                             for func, args in calls
                         ]
 
                         # skip functions that call into parent functions
-                        if not any(func.startswith("super().") for func, args, base in calls):
+                        if not any(
+                            func.startswith("super().") for func, args, base in calls
+                        ):
                             # check for requester calls with the expected verb
                             if not any(
-                                func.startswith(("self._requester.request", "self.__requester.request"))
+                                func.startswith(
+                                    (
+                                        "self._requester.request",
+                                        "self.__requester.request",
+                                    )
+                                )
                                 and args
                                 and args[0] == quoted_verb
                                 for func, args, base in calls
                             ):
-                                print(f"Not found any {quoted_verb} call in {self.current_class_name}.{method_name}")
+                                print(
+                                    f"Not found any {quoted_verb} call in {self.current_class_name}.{method_name}"
+                                )
                                 for func, args, base in calls:
                                     print(f"- calls {func}({', '.join(args)})")
                             # else:
@@ -1319,7 +1492,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
     def code(node: cst.Node) -> str:
         return cst.Module([]).code_for_node(node)
 
-    def inner_github_type(self, data_type: PythonType | GithubClass | list[PythonType | GithubClass]) -> [GithubClass]:
+    def inner_github_type(
+        self, data_type: PythonType | GithubClass | list[PythonType | GithubClass]
+    ) -> [GithubClass]:
         if data_type is None:
             return []
         if isinstance(data_type, list):
@@ -1349,7 +1524,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         datetime_exists = False
         in_github_imports = False
         needs_datetime_import = any(
-            p.data_type.type == "datetime" for p in self.all_properties if isinstance(p.data_type, PythonType)
+            p.data_type.type == "datetime"
+            for p in self.all_properties
+            if isinstance(p.data_type, PythonType)
         )
 
         # insert import classes if needed
@@ -1393,13 +1570,24 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                     import_stmt = cst.SimpleStatementLine(
                         [
                             cst.Import(
-                                [cst.ImportAlias(self.create_attribute([import_module.package, import_module.module]))]
+                                [
+                                    cst.ImportAlias(
+                                        self.create_attribute(
+                                            [
+                                                import_module.package,
+                                                import_module.module,
+                                            ]
+                                        )
+                                    )
+                                ]
                             )
                         ]
                     )
 
                     stmts = node.body
-                    node = node.with_changes(body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:]))
+                    node = node.with_changes(
+                        body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:])
+                    )
                 if import_classes and import_classes[0].module == imported_module:
                     import_classes.pop(0)
             i = i + 1
@@ -1412,27 +1600,48 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         while import_classes:
             import_module = import_classes.pop(0)
             import_stmt = cst.SimpleStatementLine(
-                [cst.Import([cst.ImportAlias(self.create_attribute([import_module.package, import_module.module]))])]
+                [
+                    cst.Import(
+                        [
+                            cst.ImportAlias(
+                                self.create_attribute(
+                                    [import_module.package, import_module.module]
+                                )
+                            )
+                        ]
+                    )
+                ]
             )
             stmts = node.body
-            node = node.with_changes(body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:]))
+            node = node.with_changes(
+                body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:])
+            )
 
         # insert typing classes if needed
         # find first If statement in node.body
         if_idx_node_or_none = next(
-            ((idx, stmt) for idx, stmt in enumerate(node.body) if isinstance(stmt, cst.If)), None
+            (
+                (idx, stmt)
+                for idx, stmt in enumerate(node.body)
+                if isinstance(stmt, cst.If)
+            ),
+            None,
         )
         if if_idx_node_or_none is not None:
             if_idx, if_node = if_idx_node_or_none
             i = 0
-            while i < len(if_node.body.body) and isinstance(if_node.body.body[i].body[0], (cst.Import, cst.ImportFrom)):
+            while i < len(if_node.body.body) and isinstance(
+                if_node.body.body[i].body[0], (cst.Import, cst.ImportFrom)
+            ):
                 imported_module = if_node.body.body[i].body[0].module.attr.value
                 while typing_classes and typing_classes[0].module < imported_module:
                     typing_class = typing_classes.pop(0)
                     import_stmt = cst.SimpleStatementLine(
                         [
                             cst.ImportFrom(
-                                module=self.create_attribute([typing_class.package, typing_class.module]),
+                                module=self.create_attribute(
+                                    [typing_class.package, typing_class.module]
+                                ),
                                 names=[cst.ImportAlias(cst.Name(typing_class.name))],
                             )
                         ]
@@ -1440,7 +1649,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
 
                     stmts = if_node.body.body
                     if_node = if_node.with_changes(
-                        body=if_node.body.with_changes(body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:]))
+                        body=if_node.body.with_changes(
+                            body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:])
+                        )
                     )
                 if typing_classes and typing_classes[0].module == imported_module:
                     typing_classes.pop(0)
@@ -1451,7 +1662,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                 import_stmt = cst.SimpleStatementLine(
                     [
                         cst.ImportFrom(
-                            module=self.create_attribute([typing_class.package, typing_class.module]),
+                            module=self.create_attribute(
+                                [typing_class.package, typing_class.module]
+                            ),
                             names=[cst.ImportAlias(cst.Name(typing_class.name))],
                         )
                     ]
@@ -1459,17 +1672,27 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
 
                 stmts = if_node.body.body
                 if_node = if_node.with_changes(
-                    body=if_node.body.with_changes(body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:]))
+                    body=if_node.body.with_changes(
+                        body=tuple(stmts[:i]) + (import_stmt,) + tuple(stmts[i:])
+                    )
                 )
 
-            node = node.with_changes(body=tuple(node.body[:if_idx]) + (if_node,) + tuple(node.body[if_idx + 1 :]))
+            node = node.with_changes(
+                body=tuple(node.body[:if_idx])
+                + (if_node,)
+                + tuple(node.body[if_idx + 1 :])
+            )
 
         return node
 
-    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef):
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ):
         if self.current_class_name != self.class_name:
             return updated_node
-        if updated_node.name.value.startswith("__") and updated_node.name.value.endswith("__"):
+        if updated_node.name.value.startswith(
+            "__"
+        ) and updated_node.name.value.endswith("__"):
             return updated_node
         if updated_node.name.value == "_initAttributes":
             return self.update_init_attrs(updated_node)
@@ -1478,13 +1701,17 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         if updated_node.name.value == "_useAttributes":
             while self.current_property:
                 prop = self.properties.pop(0)
-                node = self.create_property_function(prop.python_name, prop.data_type, prop.deprecated)
+                node = self.create_property_function(
+                    prop.python_name, prop.data_type, prop.deprecated
+                )
                 nodes.append(cst.EmptyLine(indent=False))
                 nodes.append(node)
             nodes.append(self.update_use_attrs(updated_node))
             return cst.FlattenSentinel(nodes=nodes)
 
-        updated_node_is_github_object_property = self.is_github_object_property(updated_node)
+        updated_node_is_github_object_property = self.is_github_object_property(
+            updated_node
+        )
 
         while self.current_property and (
             updated_node_is_github_object_property
@@ -1492,7 +1719,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
             or not updated_node_is_github_object_property
         ):
             prop = self.properties.pop(0)
-            node = self.create_property_function(prop.python_name, prop.data_type, prop.deprecated)
+            node = self.create_property_function(
+                prop.python_name, prop.data_type, prop.deprecated
+            )
             nodes.append(cst.EmptyLine(indent=False))
             nodes.append(node)
 
@@ -1502,10 +1731,17 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                 or updated_node.name.value != self.current_property.python_name
                 or self.current_property.deprecated
             ):
-                nodes.append(self.deprecate_function(updated_node) if self.deprecate else updated_node)
+                nodes.append(
+                    self.deprecate_function(updated_node)
+                    if self.deprecate
+                    else updated_node
+                )
             else:
                 nodes.append(updated_node)
-            if self.current_property and updated_node.name.value == self.current_property.python_name:
+            if (
+                self.current_property
+                and updated_node.name.value == self.current_property.python_name
+            ):
                 self.properties.pop(0)
         else:
             nodes.append(updated_node)
@@ -1528,14 +1764,20 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                 )
             ]
         )
-        return_stmt = cst.SimpleStatementLine(body=[cst.Return(self.create_attribute(["self", attr_name, "value"]))])
-        stmts = ([complete_if_completable_stmt] if self.completable else []) + [return_stmt]
+        return_stmt = cst.SimpleStatementLine(
+            body=[cst.Return(self.create_attribute(["self", attr_name, "value"]))]
+        )
+        stmts = ([complete_if_completable_stmt] if self.completable else []) + [
+            return_stmt
+        ]
 
         return cst.FunctionDef(
             decorators=[cst.Decorator(decorator=cst.Name(value="property"))],
             name=cst.Name(value=name),
             params=cst.Parameters(params=[cst.Param(cst.Name("self"))]),
-            returns=cst.Annotation(annotation=self.create_type(data_type, short_class_name=True)),
+            returns=cst.Annotation(
+                annotation=self.create_type(data_type, short_class_name=True)
+            ),
             body=cst.IndentedBlock(body=stmts),
         )
 
@@ -1543,7 +1785,11 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
     def create_init_attr(cls, prop: Property) -> cst.SimpleStatementLine:
         # we need to make the 'headers' attribute truly private,
         # otherwise it conflicts with GithubObject._headers
-        attr_name = f"__{prop.python_name}" if prop.python_name == "headers" else f"_{prop.python_name}"
+        attr_name = (
+            f"__{prop.python_name}"
+            if prop.python_name == "headers"
+            else f"_{prop.python_name}"
+        )
         return cst.SimpleStatementLine(
             [
                 cst.AnnAssign(
@@ -1553,7 +1799,11 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                             value=cst.Name("Attribute"),
                             slice=[
                                 cst.SubscriptElement(
-                                    slice=cst.Index(cls.create_type(prop.data_type, short_class_name=True))
+                                    slice=cst.Index(
+                                        cls.create_type(
+                                            prop.data_type, short_class_name=True
+                                        )
+                                    )
                                 )
                             ],
                         )
@@ -1582,7 +1832,11 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         func_name = None
         attr = cst.Subscript(
             value=cst.Name("attributes"),
-            slice=[cst.SubscriptElement(slice=cst.Index(cst.SimpleString(f'"{prop.name}"')))],
+            slice=[
+                cst.SubscriptElement(
+                    slice=cst.Index(cst.SimpleString(f'"{prop.name}"'))
+                )
+            ],
         )
         if prop.data_type is None:
             func_name = "_makeClassAttribute"
@@ -1609,7 +1863,10 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         elif prop.data_type.type == "dict":
             if isinstance(prop.data_type.inner_types[1], GithubClass):
                 func_name = "_makeDictOfStringsToClassesAttribute"
-                args = [cst.Arg(cls.create_type(prop.data_type.inner_types[1])), cst.Arg(attr)]
+                args = [
+                    cst.Arg(cls.create_type(prop.data_type.inner_types[1])),
+                    cst.Arg(attr),
+                ]
             else:
                 func_name = "_makeDictAttribute"
                 args = [cst.Arg(attr)]
@@ -1620,10 +1877,14 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                 # TODO: warn about unknown / supported type
             elif isinstance(prop.data_type.inner_types[0], GithubClass):
                 func_name = "_makeListOfClassesAttribute"
-                args = [cst.Arg(cls.create_type(prop.data_type.inner_types[0])), cst.Arg(attr)]
+                args = [
+                    cst.Arg(cls.create_type(prop.data_type.inner_types[0])),
+                    cst.Arg(attr),
+                ]
                 # TODO: warn about unknown / supported type
             elif prop.data_type.inner_types[0].type == "union" and all(
-                isinstance(t, GithubClass) for t in prop.data_type.inner_types[0].inner_types
+                isinstance(t, GithubClass)
+                for t in prop.data_type.inner_types[0].inner_types
             ):
                 func_name = "_makeListOfUnionClassesAttributeFromTypeKey"
                 args = [
@@ -1635,7 +1896,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                         cst.Tuple(
                             elements=[
                                 cst.Element(cls.create_type(dt)),
-                                cst.Element(cst.SimpleString(f'"{cls.get_type_value(dt)}"')),
+                                cst.Element(
+                                    cst.SimpleString(f'"{cls.get_type_value(dt)}"')
+                                ),
                             ]
                         )
                     )
@@ -1671,7 +1934,9 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
                     cst.Tuple(
                         elements=[
                             cst.Element(cls.create_type(dt)),
-                            cst.Element(cst.SimpleString(f'"{cls.get_type_value(dt)}"')),
+                            cst.Element(
+                                cst.SimpleString(f'"{cls.get_type_value(dt)}"')
+                            ),
                         ]
                     )
                 )
@@ -1685,21 +1950,34 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
     def create_use_attr(cls, prop: Property) -> cst.BaseStatement:
         # we need to make the 'headers' attribute truly private,
         # otherwise it conflicts with GithubObject._headers
-        attr_name = f"__{prop.python_name}" if prop.python_name == "headers" else f"_{prop.python_name}"
+        attr_name = (
+            f"__{prop.python_name}"
+            if prop.python_name == "headers"
+            else f"_{prop.python_name}"
+        )
         return cst.If(
             test=cst.Comparison(
                 left=cst.SimpleString(f'"{prop.name}"'),
-                comparisons=[cst.ComparisonTarget(operator=cst.In(), comparator=cst.Name("attributes"))],
+                comparisons=[
+                    cst.ComparisonTarget(
+                        operator=cst.In(), comparator=cst.Name("attributes")
+                    )
+                ],
             ),
             body=cst.IndentedBlock(
                 header=cst.TrailingWhitespace(
-                    whitespace=cst.SimpleWhitespace("  "), comment=cst.Comment("# pragma no branch")
+                    whitespace=cst.SimpleWhitespace("  "),
+                    comment=cst.Comment("# pragma no branch"),
                 ),
                 body=[
                     cst.SimpleStatementLine(
                         [
                             cst.Assign(
-                                targets=[cst.AssignTarget(cls.create_attribute(["self", attr_name]))],
+                                targets=[
+                                    cst.AssignTarget(
+                                        cls.create_attribute(["self", attr_name])
+                                    )
+                                ],
                                 value=cls.make_attribute(prop),
                             )
                         ]
@@ -1715,12 +1993,22 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
         updated_statements = []
 
         for statement in statements:
-            if not isinstance(statement, cst.SimpleStatementLine) or not isinstance(statement.body[0], cst.AnnAssign):
+            if not isinstance(statement, cst.SimpleStatementLine) or not isinstance(
+                statement.body[0], cst.AnnAssign
+            ):
                 updated_statements.append(statement)
                 continue
-            while new_statements and new_statements[0].body[0].target.attr.value < statement.body[0].target.attr.value:
+            while (
+                new_statements
+                and new_statements[0].body[0].target.attr.value
+                < statement.body[0].target.attr.value
+            ):
                 updated_statements.append(new_statements.pop(0))
-            if new_statements and new_statements[0].body[0].target.attr.value == statement.body[0].target.attr.value:
+            if (
+                new_statements
+                and new_statements[0].body[0].target.attr.value
+                == statement.body[0].target.attr.value
+            ):
                 updated_statements.append(statement)
                 new_statements.pop(0)
             else:
@@ -1729,7 +2017,10 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
             updated_statements.append(new_statements.pop(0))
 
         # remove dangling pass command
-        if len(updated_statements) > 1 and self.code(updated_statements[0]).strip().strip() == "pass":
+        if (
+            len(updated_statements) > 1
+            and self.code(updated_statements[0]).strip().strip() == "pass"
+        ):
             updated_statements = updated_statements[1:]
 
         return func.with_changes(body=func.body.with_changes(body=updated_statements))
@@ -1749,10 +2040,20 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
             if not isinstance(statement, cst.If):
                 updated_statements.append(statement)
                 continue
-            comparison = statement.test if isinstance(statement.test, cst.Comparison) else statement.test.left
-            while new_statements and new_statements[0].test.left.value < comparison.left.value:
+            comparison = (
+                statement.test
+                if isinstance(statement.test, cst.Comparison)
+                else statement.test.left
+            )
+            while (
+                new_statements
+                and new_statements[0].test.left.value < comparison.left.value
+            ):
                 updated_statements.append(new_statements.pop(0))
-            if new_statements and new_statements[0].test.left.value == comparison.left.value:
+            if (
+                new_statements
+                and new_statements[0].test.left.value == comparison.left.value
+            ):
                 updated_statements.append(statement)
                 new_statements.pop(0)
             else:
@@ -1761,7 +2062,10 @@ class ApplySchemaTransformer(ApplySchemaBaseTransformer):
             updated_statements.append(new_statements.pop(0))
 
         # remove dangling pass command
-        if len(updated_statements) > 1 and self.code(updated_statements[0]).strip() == "pass":
+        if (
+            len(updated_statements) > 1
+            and self.code(updated_statements[0]).strip() == "pass"
+        ):
             updated_statements = updated_statements[1:]
 
         return func.with_changes(body=func.body.with_changes(body=updated_statements))
@@ -1817,7 +2121,9 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
         updated_node = self.add_future_import(updated_node)
 
         needs_datetime_import = any(
-            p.data_type.type == "datetime" for p in self.all_properties if isinstance(p.data_type, PythonType)
+            p.data_type.type == "datetime"
+            for p in self.all_properties
+            if isinstance(p.data_type, PythonType)
         )
 
         if not needs_datetime_import:
@@ -1853,11 +2159,15 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
 
         return node
 
-    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef):
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ):
         if self.current_class_name != self.class_name:
             return updated_node
 
-        def create_statement(prop: Property, self_attribute: bool) -> cst.SimpleStatementLine:
+        def create_statement(
+            prop: Property, self_attribute: bool
+        ) -> cst.SimpleStatementLine:
             # turn a list of GithubClasses into the first element of the list
             if (
                 isinstance(prop.data_type, PythonType)
@@ -1866,19 +2176,26 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                 and prop.data_type.inner_types[0].ids
             ):
                 prop = dataclasses.replace(
-                    prop, python_name=f"{prop.python_name}[0]", data_type=prop.data_type.inner_types[0]
+                    prop,
+                    python_name=f"{prop.python_name}[0]",
+                    data_type=prop.data_type.inner_types[0],
                 )
 
             if (
                 isinstance(prop.data_type, GithubClass)
                 or isinstance(prop.data_type, PythonType)
                 and prop.data_type.type == "union"
-                and any(isinstance(inner, GithubClass) for inner in prop.data_type.inner_types)
+                and any(
+                    isinstance(inner, GithubClass)
+                    for inner in prop.data_type.inner_types
+                )
             ):
                 ids = []
                 if isinstance(prop.data_type, PythonType):
                     ids_sets = [
-                        set(inner.ids) for inner in prop.data_type.inner_types if isinstance(inner, GithubClass)
+                        set(inner.ids)
+                        for inner in prop.data_type.inner_types
+                        if isinstance(inner, GithubClass)
                     ]
                     if len(ids_sets) == 1:
                         ids = list(ids_sets[0])
@@ -1901,7 +2218,8 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                                     args=[
                                         cst.Arg(
                                             self.create_attribute(
-                                                (["self"] if self_attribute else []) + [attribute, prop.python_name, id]
+                                                (["self"] if self_attribute else [])
+                                                + [attribute, prop.python_name, id]
                                             )
                                         ),
                                         cst.Arg(cst.SimpleString('""')),
@@ -1919,7 +2237,8 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                             args=[
                                 cst.Arg(
                                     self.create_attribute(
-                                        (["self"] if self_attribute else []) + [attribute, prop.python_name]
+                                        (["self"] if self_attribute else [])
+                                        + [attribute, prop.python_name]
                                     )
                                 ),
                                 cst.Arg(self.get_value(prop.data_type)),
@@ -1936,7 +2255,9 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
             if (
                 isinstance(updated_node.body.body[0], cst.SimpleStatementLine)
                 and isinstance(updated_node.body.body[0].body[0], cst.Assign)
-                and not isinstance(updated_node.body.body[0].body[0].targets[0].target, cst.Attribute)
+                and not isinstance(
+                    updated_node.body.body[0].body[0].targets[0].target, cst.Attribute
+                )
             ):
                 attribute = updated_node.body.body[0].body[0].targets[0].target.value
                 self_attribute = False
@@ -1976,16 +2297,26 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                 for node in [
                     stmt
                     for node in updated_node.body.body
-                    for stmt in (node.body.body if isinstance(node, cst.With) else [node])
+                    for stmt in (
+                        node.body.body if isinstance(node, cst.With) else [node]
+                    )
                 ]
                 if isinstance(node.body[0].value, cst.Call) and node.body[0].value.args
-                for attr_nodes in [self.find_nodes(node.body[0].value.args[0].value, cst.Attribute)]
+                for attr_nodes in [
+                    self.find_nodes(node.body[0].value.args[0].value, cst.Attribute)
+                ]
                 if attr_nodes
                 for attr_node in [attr_nodes[0]]
-                for attrs_with_self in [self.parse_attribute(attr_node) if isinstance(attr_node, cst.Attribute) else []]
+                for attrs_with_self in [
+                    self.parse_attribute(attr_node)
+                    if isinstance(attr_node, cst.Attribute)
+                    else []
+                ]
                 for attrs in [
                     attrs_with_self[1:]
-                    if attrs_with_self and self_attribute and attrs_with_self[0] == "self"
+                    if attrs_with_self
+                    and self_attribute
+                    and attrs_with_self[0] == "self"
                     else attrs_with_self
                 ]
                 if len(attrs) >= 2 and attrs[0] == attribute
@@ -1993,7 +2324,9 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
 
             # we can remove all properties that already exist in the test file
             self.properties = [
-                property for property in self.properties if property.python_name not in existing_properties
+                property
+                for property in self.properties
+                if property.python_name not in existing_properties
             ]
 
             i = 0
@@ -2007,24 +2340,36 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                     i = i + 1
                     continue
 
-                attr_nodes = self.find_nodes(stmts[i].body[0].value.args[0].value, cst.Attribute)
+                attr_nodes = self.find_nodes(
+                    stmts[i].body[0].value.args[0].value, cst.Attribute
+                )
                 if not attr_nodes:
                     i = i + 1
                     continue
 
                 attr = attr_nodes[0]
-                attrs = self.parse_attribute(attr) if isinstance(attr, cst.Attribute) else []
+                attrs = (
+                    self.parse_attribute(attr)
+                    if isinstance(attr, cst.Attribute)
+                    else []
+                )
                 if attrs and self_attribute and attrs[0] == "self":
                     attrs.pop(0)
 
                 if len(attrs) >= 2 and attrs[0] == attribute:
                     asserted_property = attrs[1]
-                    while self.properties and self.properties[0].python_name < asserted_property:
+                    while (
+                        self.properties
+                        and self.properties[0].python_name < asserted_property
+                    ):
                         prop = self.properties.pop(0)
                         stmt = create_statement(prop, self_attribute)
                         stmts = stmts[:i] + [stmt] + stmts[i:]
                         i = i + 1
-                    if self.properties and self.properties[0].python_name == asserted_property:
+                    if (
+                        self.properties
+                        and self.properties[0].python_name == asserted_property
+                    ):
                         self.properties.pop(0)
                 i = i + 1
             while self.properties:
@@ -2032,7 +2377,9 @@ class ApplySchemaTestTransformer(ApplySchemaBaseTransformer):
                 stmt = create_statement(prop, self_attribute)
                 stmts = stmts + [stmt]
 
-            updated_node = updated_node.with_changes(body=updated_node.body.with_changes(body=tuple(stmts)))
+            updated_node = updated_node.with_changes(
+                body=updated_node.body.with_changes(body=tuple(stmts))
+            )
         return updated_node
 
 
@@ -2062,23 +2409,35 @@ class AddSchemasTransformer(CstTransformerBase):
                         break
                 if heading is not None:
                     end = heading + 1
-                    while end < len(lines) and not lines[end].strip():  # skip blank lines after the heading
+                    while (
+                        end < len(lines) and not lines[end].strip()
+                    ):  # skip blank lines after the heading
                         end += 1
                     existing_lines = []
                     while end < len(lines) and lines[end].strip().startswith("- "):
                         existing_lines.append(lines[end])
                         end += 1
                     prefix = lines[:heading]
-                    trailing = lines[end:]  # blank line(s), any trailing content and the closing """
+                    trailing = lines[
+                        end:
+                    ]  # blank line(s), any trailing content and the closing """
                 else:
                     # no heading yet: place the schema list right before the closing """
                     existing_lines = []
                     prefix = lines[:-1]
                     trailing = lines[-1:]
 
-                schema_lines = {schema_line for schema_line in existing_lines if schema_line}
+                schema_lines = {
+                    schema_line for schema_line in existing_lines if schema_line
+                }
                 before = len(schema_lines)
-                schema_lines = sorted(list(schema_lines.union({f"{indent}- {schema}" for schema in self.schemas})))
+                schema_lines = sorted(
+                    list(
+                        schema_lines.union(
+                            {f"{indent}- {schema}" for schema in self.schemas}
+                        )
+                    )
+                )
                 after = len(schema_lines)
                 # do not add an empty schema heading to classes without any schemas
                 if schema_lines:
@@ -2096,9 +2455,13 @@ class AddSchemasTransformer(CstTransformerBase):
                         + trailing
                     )
                     docstring = "\n".join(lines)
-                    stmt = cst.SimpleStatementLine([cst.Expr(cst.SimpleString(docstring))])
+                    stmt = cst.SimpleStatementLine(
+                        [cst.Expr(cst.SimpleString(docstring))]
+                    )
                     stmts = [stmt] + list(updated_node.body.body[1:])
-                    updated_node = updated_node.with_changes(body=updated_node.body.with_changes(body=stmts))
+                    updated_node = updated_node.with_changes(
+                        body=updated_node.body.with_changes(body=stmts)
+                    )
                     self.schema_added += after - before
 
         return super().leave_ClassDef(original_node, updated_node)
@@ -2122,7 +2485,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         self.classes = index.get("classes", {})
 
     @staticmethod
-    def get_decorators(decorators: Sequence[cst.Decorator], decorator_name: str) -> list[dict[str, Any]]:
+    def get_decorators(
+        decorators: Sequence[cst.Decorator], decorator_name: str
+    ) -> list[dict[str, Any]]:
         return [
             {
                 k: v
@@ -2146,11 +2511,16 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
     def apply_decorators(self, method: Method, function: cst.FunctionDef) -> Method:
         # get openapi decorator args of method
         openapi_decorators = {
-            decorator["name"]: decorator for decorator in self.get_decorators(function.decorators, "openapi_parameter")
+            decorator["name"]: decorator
+            for decorator in self.get_decorators(
+                function.decorators, "openapi_parameter"
+            )
         }
         if openapi_decorators:
             # clone method and its parameter list so we do not mutate the input argument
-            method = dataclasses.replace(method, parameters=[p for p in method.parameters])
+            method = dataclasses.replace(
+                method, parameters=[p for p in method.parameters]
+            )
             for idx, parameter in enumerate(method.parameters):
                 if parameter.name in openapi_decorators:
                     decorator = openapi_decorators.get(parameter.name)
@@ -2164,7 +2534,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
 
         return method
 
-    def apply_openapi_decorator(self, parameter: Parameter, decorator: dict[str, Any]) -> Parameter:
+    def apply_openapi_decorator(
+        self, parameter: Parameter, decorator: dict[str, Any]
+    ) -> Parameter:
         if "matches" in decorator:
             parameter = dataclasses.replace(parameter, python_name=decorator["matches"])
         if "type" in decorator:
@@ -2175,21 +2547,32 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             parameter = dataclasses.replace(parameter, param_type="input")
         if "docstring_prepend" in decorator:
             docstring = decorator["docstring_prepend"]
-            docstring = docstring if parameter.description is None else "".join([docstring, parameter.description])
+            docstring = (
+                docstring
+                if parameter.description is None
+                else "".join([docstring, parameter.description])
+            )
             parameter = dataclasses.replace(parameter, description=docstring)
         return parameter
 
-    def apply_method_decorator(self, method: Method, decorator: dict[str, Any]) -> Method:
+    def apply_method_decorator(
+        self, method: Method, decorator: dict[str, Any]
+    ) -> Method:
         # clone method to not mutate input
         method: Method = dataclasses.replace(method)
 
         name = decorator["name"]
-        parameters = {parameter.name: (idx, parameter) for idx, parameter in enumerate(method.parameters)}
+        parameters = {
+            parameter.name: (idx, parameter)
+            for idx, parameter in enumerate(method.parameters)
+        }
         parameter_and_idx = parameters.get(name)
         if parameter_and_idx is not None:
             parameter_idx, parameter = parameter_and_idx
         else:
-            parameter = Parameter(name, name, None, None, "input", False, ParameterOrder.POSITIONAL, None)
+            parameter = Parameter(
+                name, name, None, None, "input", False, ParameterOrder.POSITIONAL, None
+            )
             parameter_idx = len(method.parameters)
             parameters[name] = (parameter_idx, parameter)
             method.parameters.append(parameter)
@@ -2199,7 +2582,11 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             parameter = dataclasses.replace(parameter, required=required)
         if "docstring_prepend" in decorator:
             docstring = decorator["docstring_prepend"]
-            docstring = docstring if parameter.description is None else "".join([docstring, parameter.description])
+            docstring = (
+                docstring
+                if parameter.description is None
+                else "".join([docstring, parameter.description])
+            )
             parameter = dataclasses.replace(parameter, description=docstring)
 
         # subsequent operations require method and parameters to be up-to-date
@@ -2219,20 +2606,32 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                     else (
                         parameter.description
                         if merged_parameter.description is None
-                        else "\n".join([parameter.description, merged_parameter.description])
+                        else "\n".join(
+                            [parameter.description, merged_parameter.description]
+                        )
                     )
                 )
-                data_type = PythonType.union(parameter.data_type, merged_parameter.data_type)
-                parameter: Parameter = dataclasses.replace(parameter, description=description, data_type=data_type)
+                data_type = PythonType.union(
+                    parameter.data_type, merged_parameter.data_type
+                )
+                parameter: Parameter = dataclasses.replace(
+                    parameter, description=description, data_type=data_type
+                )
             parameters[name] = (parameter_idx, parameter)
             method.parameters[parameter_idx] = parameter
             # remove merged parameters from method
-            method_parameters = [parameter for parameter in method.parameters if parameter.name not in merge]
+            method_parameters = [
+                parameter
+                for parameter in method.parameters
+                if parameter.name not in merge
+            ]
             method = dataclasses.replace(method, parameters=method_parameters)
 
         return method
 
-    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef):
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ):
         method = self.methods.get(updated_node.name.value)
         if method is None:
             return updated_node
@@ -2247,22 +2646,30 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         updated_node = self.update_assertions(updated_node, method)
         updated_node = self.update_deprecations(updated_node, method)
         updated_node = self.update_url_request_parameters(updated_node, method)
-        updated_node = self.update_verb_request_parameters(updated_node, method, method.verb)
+        updated_node = self.update_verb_request_parameters(
+            updated_node, method, method.verb
+        )
 
         return updated_node
 
     def check_parameters(self, method: Method) -> None:
-        paths, queries, bodies, unknowns = self.split_parameters_by_type(method.parameters, ["path", "query", "body"])
+        paths, queries, bodies, unknowns = self.split_parameters_by_type(
+            method.parameters, ["path", "query", "body"]
+        )
         if unknowns:
             print("Parameters with unsupported types:")
             for unknown in unknowns:
                 print(f"- {unknown}")
         for path in paths:
             if f"{{{path.name}}}" not in method.path:
-                print(f"Path parameter {{{path.name}}} not found in path: {method.path}")
+                print(
+                    f"Path parameter {{{path.name}}} not found in path: {method.path}"
+                )
 
     @classmethod
-    def create_parameter(cls, parameter: Parameter, template: cst.Param, allow_required: bool) -> cst.Param | None:
+    def create_parameter(
+        cls, parameter: Parameter, template: cst.Param, allow_required: bool
+    ) -> cst.Param | None:
         if parameter.required and not allow_required:
             print(
                 f"Cannot add parameter {parameter.python_name} without a breaking change "
@@ -2273,14 +2680,18 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         param = param.with_changes(
             name=cst.Name(parameter.python_name),
             annotation=cls.create_annotation(parameter),
-            equal=cst.MaybeSentinel.DEFAULT if parameter.required else cst.AssignEqual(),
+            equal=cst.MaybeSentinel.DEFAULT
+            if parameter.required
+            else cst.AssignEqual(),
             default=cls.create_default(parameter),
         )
         return param
 
     @classmethod
     def amend_type(
-        cls, existing_type: PythonType | GithubClass, spec_type: PythonType | GithubClass
+        cls,
+        existing_type: PythonType | GithubClass,
+        spec_type: PythonType | GithubClass,
     ) -> PythonType | GithubClass | None:
         types = []
         outer_type: str | None = None
@@ -2308,19 +2719,24 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                             for inner in a_type.inner_types
                             for flattened in (
                                 inner.inner_types
-                                if isinstance(inner, PythonType) and inner.type == "union"
+                                if isinstance(inner, PythonType)
+                                and inner.type == "union"
                                 else [inner]
                             )
                             if flattened not in types
                         ]
                     )
             else:
-                print(f"Existing type {existing_type} is incompatible with spec type {spec_type}")
+                print(
+                    f"Existing type {existing_type} is incompatible with spec type {spec_type}"
+                )
                 return existing_type
         else:
             for a_type in [existing_type, spec_type]:
                 if isinstance(a_type, PythonType) and a_type.type == "union":
-                    types.extend([inner for inner in a_type.inner_types if inner not in types])
+                    types.extend(
+                        [inner for inner in a_type.inner_types if inner not in types]
+                    )
                 elif a_type not in types:
                     types.append(a_type)
 
@@ -2360,11 +2776,17 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             if parameter.name in params:
                 param = params[parameter.name]
                 if parameter.name == star_name:
-                    parameter = dataclasses.replace(parameter, position=ParameterOrder.STAR)
+                    parameter = dataclasses.replace(
+                        parameter, position=ParameterOrder.STAR
+                    )
                 elif parameter.name in kw_params:
-                    parameter = dataclasses.replace(parameter, position=ParameterOrder.NAMED)
+                    parameter = dataclasses.replace(
+                        parameter, position=ParameterOrder.NAMED
+                    )
                 else:
-                    parameter = dataclasses.replace(parameter, position=ParameterOrder.POSITIONAL)
+                    parameter = dataclasses.replace(
+                        parameter, position=ParameterOrder.POSITIONAL
+                    )
                 if param.annotation is not None:
                     # get data type from code
                     code = cst.Module("").code_for_node(param.annotation.annotation)
@@ -2383,15 +2805,25 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                     if parameter.position == ParameterOrder.STAR:
                         parameter = dataclasses.replace(parameter, required=True)
                         # check parameter type (list[T]) is compatible with existing type (*T)
-                        if isinstance(parameter.data_type, PythonType) and parameter.data_type.type == "list":
+                        if (
+                            isinstance(parameter.data_type, PythonType)
+                            and parameter.data_type.type == "list"
+                        ):
                             parameter_inner_data_types = parameter.data_type.inner_types
                             if (
                                 len(parameter_inner_data_types) == 1
-                                and isinstance(parameter_inner_data_types[0], PythonType)
+                                and isinstance(
+                                    parameter_inner_data_types[0], PythonType
+                                )
                                 and parameter_inner_data_types[0].type == "union"
                             ):
-                                parameter_inner_data_types = parameter_inner_data_types[0].inner_types
-                            if isinstance(existing_data_type, PythonType) and existing_data_type.type == "union":
+                                parameter_inner_data_types = parameter_inner_data_types[
+                                    0
+                                ].inner_types
+                            if (
+                                isinstance(existing_data_type, PythonType)
+                                and existing_data_type.type == "union"
+                            ):
                                 if not all(
                                     data_type in existing_data_type.inner_types
                                     for data_type in parameter_inner_data_types
@@ -2424,28 +2856,49 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                             continue
 
                         # turn *T into list[T]
-                        existing_data_type = PythonType("list", inner_types=[existing_data_type])
+                        existing_data_type = PythonType(
+                            "list", inner_types=[existing_data_type]
+                        )
                     else:
-                        existing_data_type = self.amend_type(existing_data_type, parameter.data_type)
+                        existing_data_type = self.amend_type(
+                            existing_data_type, parameter.data_type
+                        )
                         if existing_data_type is None:
                             continue
 
                     # check inner type is a subset of existing data-type
                     if parameter.data_type != existing_data_type:
-                        print(f"  - Replacing {parameter.data_type} with {existing_data_type}")
-                        parameter = dataclasses.replace(parameter, data_type=existing_data_type)
+                        print(
+                            f"  - Replacing {parameter.data_type} with {existing_data_type}"
+                        )
+                        parameter = dataclasses.replace(
+                            parameter, data_type=existing_data_type
+                        )
             amended_parameters.append(parameter)
         return amended_parameters
 
-    def _get_parameters(self, node: cst.FunctionDef, method: Method) -> tuple[list[Parameter], list[cst.Param]]:
+    def _get_parameters(
+        self, node: cst.FunctionDef, method: Method
+    ) -> tuple[list[Parameter], list[cst.Param]]:
         params = node.params.params
-        star_param = node.params.star_arg if isinstance(node.params.star_arg, cst.Param) else None
+        star_param = (
+            node.params.star_arg
+            if isinstance(node.params.star_arg, cst.Param)
+            else None
+        )
         kw_params = node.params.kwonly_params
 
-        input_parameters, query_parameters, body_parameters, _ = self.split_parameters_by_type(
-            method.parameters, ["input", "query", "body"]
+        (
+            input_parameters,
+            query_parameters,
+            body_parameters,
+            _,
+        ) = self.split_parameters_by_type(method.parameters, ["input", "query", "body"])
+        parameters = (
+            input_parameters
+            + self.remove_pagination_parameters(query_parameters)
+            + body_parameters
         )
-        parameters = input_parameters + self.remove_pagination_parameters(query_parameters) + body_parameters
         parameters = self.amend_parameters(parameters, params, star_param, kw_params)
         params = list(params)
         if star_param:
@@ -2453,10 +2906,23 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         params.extend(kw_params)
         return parameters, params
 
-    def update_func_parameters(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
+    def update_func_parameters(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
         # update params: create missing, update type annotation of existing params
-        if sum([1 for param in method.parameters if param.position == ParameterOrder.STAR]) > 1:
-            print("Cannot update function parameter list as there are multiple star parameters")
+        if (
+            sum(
+                [
+                    1
+                    for param in method.parameters
+                    if param.position == ParameterOrder.STAR
+                ]
+            )
+            > 1
+        ):
+            print(
+                "Cannot update function parameter list as there are multiple star parameters"
+            )
             return node
 
         parameters, params = self._get_parameters(node, method)
@@ -2464,7 +2930,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         if len(params) == 0:
             return node
         if params[0].name.value != "self":
-            print("Cannot update function parameter list as it does not have the 'self' parameter")
+            print(
+                "Cannot update function parameter list as it does not have the 'self' parameter"
+            )
             return node
 
         last_param_has_comma = params[-1].comma is not cst.MaybeSentinel.DEFAULT
@@ -2484,12 +2952,16 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             # rewrite params list
             for parameter in parameters_sorted:
                 param = self.create_parameter(
-                    parameter, params[-1] if params else updated_params[-1], not optional_exists
+                    parameter,
+                    params[-1] if params else updated_params[-1],
+                    not optional_exists,
                 )
                 # propagate the last but one param's comma to the last param (before adding the new param)
                 if parameter.position == ParameterOrder.POSITIONAL:
                     if len(params) > 1:
-                        updated_params[-1] = updated_params[-1].with_changes(comma=params[-2].comma)
+                        updated_params[-1] = updated_params[-1].with_changes(
+                            comma=params[-2].comma
+                        )
                     updated_params.append(param)
                 elif parameter.position == ParameterOrder.STAR:
                     updated_star_param = param.with_changes(star="*")
@@ -2512,13 +2984,18 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                     continue
                 existing_parameters.add(parameter.python_name)
                 if not parameter.required and param.default is None:
-                    print(f"Cannot update optional parameter '{parameter.python_name}' as it is required")
+                    print(
+                        f"Cannot update optional parameter '{parameter.python_name}' as it is required"
+                    )
                 elif parameter.required and param.default is not None:
-                    print(f"Cannot update required parameter '{parameter.python_name}' as it is optional")
+                    print(
+                        f"Cannot update required parameter '{parameter.python_name}' as it is optional"
+                    )
                     optional_exists = True
                 else:
                     param = param.with_changes(
-                        annotation=self.create_annotation(parameter), default=self.create_default(parameter)
+                        annotation=self.create_annotation(parameter),
+                        default=self.create_default(parameter),
                     )
                 optional_exists = optional_exists or not parameter.required
 
@@ -2535,28 +3012,42 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                     continue
 
                 print(f"  - Adding parameter {parameter.python_name}")
-                param = self.create_parameter(parameter, updated_params[-1], not optional_exists)
+                param = self.create_parameter(
+                    parameter, updated_params[-1], not optional_exists
+                )
                 if param:
                     # propagate the last but one param's comma to the last param (before adding the new param)
                     if last_param_has_comma and len(updated_params) > 1:
-                        updated_params[-1] = updated_params[-1].with_changes(comma=updated_params[-2].comma)
+                        updated_params[-1] = updated_params[-1].with_changes(
+                            comma=updated_params[-2].comma
+                        )
                     updated_params.append(param)
 
         return node.with_changes(
             params=node.params.with_changes(
-                params=updated_params, star_arg=updated_star_param, kwonly_params=updated_kw_params
+                params=updated_params,
+                star_arg=updated_star_param,
+                kwonly_params=updated_kw_params,
             )
         )
 
-    def update_func_return(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
+    def update_func_return(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
         if self.rewrite or node.returns is None:
             node = node.with_changes(
-                returns=cst.Annotation(annotation=self.create_type(method.return_type, short_class_name=True))
+                returns=cst.Annotation(
+                    annotation=self.create_type(
+                        method.return_type, short_class_name=True
+                    )
+                )
             )
         return node
 
     @staticmethod
-    def split_parameters_by_type(parameters: list[Parameter], param_types: list[str]) -> tuple[list[Parameter], ...]:
+    def split_parameters_by_type(
+        parameters: list[Parameter], param_types: list[str]
+    ) -> tuple[list[Parameter], ...]:
         params_by_type = defaultdict(list)
         for parameter in parameters:
             params_by_type[parameter.param_type].append(parameter)
@@ -2564,18 +3055,26 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         for param_type, params in params_by_type.items():
             if param_type not in param_types:
                 other_param_types.extend(params)
-        return tuple([params_by_type.get(param_type, list()) for param_type in param_types] + [other_param_types])
+        return tuple(
+            [params_by_type.get(param_type, list()) for param_type in param_types]
+            + [other_param_types]
+        )
 
     @staticmethod
     def remove_pagination_parameters(parameters: list[Parameter]) -> list[Parameter]:
         return [
             parameter
             for parameter in parameters
-            if not (parameter.param_type == "query" and parameter.name in {"page", "per_page"})
+            if not (
+                parameter.param_type == "query"
+                and parameter.name in {"page", "per_page"}
+            )
         ]
 
     @staticmethod
-    def indent_lines(string: str, indentation: str, indent_first: bool = True) -> list[str]:
+    def indent_lines(
+        string: str, indentation: str, indent_first: bool = True
+    ) -> list[str]:
         lines = UpdateMethodsTransformer.split_and_strip_lines(string)
         if indent_first:
             lines = [indentation + line for line in lines]
@@ -2594,19 +3093,34 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         description_lines = cls.indent_lines(description, "    ", indent_first=False)
         docstrings = []
         if deprecation or "".join(description_lines):
-            docstrings.append(f":param {parameter.python_name}: {deprecation}{description_lines[0]}")
+            docstrings.append(
+                f":param {parameter.python_name}: {deprecation}{description_lines[0]}"
+            )
             docstrings.extend(description_lines[1:])
         else:
             docstrings.append(f":param {parameter.python_name}:")
         return docstrings
 
-    def update_docstring(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
-        input_parameters, query_parameters, body_parameters, _ = self.split_parameters_by_type(
-            method.parameters, ["input", "query", "body"]
+    def update_docstring(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
+        (
+            input_parameters,
+            query_parameters,
+            body_parameters,
+            _,
+        ) = self.split_parameters_by_type(method.parameters, ["input", "query", "body"])
+        parameters = (
+            input_parameters
+            + self.remove_pagination_parameters(query_parameters)
+            + body_parameters
         )
-        parameters = input_parameters + self.remove_pagination_parameters(query_parameters) + body_parameters
 
-        docstring_stmt = node.body.body[0] if len(node.body.body) > 0 and is_comment(node.body.body[0]) else None
+        docstring_stmt = (
+            node.body.body[0]
+            if len(node.body.body) > 0 and is_comment(node.body.body[0])
+            else None
+        )
         stmts = node.body.body[1:] if docstring_stmt is not None else node.body.body
 
         docstrings = []
@@ -2619,7 +3133,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                 docstrings.extend(self.split_and_strip_lines(method.description))
                 docstrings.append("")
             if method.docs_url:
-                docstrings.append(f":calls: `{method.verb.upper()} {method.path} <{method.docs_url}>`_")
+                docstrings.append(
+                    f":calls: `{method.verb.upper()} {method.path} <{method.docs_url}>`_"
+                )
             else:
                 docstrings.append(f":calls: {method.verb.upper()} {method.path}")
             for parameter in parameters:
@@ -2633,15 +3149,26 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             if (
                 len(docstrings) > 1
                 and docstrings[0].strip() == '"""'
-                and all(line.strip().startswith(":") or line.strip().startswith('"""') for line in docstrings)
+                and all(
+                    line.strip().startswith(":") or line.strip().startswith('"""')
+                    for line in docstrings
+                )
             ):
                 # inserted description before summary, as the latter will move the former further down
                 if method.description:
                     docstrings = (
-                        [docstrings[0]] + self.split_and_strip_lines(method.description) + [""] + docstrings[1:]
+                        [docstrings[0]]
+                        + self.split_and_strip_lines(method.description)
+                        + [""]
+                        + docstrings[1:]
                     )
                 if method.summary:
-                    docstrings = [docstrings[0]] + self.split_and_strip_lines(method.summary) + [""] + docstrings[1:]
+                    docstrings = (
+                        [docstrings[0]]
+                        + self.split_and_strip_lines(method.summary)
+                        + [""]
+                        + docstrings[1:]
+                    )
 
             # extend params
             last_param_idx = None
@@ -2661,14 +3188,21 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
 
         # add docstrings as first statement
         docstring = "\n".join(
-            [("        " + line) if idx > 0 and line else line for idx, line in enumerate(docstrings)]
+            [
+                ("        " + line) if idx > 0 and line else line
+                for idx, line in enumerate(docstrings)
+            ]
         )
         if docstring:
-            docstring_stmt = cst.SimpleStatementLine([cst.Expr(cst.SimpleString(docstring))])
+            docstring_stmt = cst.SimpleStatementLine(
+                [cst.Expr(cst.SimpleString(docstring))]
+            )
             stmts = [docstring_stmt] + list(stmts)
         return node.with_changes(body=node.body.with_changes(body=stmts))
 
-    def update_assertions(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
+    def update_assertions(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
         parameters, _ = self._get_parameters(node, method)
 
         # remove all existing parameter assertions
@@ -2689,10 +3223,18 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                 body=[
                     cst.Assert(
                         test=cst.Call(
-                            func=(cst.Name("is_list") if is_list else cst.Name("isinstance"))
+                            func=(
+                                cst.Name("is_list")
+                                if is_list
+                                else cst.Name("isinstance")
+                            )
                             if parameter.required
                             else (
-                                (cst.Name("is_list") if is_star else cst.Name("is_optional_list"))
+                                (
+                                    cst.Name("is_list")
+                                    if is_star
+                                    else cst.Name("is_optional_list")
+                                )
                                 if is_list
                                 else cst.Name("is_optional")
                             ),
@@ -2700,7 +3242,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                                 cst.Arg(cst.Name(parameter.python_name)),
                                 cst.Arg(
                                     self.create_type(
-                                        parameter.data_type.inner_types[0] if is_list else parameter.data_type,
+                                        parameter.data_type.inner_types[0]
+                                        if is_list
+                                        else parameter.data_type,
                                         union_as_tuple=True,
                                     )
                                 ),
@@ -2711,26 +3255,48 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                 ]
             )
             for parameter in parameters_sorted
-            for is_list in [isinstance(parameter.data_type, PythonType) and parameter.data_type.type == "list"]
+            for is_list in [
+                isinstance(parameter.data_type, PythonType)
+                and parameter.data_type.type == "list"
+            ]
             for is_star in [parameter.position == ParameterOrder.STAR]
         ]
 
         assertions_start_idx = (
             1
-            if assertions_start_idx is None and len(node.body.body) > 0 and is_comment(node.body.body[0])
+            if assertions_start_idx is None
+            and len(node.body.body) > 0
+            and is_comment(node.body.body[0])
             else assertions_start_idx
         )
-        stmts = stmts[:assertions_start_idx] + assertion_stmts + stmts[assertions_start_idx:]
+        stmts = (
+            stmts[:assertions_start_idx]
+            + assertion_stmts
+            + stmts[assertions_start_idx:]
+        )
         return node.with_changes(body=node.body.with_changes(body=stmts))
 
-    def update_deprecations(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
-        input_parameters, query_parameters, body_parameters, _ = self.split_parameters_by_type(
-            method.parameters, ["input", "query", "body"]
+    def update_deprecations(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
+        (
+            input_parameters,
+            query_parameters,
+            body_parameters,
+            _,
+        ) = self.split_parameters_by_type(method.parameters, ["input", "query", "body"])
+        parameters = (
+            input_parameters
+            + self.remove_pagination_parameters(query_parameters)
+            + body_parameters
         )
-        parameters = input_parameters + self.remove_pagination_parameters(query_parameters) + body_parameters
 
         parameters_sorted = self.required_first(parameters)
-        deprecated_parameters = [parameter.python_name for parameter in parameters_sorted if parameter.deprecated]
+        deprecated_parameters = [
+            parameter.python_name
+            for parameter in parameters_sorted
+            if parameter.deprecated
+        ]
 
         # TODO: find all existing deprecation lines, extract deprecated parameters and index of last line,
         # use last assertion line index+1 as default
@@ -2742,14 +3308,20 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             pass
         return node
 
-    def update_url_request_parameters(self, node: cst.FunctionDef, method: Method) -> cst.FunctionDef:
+    def update_url_request_parameters(
+        self, node: cst.FunctionDef, method: Method
+    ) -> cst.FunctionDef:
         parameters, _ = self.split_parameters_by_type(method.parameters, ["query"])
         parameters = self.remove_pagination_parameters(parameters)
         return self.update_request_parameters(node, "url_parameters", parameters)
 
-    def update_verb_request_parameters(self, node: cst.FunctionDef, method: Method, verb: str) -> cst.FunctionDef:
+    def update_verb_request_parameters(
+        self, node: cst.FunctionDef, method: Method, verb: str
+    ) -> cst.FunctionDef:
         parameters, _ = self.split_parameters_by_type(method.parameters, ["body"])
-        return self.update_request_parameters(node, f"{verb.lower()}_parameters", parameters)
+        return self.update_request_parameters(
+            node, f"{verb.lower()}_parameters", parameters
+        )
 
     def update_request_parameters(
         self, node: cst.FunctionDef, var_name: str, parameters: list[Parameter]
@@ -2777,30 +3349,46 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
 
         indented = cst.ParenthesizedWhitespace(indent=True)
         onetab = indented.with_changes(last_line=cst.SimpleWhitespace(value="    "))
-        twotabs = indented.with_changes(last_line=cst.SimpleWhitespace(value="        "))
+        twotabs = indented.with_changes(
+            last_line=cst.SimpleWhitespace(value="        ")
+        )
         if self.rewrite:
             # create new request parameters line
             request_parameters_stmt = cst.SimpleStatementLine(
                 body=[
                     cst.Assign(
-                        targets=[cst.AssignTarget(target=self.create_attribute([var_name]))],
+                        targets=[
+                            cst.AssignTarget(target=self.create_attribute([var_name]))
+                        ],
                         value=cst.Call(
-                            func=self.create_attribute(["NotSet", "remove_unset_items"]),
+                            func=self.create_attribute(
+                                ["NotSet", "remove_unset_items"]
+                            ),
                             args=[
                                 cst.Arg(
                                     value=cst.Dict(
                                         elements=[
                                             cst.DictElement(
-                                                key=cst.SimpleString(value=f'"{parameter.name}"'),
-                                                value=cst.Name(value=parameter.python_name),
-                                                comma=cst.Comma(whitespace_after=twotabs)
+                                                key=cst.SimpleString(
+                                                    value=f'"{parameter.name}"'
+                                                ),
+                                                value=cst.Name(
+                                                    value=parameter.python_name
+                                                ),
+                                                comma=cst.Comma(
+                                                    whitespace_after=twotabs
+                                                )
                                                 if idx + 1 < len(parameters_set)
                                                 else cst.Comma(),
                                             )
                                             for idx, parameter in enumerate(parameters)
                                         ],
-                                        lbrace=cst.LeftCurlyBrace(whitespace_after=twotabs),
-                                        rbrace=cst.RightCurlyBrace(whitespace_before=onetab),
+                                        lbrace=cst.LeftCurlyBrace(
+                                            whitespace_after=twotabs
+                                        ),
+                                        rbrace=cst.RightCurlyBrace(
+                                            whitespace_before=onetab
+                                        ),
                                     ),
                                     whitespace_after_arg=indented,
                                 )
@@ -2823,7 +3411,11 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
 
             last_existing_element = dict_node.elements[-1]
             existing_keys = {e.key.value.strip('"') for e in dict_node.elements}
-            new_parameters = [parameter for parameter in parameters if parameter.name not in existing_keys]
+            new_parameters = [
+                parameter
+                for parameter in parameters
+                if parameter.name not in existing_keys
+            ]
             new_elements = [
                 cst.DictElement(
                     key=cst.SimpleString(value=f'"{parameter.name}"'),
@@ -2844,20 +3436,39 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
                     if last_existing_element.comma is cst.MaybeSentinel.DEFAULT
                     else cst.Comma(whitespace_after=onetab)
                 )
-            elements = [e for e in dict_node.elements[:-1]] + [last_existing_element] + new_elements
-            request_parameters_stmt = request_parameters_stmt.with_deep_changes(dict_node, elements=elements)
+            elements = (
+                [e for e in dict_node.elements[:-1]]
+                + [last_existing_element]
+                + new_elements
+            )
+            request_parameters_stmt = request_parameters_stmt.with_deep_changes(
+                dict_node, elements=elements
+            )
 
         # insert / replace request parameters line
         if request_parameters_idx is None:
-            stmts = stmts[: assertions_end_idx + 1] + [request_parameters_stmt] + stmts[assertions_end_idx + 1 :]
+            stmts = (
+                stmts[: assertions_end_idx + 1]
+                + [request_parameters_stmt]
+                + stmts[assertions_end_idx + 1 :]
+            )
         else:
-            stmts = stmts[:request_parameters_idx] + [request_parameters_stmt] + stmts[request_parameters_idx + 1 :]
+            stmts = (
+                stmts[:request_parameters_idx]
+                + [request_parameters_stmt]
+                + stmts[request_parameters_idx + 1 :]
+            )
         return node.with_changes(body=node.body.with_changes(body=stmts))
 
     @staticmethod
     def required_first(parameters: list[Parameter]) -> list[Parameter]:
         # stable sorting parameters by Argument.required, True first
-        return [a for _, a in sorted(enumerate(parameters), key=lambda a: (not a[1].required, a[0]))]
+        return [
+            a
+            for _, a in sorted(
+                enumerate(parameters), key=lambda a: (not a[1].required, a[0])
+            )
+        ]
 
     @classmethod
     def create_annotation(cls, argument: Parameter) -> cst.Annotation:
@@ -2866,7 +3477,9 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
             and isinstance(argument.data_type, PythonType)
             and argument.data_type.type == "list"
         ):
-            data_type = cls.create_type(argument.data_type.inner_types[0], short_class_name=True)
+            data_type = cls.create_type(
+                argument.data_type.inner_types[0], short_class_name=True
+            )
         else:
             data_type = cls.create_type(argument.data_type, short_class_name=True)
         if argument.required:
@@ -2874,7 +3487,8 @@ class UpdateMethodsTransformer(CstTransformerBase, abc.ABC):
         else:
             return cst.Annotation(
                 annotation=cst.Subscript(
-                    value=cst.Name(value="Opt"), slice=[cst.SubscriptElement(slice=cst.Index(value=data_type))]
+                    value=cst.Name(value="Opt"),
+                    slice=[cst.SubscriptElement(slice=cst.Index(value=data_type))],
                 )
             )
 
@@ -2910,7 +3524,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
         self.relative_path = api_path[len(prefix_path) :] if prefix_path else api_path
         self.api = spec.get("paths", {}).get(api_path, {}).get(api_verb, {})
         if not self.api:
-            raise ValueError(f"Path {api_path} with verb {api_verb} does not exist in spec")
+            raise ValueError(
+                f"Path {api_path} with verb {api_verb} does not exist in spec"
+            )
         self.api_descr: str | None = self.api.get("summary", None)
         if self.api_descr and not self.api_descr.endswith("."):
             self.api_descr += "."
@@ -2926,9 +3542,16 @@ class CreateClassMethodTransformer(CstTransformerBase):
             else:
                 raise ValueError(f"Invalid verb {api_verb}")
         if api_response not in responses:
-            raise ValueError(f"Response {api_response} does not exist for path {api_path} and verb {api_verb} in spec")
+            raise ValueError(
+                f"Response {api_response} does not exist for path {api_path} and verb {api_verb} in spec"
+            )
         self.api_response = api_response
-        content_schema = responses.get(api_response).get("content", {}).get("application/json", {}).get("schema", None)
+        content_schema = (
+            responses.get(api_response)
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", None)
+        )
         schema_path = [
             "paths",
             self.api_path,
@@ -2950,7 +3573,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
                 raise ValueError(
                     f"Property '{return_property}' does not exist in response for path {api_path} and verb {api_verb} in spec"
                 )
-            content_schema = content_schema.get("properties", {}).get(return_property, {})
+            content_schema = content_schema.get("properties", {}).get(
+                return_property, {}
+            )
             schema_path.extend(["properties", return_property])
         if create_new_class_func is not None:
             new_schemas = []
@@ -2968,10 +3593,19 @@ class CreateClassMethodTransformer(CstTransformerBase):
                     print(f"Creating new class for schema {new_schema}")
                     index = create_new_class_func(new_schema)
                 self.classes = index.get("classes", {})
-                self.schema_to_class = index.get("indices", {}).get("schema_to_classes", {})
+                self.schema_to_class = index.get("indices", {}).get(
+                    "schema_to_classes", {}
+                )
                 self.schema_to_class["default"] = ["GithubObject"]
         self.api_content = (
-            as_python_type(content_schema, schema_path, self.schema_to_class, self.classes, self.spec, verbose=True)
+            as_python_type(
+                content_schema,
+                schema_path,
+                self.schema_to_class,
+                self.classes,
+                self.spec,
+                verbose=True,
+            )
             if content_schema
             else None
         )
@@ -2983,16 +3617,23 @@ class CreateClassMethodTransformer(CstTransformerBase):
             insert_idx = self.find_method_index(self.method_name, stmts)
             if insert_idx < len(stmts):
                 stmt = stmts[insert_idx]
-                if isinstance(stmt, cst.FunctionDef) and stmt.name.value == self.method_name:
+                if (
+                    isinstance(stmt, cst.FunctionDef)
+                    and stmt.name.value == self.method_name
+                ):
                     raise RuntimeError(f"Function '{self.method_name}' already exists")
             method = self.create_method()
             stmts = tuple(stmts[:insert_idx]) + (method,) + tuple(stmts[insert_idx:])
-            return updated_node.with_changes(body=updated_node.body.with_changes(body=stmts))
+            return updated_node.with_changes(
+                body=updated_node.body.with_changes(body=stmts)
+            )
 
         return updated_node
 
     def find_method_index(
-        self, method_name: str, statements: Sequence[cst.BaseStatement] | Sequence[cst.BaseSmallStatement]
+        self,
+        method_name: str,
+        statements: Sequence[cst.BaseStatement] | Sequence[cst.BaseSmallStatement],
     ):
         method_name_order_elements = self.get_order_elements(method_name)
         for idx, stmt in enumerate(statements):
@@ -3001,7 +3642,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
                 function_name_order_elements = self.get_order_elements(function_name)
                 if function_name == "_useAttributes":
                     return idx
-                if function_name.startswith("_") or self.is_github_object_property(stmt):
+                if function_name.startswith("_") or self.is_github_object_property(
+                    stmt
+                ):
                     continue
                 if function_name_order_elements >= method_name_order_elements:
                     return idx
@@ -3009,7 +3652,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
 
     @staticmethod
     def get_order_elements(function_name: str) -> tuple[str] | tuple[str, int, str]:
-        for idx, prefix in enumerate(["create", "get", "set", "delete", "remove", "edit"]):
+        for idx, prefix in enumerate(
+            ["create", "get", "set", "delete", "remove", "edit"]
+        ):
             if function_name.startswith(f"{prefix}_"):
                 return function_name[len(prefix) + 1 :], idx, prefix
         return (function_name,)
@@ -3017,7 +3662,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
     def create_method(self) -> cst.FunctionDef:
         # extract url parameters that are not given by the class' GET url
         url_params = [
-            elem[1:-1] for elem in self.relative_path.split("/") if elem.startswith("{") and elem.endswith("}")
+            elem[1:-1]
+            for elem in self.relative_path.split("/")
+            if elem.startswith("{") and elem.endswith("}")
         ]
         # add an input decorator to pull these url parameters into method parameters
         decorators = [
@@ -3026,7 +3673,11 @@ class CreateClassMethodTransformer(CstTransformerBase):
                     func=cst.Name("openapi_parameter"),
                     args=[
                         cst.Arg(cst.SimpleString(f'"{url_param}"')),
-                        cst.Arg(keyword=cst.Name("input"), value=cst.Name("True"), equal=equal),
+                        cst.Arg(
+                            keyword=cst.Name("input"),
+                            value=cst.Name("True"),
+                            equal=equal,
+                        ),
                     ],
                 ),
                 leading_lines=[cst.EmptyLine()] if idx == 0 else [],
@@ -3036,7 +3687,10 @@ class CreateClassMethodTransformer(CstTransformerBase):
 
         # TODO: use Method.from_schema
         request_schema = (
-            self.api.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", None)
+            self.api.get("requestBody", {})
+            .get("content", {})
+            .get("application/json", {})
+            .get("schema", None)
         )
         schema_path = (
             "paths",
@@ -3052,7 +3706,12 @@ class CreateClassMethodTransformer(CstTransformerBase):
         request_properties = (
             {
                 prop: as_python_type(
-                    desc, list(schema_path + (prop,)), self.schema_to_class, self.classes, self.spec, verbose=True
+                    desc,
+                    list(schema_path + (prop,)),
+                    self.schema_to_class,
+                    self.classes,
+                    self.spec,
+                    verbose=True,
                 )
                 for prop, desc in request_schema.get("properties", {}).items()
             }
@@ -3069,7 +3728,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
         docstrings = []
         docstrings.append('"""')
         if self.api_docs:
-            docstrings.append(f":calls: `{self.api_verb.upper()} {self.api_path} <{self.api_docs}>`_")
+            docstrings.append(
+                f":calls: `{self.api_verb.upper()} {self.api_path} <{self.api_docs}>`_"
+            )
         else:
             docstrings.append(f":calls: {self.api_verb.upper()} {self.api_path}")
         docstrings.append('"""')
@@ -3084,7 +3745,10 @@ class CreateClassMethodTransformer(CstTransformerBase):
                             func=cst.Name("isinstance")
                             if prop_name in required_properties
                             else cst.Name("is_optional"),
-                            args=[cst.Arg(cst.Name(prop_name)), cst.Arg(self.create_type(prop_type))],
+                            args=[
+                                cst.Arg(cst.Name(prop_name)),
+                                cst.Arg(self.create_type(prop_type)),
+                            ],
                         ),
                         msg=cst.Name(prop_name),
                     )
@@ -3102,7 +3766,10 @@ class CreateClassMethodTransformer(CstTransformerBase):
                         targets=[cst.AssignTarget(cst.Name(request_properties_var))],
                         value=cst.Dict(
                             [
-                                cst.DictElement(key=cst.SimpleString(f'"{prop_name}"'), value=cst.Name(prop_name))
+                                cst.DictElement(
+                                    key=cst.SimpleString(f'"{prop_name}"'),
+                                    value=cst.Name(prop_name),
+                                )
                                 for prop_name, prop_type in request_properties.items()
                             ]
                         ),
@@ -3118,32 +3785,51 @@ class CreateClassMethodTransformer(CstTransformerBase):
                     targets=[
                         cst.AssignTarget(
                             cst.Tuple(
-                                elements=[cst.Element(cst.Name("headers")), cst.Element(cst.Name("data"))],
+                                elements=[
+                                    cst.Element(cst.Name("headers")),
+                                    cst.Element(cst.Name("data")),
+                                ],
                                 lpar=(),
                                 rpar=(),
                             )
                         )
                     ],
                     value=cst.Call(
-                        func=self.create_attribute(["self", "_requester", "requestJsonAndCheck"]),
+                        func=self.create_attribute(
+                            ["self", "_requester", "requestJsonAndCheck"]
+                        ),
                         args=(
                             cst.Arg(cst.SimpleString(f'"{self.api_verb.upper()}"')),
                             cst.Arg(
                                 cst.FormattedString(
                                     [
-                                        cst.FormattedStringExpression(self.create_attribute(["self", "url"])),
+                                        cst.FormattedStringExpression(
+                                            self.create_attribute(["self", "url"])
+                                        ),
                                         cst.FormattedStringText(self.relative_path),
                                     ]
                                 )
                             ),
                         )
                         + (
-                            (cst.Arg(keyword=cst.Name("parameters"), value=cst.Name("url_parameters"), equal=equal),)
+                            (
+                                cst.Arg(
+                                    keyword=cst.Name("parameters"),
+                                    value=cst.Name("url_parameters"),
+                                    equal=equal,
+                                ),
+                            )
                             if url_params
                             else ()
                         )
                         + (
-                            (cst.Arg(keyword=cst.Name("input"), value=cst.Name(request_properties_var), equal=equal),)
+                            (
+                                cst.Arg(
+                                    keyword=cst.Name("input"),
+                                    value=cst.Name(request_properties_var),
+                                    equal=equal,
+                                ),
+                            )
                             if request_properties
                             else ()
                         ),
@@ -3170,7 +3856,9 @@ class CreateClassMethodTransformer(CstTransformerBase):
                             value=cst.Call(
                                 func=self.create_type(self.api_content),
                                 args=[
-                                    cst.Arg(self.create_attribute(["self", "_requester"])),
+                                    cst.Arg(
+                                        self.create_attribute(["self", "_requester"])
+                                    ),
                                     cst.Arg(cst.Name("headers")),
                                     cst.Arg(data),
                                 ],
@@ -3190,11 +3878,19 @@ class CreateClassMethodTransformer(CstTransformerBase):
                     # TODO: add NotSet default value
                     annotation = cst.Annotation(self.create_type(prop_type))
                 else:
-                    annotation = cst.Annotation(self.create_type(PythonType("union", [prop_type, PythonType("None")])))
-            method_params.append(cst.Param(name=cst.Name(prop_name), annotation=annotation))
+                    annotation = cst.Annotation(
+                        self.create_type(
+                            PythonType("union", [prop_type, PythonType("None")])
+                        )
+                    )
+            method_params.append(
+                cst.Param(name=cst.Name(prop_name), annotation=annotation)
+            )
 
         params = cst.Parameters(params=method_params)
-        returns = cst.Annotation(annotation=self.create_type(self.api_content, short_class_name=True))
+        returns = cst.Annotation(
+            annotation=self.create_type(self.api_content, short_class_name=True)
+        )
         body = cst.IndentedBlock(body=stmts)
 
         return cst.FunctionDef(
@@ -3242,7 +3938,10 @@ class IndexFileWorker:
 
         paths = {}
         visitor = IndexPythonClassesVisitor(
-            self.spec, self.classes, paths, self.config.get("known method verbs", {}) if self.check_verbs else None
+            self.spec,
+            self.classes,
+            paths,
+            self.config.get("known method verbs", {}) if self.check_verbs else None,
         )
         visitor.package("github")
         visitor.module(Path(filename.removesuffix(".py")).name)
@@ -3276,12 +3975,18 @@ class OpenApi:
         self.verbose = args.verbose
 
         index = (
-            OpenApi.read_json(args.index_filename) if self.subcommand != "index" and "index_filename" in args else {}
+            OpenApi.read_json(args.index_filename)
+            if self.subcommand != "index" and "index_filename" in args
+            else {}
         )
         self.classes = index.get("classes", {})
         self.schema_to_class = index.get("indices", {}).get("schema_to_classes", {})
         self.schema_to_class["default"] = ["GithubObject"]
-        self.spec = OpenApi.read_json(args.spec) if "spec" in args and self.subcommand not in ["fetch", "index"] else {}
+        self.spec = (
+            OpenApi.read_json(args.spec)
+            if "spec" in args and self.subcommand not in ["fetch", "index"]
+            else {}
+        )
         self.ignored_schemas = set(index.get("config", {}).get("ignored_schemas", {}))
 
     def as_python_type(
@@ -3337,16 +4042,16 @@ class OpenApi:
         return steps, schema
 
     def get_spec_types(self, schema: dict, schema_path: list[str | int]) -> list[str]:
-        """
-        Returns spec types.
-        """
+        """Returns spec types."""
         if "$ref" in schema:
             return [schema.get("$ref")]
         if "oneOf" in schema:
             return [
                 spec_type
                 for idx, component in enumerate(schema.get("oneOf"))
-                for spec_type in self.get_inner_spec_types(component, schema_path + ["oneOf", str(idx)])
+                for spec_type in self.get_inner_spec_types(
+                    component, schema_path + ["oneOf", str(idx)]
+                )
             ]
         if "allOf" in schema and len(schema.get("allOf")) == 1:
             return [schema.get("allOf")[0].get("$ref")]
@@ -3354,20 +4059,24 @@ class OpenApi:
             return ["/".join(["#"] + schema_path)]
         return []
 
-    def get_inner_spec_types(self, schema: dict, schema_path: list[str | int]) -> list[str]:
-        """
-        Returns inner spec type, ignores outer datastructures like lists or pagination.
-        """
+    def get_inner_spec_types(
+        self, schema: dict, schema_path: list[str | int]
+    ) -> list[str]:
+        """Returns inner spec type, ignores outer datastructures like lists or
+        pagination."""
         # extract the inner type of pagination objects
         if "properties" in schema:
             props = schema.get("properties")
             list_item = pagination_list_property(props)
             if list_item is not None:
                 return self.get_inner_spec_types(
-                    props.get(list_item).get("items"), schema_path + ["properties", list_item, "items"]
+                    props.get(list_item).get("items"),
+                    schema_path + ["properties", list_item, "items"],
                 )
         if schema.get("type") == "array" and "items" in schema:
-            return self.get_inner_spec_types(schema.get("items"), schema_path + ["items"])
+            return self.get_inner_spec_types(
+                schema.get("items"), schema_path + ["items"]
+            )
 
         return self.get_spec_types(schema, schema_path)
 
@@ -3377,9 +4086,13 @@ class OpenApi:
         updated = False
 
         for name, cls in classes.items():
-            orig_inheritance = cls.get("inheritance", set()).union(set(cls.get("bases", [])))
+            orig_inheritance = cls.get("inheritance", set()).union(
+                set(cls.get("bases", []))
+            )
             inheritance = orig_inheritance.union(
-                ancestor for base in cls.get("bases", []) for ancestor in classes.get(base, {}).get("inheritance", [])
+                ancestor
+                for base in cls.get("bases", [])
+                for ancestor in classes.get(base, {}).get("inheritance", [])
             )
             cls["inheritance"] = inheritance
             extended_classes[name] = cls
@@ -3412,7 +4125,9 @@ class OpenApi:
         return updated
 
     @classmethod
-    def add_schema_to_class(cls, class_name: str, filename: str, schemas: list[str], dry_run: bool) -> int:
+    def add_schema_to_class(
+        cls, class_name: str, filename: str, schemas: list[str], dry_run: bool
+    ) -> int:
         with open(filename) as r:
             code = "".join(r.readlines())
 
@@ -3427,9 +4142,13 @@ class OpenApi:
         return transformer.schema_added
 
     @staticmethod
-    def write_code(orig_code: str, updated_code: str, filename: str, dry_run: bool) -> bool:
+    def write_code(
+        orig_code: str, updated_code: str, filename: str, dry_run: bool
+    ) -> bool:
         if dry_run:
-            diff = difflib.unified_diff(orig_code.splitlines(1), updated_code.splitlines(1))
+            diff = difflib.unified_diff(
+                orig_code.splitlines(1), updated_code.splitlines(1)
+            )
             changes = "".join(diff)
             print("Diff:")
             print(changes)
@@ -3470,16 +4189,26 @@ class OpenApi:
         for class_name in class_names:
             clazz = GithubClass.from_class_name(class_name, index)
 
-            print(f"Applying spec {spec_file} to {clazz.full_class_name} ({clazz.filename})")
+            print(
+                f"Applying spec {spec_file} to {clazz.full_class_name} ({clazz.filename})"
+            )
             cls = classes.get(clazz.short_class_name, {})
             irrelevant_bases = {
                 inheritance
-                for base in ["GithubObject", "CompletableGithubObject", "NonCompletableGithubObject"]
+                for base in [
+                    "GithubObject",
+                    "CompletableGithubObject",
+                    "NonCompletableGithubObject",
+                ]
                 for inheritance in classes.get(base, {}).get("inheritance", [])
             }
-            relevant_bases = set(cls.get("inheritance", [])).difference(irrelevant_bases)
+            relevant_bases = set(cls.get("inheritance", [])).difference(
+                irrelevant_bases
+            )
             inherited_properties = {
-                property for base in relevant_bases for property in classes.get(base, {}).get("properties", {}).keys()
+                property
+                for base in relevant_bases
+                for property in classes.get(base, {}).get("properties", {}).keys()
             }
             completable = "CompletableGithubObject" in cls.get("inheritance", [])
             cls_schemas = cls.get("schemas", [])
@@ -3495,25 +4224,42 @@ class OpenApi:
                     for k, v in schema.get("properties", {}).items():
                         # only check for new schemas of new attributes
                         if k not in cls_properties:
-                            self.as_python_type(v, schema_path + ["properties", k], collect_new_schemas=new_schemas)
+                            self.as_python_type(
+                                v,
+                                schema_path + ["properties", k],
+                                collect_new_schemas=new_schemas,
+                            )
                     # handle new schemas
                     for new_schema in new_schemas:
                         index = self.create_class_for_schema(
-                            github_path, spec_file, index_filename, spec, classes, tests, new_schema
+                            github_path,
+                            spec_file,
+                            index_filename,
+                            spec,
+                            classes,
+                            tests,
+                            new_schema,
                         )
 
                     # propagate new classes to self.as_python_type
                     self.classes = classes
-                    self.schema_to_class = index.get("indices", {}).get("schema_to_classes", {})
+                    self.schema_to_class = index.get("indices", {}).get(
+                        "schema_to_classes", {}
+                    )
 
-                def is_not_dict_type(python_type: GithubClass | PythonType | None) -> bool:
+                def is_not_dict_type(
+                    python_type: GithubClass | PythonType | None,
+                ) -> bool:
                     return (
                         python_type is None
                         or isinstance(python_type, GithubClass)
                         or isinstance(python_type, PythonType)
                         and (
                             python_type.type != "dict"
-                            and (python_type.type != "list" or is_not_dict_type(python_type.inner_types[0]))
+                            and (
+                                python_type.type != "list"
+                                or is_not_dict_type(python_type.inner_types[0])
+                            )
                         )
                     )
 
@@ -3525,27 +4271,47 @@ class OpenApi:
                 ) -> bool:
                     if isinstance(property_type, PythonType):
                         if property_type.type == "union":
-                            if not all(isinstance(inner_type, GithubClass) for inner_type in property_type.inner_types):
+                            if not all(
+                                isinstance(inner_type, GithubClass)
+                                for inner_type in property_type.inner_types
+                            ):
                                 if verbose:
-                                    print(f"Unsupported property '{property_name}' of type {property_type}")
+                                    print(
+                                        f"Unsupported property '{property_name}' of type {property_type}"
+                                    )
                                 return False
                         if property_type.type == "list":
                             if not is_supported_type(
-                                property_name, property_spec, property_type.inner_types[0], verbose=False
+                                property_name,
+                                property_spec,
+                                property_type.inner_types[0],
+                                verbose=False,
                             ):
                                 if verbose:
-                                    print(f"Unsupported property '{property_name}' of type {property_type}")
+                                    print(
+                                        f"Unsupported property '{property_name}' of type {property_type}"
+                                    )
                                 return False
                     return True
 
                 all_properties = {
                     k: (python_type, v.get("deprecated", False))
                     for k, v in schema.get("properties", {}).items()
-                    for python_type in [self.as_python_type(v, schema_path + ["properties", k])]
+                    for python_type in [
+                        self.as_python_type(v, schema_path + ["properties", k])
+                    ]
                     if is_supported_type(k, v, python_type, self.verbose)
-                    and (is_not_dict_type(python_type) or new_schemas_as_dict or new_schemas_create_class)
+                    and (
+                        is_not_dict_type(python_type)
+                        or new_schemas_as_dict
+                        or new_schemas_create_class
+                    )
                 }
-                genuine_properties = {k: v for k, v in all_properties.items() if k not in inherited_properties}
+                genuine_properties = {
+                    k: v
+                    for k, v in all_properties.items()
+                    if k not in inherited_properties
+                }
 
                 with open(clazz.filename) as r:
                     code = "".join(r.readlines())
@@ -3560,7 +4326,10 @@ class OpenApi:
 
                 tree = cst.parse_module(code)
                 tree_updated = tree.visit(apply_transformer)
-                class_change = self.write_code(code, tree_updated.code, clazz.filename, dry_run) or class_change
+                class_change = (
+                    self.write_code(code, tree_updated.code, clazz.filename, dry_run)
+                    or class_change
+                )
 
                 if tests and os.path.exists(clazz.test_filename):
                     with open(clazz.test_filename) as r:
@@ -3575,7 +4344,12 @@ class OpenApi:
                     )
                     tree = cst.parse_module(code)
                     tree_updated = tree.visit(apply_transformer)
-                    test_change = self.write_code(code, tree_updated.code, clazz.test_filename, dry_run) or test_change
+                    test_change = (
+                        self.write_code(
+                            code, tree_updated.code, clazz.test_filename, dry_run
+                        )
+                        or test_change
+                    )
 
             any_change = any_change or class_change or test_change
             if class_change or test_change:
@@ -3616,7 +4390,9 @@ class OpenApi:
                     class_name = ".".join(fields[0:2])
                     method_name = fields[3]
                 else:
-                    print(f"Could not parse as class name or class method name: {class_or_class_method_name}")
+                    print(
+                        f"Could not parse as class name or class method name: {class_or_class_method_name}"
+                    )
                     sys.exit(1)
                 if method_name is None:
                     class_methods[class_name] = None
@@ -3665,7 +4441,9 @@ class OpenApi:
         for class_name, method_names in class_methods.items():
             clazz = GithubClass.from_class_name(class_name, index)
 
-            print(f"Applying spec {spec_file} to {clazz.full_class_name} ({clazz.filename})")
+            print(
+                f"Applying spec {spec_file} to {clazz.full_class_name} ({clazz.filename})"
+            )
             cls = classes.get(clazz.short_class_name, {})
             cls_methods = cls.get("methods", [])
             class_change = False
@@ -3676,10 +4454,15 @@ class OpenApi:
                 with open(clazz.filename) as r:
                     code = "".join(r.readlines())
 
-                method_transformer = UpdateMethodsTransformer(clazz.module, class_name, methods, index, rewrite)
+                method_transformer = UpdateMethodsTransformer(
+                    clazz.module, class_name, methods, index, rewrite
+                )
                 tree = cst.parse_module(code)
                 tree_updated = tree.visit(method_transformer)
-                class_change = self.write_code(code, tree_updated.code, clazz.filename, dry_run) or class_change
+                class_change = (
+                    self.write_code(code, tree_updated.code, clazz.filename, dry_run)
+                    or class_change
+                )
 
             any_change = any_change or class_change
             if class_change:
@@ -3687,9 +4470,13 @@ class OpenApi:
 
         return any_change
 
-    def fetch(self, api: str, api_version: str, commit: str | None, spec_file: str) -> bool:
+    def fetch(
+        self, api: str, api_version: str, commit: str | None, spec_file: str
+    ) -> bool:
         ref = "refs/heads/main" if commit is None else commit
-        base_url = f"https://github.com/github/rest-api-description/raw/{ref}/descriptions"
+        base_url = (
+            f"https://github.com/github/rest-api-description/raw/{ref}/descriptions"
+        )
         url = f"{base_url}/{api}/{api}.{api_version}.json"
         response = requests.get(url)
         response.raise_for_status()
@@ -3705,7 +4492,12 @@ class OpenApi:
         return True
 
     def index(
-        self, github_path: str, spec_file: str | None, index_filename: str, check_verbs: bool, dry_run: bool
+        self,
+        github_path: str,
+        spec_file: str | None,
+        index_filename: str,
+        check_verbs: bool,
+        dry_run: bool,
     ) -> bool:
         import multiprocessing
 
@@ -3716,7 +4508,11 @@ class OpenApi:
                 ignored_schemas = json.load(r).get("ignored OpenAPI schemas", [])
             config["ignored_schemas"] = ignored_schemas
 
-        files = [f for f in listdir(github_path) if isfile(join(github_path, f)) and f.endswith(".py")]
+        files = [
+            f
+            for f in listdir(github_path)
+            if isfile(join(github_path, f)) and f.endswith(".py")
+        ]
         print(f"Indexing {len(files)} Python files")
 
         # index files in parallel
@@ -3728,7 +4524,10 @@ class OpenApi:
                 raise RuntimeError(f"Cannot check verbs without config: {config_file}")
             indexer = IndexFileWorker(spec, classes, config_file, paths, check_verbs)
             with multiprocessing.Pool() as pool:
-                pool.map(indexer.index_file, iterable=[join(github_path, file) for file in files])
+                pool.map(
+                    indexer.index_file,
+                    iterable=[join(github_path, file) for file in files],
+                )
             classes = dict(classes)
             paths = merge_paths(paths)
 
@@ -3747,7 +4546,10 @@ class OpenApi:
                 if cls not in class_to_descendants:
                     class_to_descendants[cls] = []
                 class_to_descendants[cls].append(name)
-        class_to_descendants = {cls: sorted(descendants) for cls, descendants in class_to_descendants.items()}
+        class_to_descendants = {
+            cls: sorted(descendants)
+            for cls, descendants in class_to_descendants.items()
+        }
 
         # add schemas of base classes to derived classes
         for name, clazz in sorted(classes.items(), key=lambda v: v[0]):
@@ -3786,7 +4588,11 @@ class OpenApi:
                 if verb not in path_to_call_methods[path]:
                     path_to_call_methods[path][verb] = set()
                 path_to_call_methods[path][verb] = sorted(
-                    list(set(path_to_call_methods[path][verb]).union({".".join([cls_name, method_name])}))
+                    list(
+                        set(path_to_call_methods[path][verb]).union(
+                            {".".join([cls_name, method_name])}
+                        )
+                    )
                 )
 
                 returns = method.get("returns", [])
@@ -3804,7 +4610,9 @@ class OpenApi:
                     schema_to_classes[schema] = []
                 schema_to_classes[schema].append(cls_name)
 
-        schema_to_classes = {schema: sorted(cls_names) for schema, cls_names in schema_to_classes.items()}
+        schema_to_classes = {
+            schema: sorted(cls_names) for schema, cls_names in schema_to_classes.items()
+        }
 
         print(f"Indexed {len(classes)} classes")
         print(f"Indexed {len(path_to_return_classes)} paths")
@@ -3841,13 +4649,23 @@ class OpenApi:
                 )
                 if spec_type:
                     for schema in self.get_spec_types(
-                        spec_type, [f'"{path}"', "get", "responses", '"200"', "content", '"application/json"', "schema"]
+                        spec_type,
+                        [
+                            f'"{path}"',
+                            "get",
+                            "responses",
+                            '"200"',
+                            "content",
+                            '"application/json"',
+                            "schema",
+                        ],
                     ):
                         if schema.startswith("#/components/"):
                             return_schema_to_paths[schema[1:]].append(path)
 
             data["indices"]["return_schema_to_paths"] = {
-                schema: sorted(paths) for schema, paths in return_schema_to_paths.items()
+                schema: sorted(paths)
+                for schema, paths in return_schema_to_paths.items()
             }
 
         if dry_run:
@@ -3855,15 +4673,34 @@ class OpenApi:
                 with open(index_filename) as w:
                     orig_json = w.read()
                 # compare the serialized json for stability, not the dict
-                data_json = json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False, cls=JsonSerializer)
+                data_json = json.dumps(
+                    data,
+                    indent=2,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                    cls=JsonSerializer,
+                )
                 return orig_json != data_json
         else:
             with open(index_filename, "w") as w:
-                json.dump(data, w, indent=2, sort_keys=True, ensure_ascii=False, cls=JsonSerializer)
+                json.dump(
+                    data,
+                    w,
+                    indent=2,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                    cls=JsonSerializer,
+                )
 
         return True
 
-    def suggest_paths(self, spec_file: str, index_filename: str, class_names: list[str] | None, dry_run: bool) -> bool:
+    def suggest_paths(
+        self,
+        spec_file: str,
+        index_filename: str,
+        class_names: list[str] | None,
+        dry_run: bool,
+    ) -> bool:
         print(f"Using spec {spec_file}")
         with open(spec_file) as r:
             spec = json.load(r)
@@ -3897,15 +4734,22 @@ class OpenApi:
                     print(f"  - Returned by path {path}")
                     for candidate_path in paths:
                         verbs = paths[candidate_path].keys()
-                        if len(candidate_path) > len(path) and candidate_path.startswith(f"{path}/"):
+                        if len(candidate_path) > len(
+                            path
+                        ) and candidate_path.startswith(f"{path}/"):
                             rel_path = candidate_path[len(path) + 1 :]
                             rel_path_fields = rel_path.split("/")
                             rel_path_params = [
-                                field.startswith("{") and field.endswith("}") for field in rel_path_fields
+                                field.startswith("{") and field.endswith("}")
+                                for field in rel_path_fields
                             ]
                             # we skip paths where multiple path parameters exist, or
                             # the path parameter is not at the end of the path
-                            if sum(rel_path_params) > 1 or sum(rel_path_params) == 1 and not rel_path_params[-1]:
+                            if (
+                                sum(rel_path_params) > 1
+                                or sum(rel_path_params) == 1
+                                and not rel_path_params[-1]
+                            ):
                                 continue
 
                             skip = False
@@ -3913,33 +4757,55 @@ class OpenApi:
                             for rel_field in rel_path_fields:
                                 rel_subpath.append(rel_field)
                                 subpath = "/".join([path] + rel_subpath)
-                                for method in implemented_paths.get(subpath, {}).get("GET", {}).get("methods", []):
+                                for method in (
+                                    implemented_paths.get(subpath, {})
+                                    .get("GET", {})
+                                    .get("methods", [])
+                                ):
                                     for return_type in method.get("returns", []):
                                         if return_type in classes:
                                             if self.verbose:
-                                                print(f"\n      - Parent path {subpath} returns {return_type}", end="")
+                                                print(
+                                                    f"\n      - Parent path {subpath} returns {return_type}",
+                                                    end="",
+                                                )
                                             skip = True
                             if skip:
                                 continue
 
                             for verb in verbs:
-                                if implemented_paths.get(candidate_path, {}).get(verb.upper, {}).get("methods", []):
+                                if (
+                                    implemented_paths.get(candidate_path, {})
+                                    .get(verb.upper, {})
+                                    .get("methods", [])
+                                ):
                                     methods = [
                                         f"{method.get('class')}.{method.get('name')}"
-                                        for method in implemented_paths.get(candidate_path, {})
+                                        for method in implemented_paths.get(
+                                            candidate_path, {}
+                                        )
                                         .get("GET", {})
                                         .get("methods")
                                     ]
                                     if self.verbose:
-                                        print(f"    - {verb} {candidate_path} implemented by {', '.join(methods)}")
+                                        print(
+                                            f"    - {verb} {candidate_path} implemented by {', '.join(methods)}"
+                                        )
                                     continue
 
-                                suggested_methods = self.suggest_method_names(verb, path, candidate_path, spec)
+                                suggested_methods = self.suggest_method_names(
+                                    verb, path, candidate_path, spec
+                                )
                                 if suggested_methods:
                                     implementations = " or ".join(
-                                        [f"{cls}.{suggested_method}()" for suggested_method in suggested_methods]
+                                        [
+                                            f"{cls}.{suggested_method}()"
+                                            for suggested_method in suggested_methods
+                                        ]
                                     )
-                                    print(f"    - {verb} {candidate_path} should be implemented as {implementations}")
+                                    print(
+                                        f"    - {verb} {candidate_path} should be implemented as {implementations}"
+                                    )
                                     for suggested_method in suggested_methods:
                                         print(
                                             f"      python {sys.argv[0]} create method {spec_file} {index_filename} {cls} {suggested_method} {verb} {candidate_path}"
@@ -3949,9 +4815,15 @@ class OpenApi:
 
         return False
 
-    def suggest_path_corrections(self, paths: dict[str, Any], implemented_paths: dict[str, Any]):
+    def suggest_path_corrections(
+        self, paths: dict[str, Any], implemented_paths: dict[str, Any]
+    ):
         spec_paths = {(verb, path) for path, verbs in paths.items() for verb in verbs}
-        impl_paths = {(verb.lower(), path) for path, verbs in implemented_paths.items() for verb in verbs}
+        impl_paths = {
+            (verb.lower(), path)
+            for path, verbs in implemented_paths.items()
+            for verb in verbs
+        }
         unspec_paths = impl_paths - spec_paths
         impl_spec_paths = spec_paths.intersection(impl_paths)
         print(
@@ -3982,15 +4854,21 @@ class OpenApi:
         print()
 
     @classmethod
-    def suggest_method_names(cls, verb: str, prefix_path: str, path: str, spec: dict[str, Any]) -> list[str]:
+    def suggest_method_names(
+        cls, verb: str, prefix_path: str, path: str, spec: dict[str, Any]
+    ) -> list[str]:
         suffix_path = path.replace("-", "_")[len(prefix_path) + 1 :]
         fields = suffix_path.split("/")
         context = "_".join(fields[:-1])
         last_field = fields[-1]
 
         # download API paths respond with a 302 status and a Location header
-        responses = spec.get("paths", {}).get(path, {}).get(verb, {}).get("responses", {})
-        if sorted(list(responses.keys()))[0] == "302" and "Location" in responses.get("302").get("headers", {}):
+        responses = (
+            spec.get("paths", {}).get(path, {}).get(verb, {}).get("responses", {})
+        )
+        if sorted(list(responses.keys()))[0] == "302" and "Location" in responses.get(
+            "302"
+        ).get("headers", {}):
             return ["download", "get_download_link"]
 
         # verb == "get": get_ method on the nearst object
@@ -4029,7 +4907,12 @@ class OpenApi:
         return method_names
 
     def suggest_schemas(
-        self, spec_file: str, index_filename: str, class_names: list[str] | None, add: bool, dry_run: bool
+        self,
+        spec_file: str,
+        index_filename: str,
+        class_names: list[str] | None,
+        add: bool,
+        dry_run: bool,
     ) -> bool:
         print(f"Using spec {spec_file}")
         with open(spec_file) as r:
@@ -4040,7 +4923,9 @@ class OpenApi:
         classes = index.get("classes", {})
         schema_to_classes = index.get("indices", {}).get("schema_to_classes", {})
         path_to_call_methods = index.get("indices", {}).get("path_to_call_methods", {})
-        path_to_return_classes = index.get("indices", {}).get("path_to_return_classes", {})
+        path_to_return_classes = index.get("indices", {}).get(
+            "path_to_return_classes", {}
+        )
 
         schemas_added = 0
         schemas_suggested = 0
@@ -4063,13 +4948,21 @@ class OpenApi:
                 return inner_return_type(return_type[14:-1])
             if return_type.startswith("list[") and return_type.endswith("]"):
                 return inner_return_type(return_type[5:-1])
-            if return_type.startswith("dict[") and "," in return_type and return_type.endswith("]"):
+            if (
+                return_type.startswith("dict[")
+                and "," in return_type
+                and return_type.endswith("]")
+            ):
                 # a dict of types indicates a wrapping object containing these types
                 return []
 
             # now that we have removed outer types, we can look for alternatives
             if "|" in return_type:
-                return [rt for alt in return_type.split("|") for rt in inner_return_type(alt)]
+                return [
+                    rt
+                    for alt in return_type.split("|")
+                    for rt in inner_return_type(alt)
+                ]
 
             # return the pure class name, no outer class, module or package names
             if "." in return_type:
@@ -4091,10 +4984,14 @@ class OpenApi:
                 schema_path, schema = self.get_schema(spec, schema_name)
 
                 if not schema:
-                    print(f"Schema {schema_name} of class {cls.get('name')} not found in spec")
+                    print(
+                        f"Schema {schema_name} of class {cls.get('name')} not found in spec"
+                    )
                     continue
 
-                for property_name, property_spec_type in schema.get("properties", {}).items():
+                for property_name, property_spec_type in schema.get(
+                    "properties", {}
+                ).items():
                     property = properties.get(property_name, {})
                     returns = property.get("returns", [])
                     cls_names = {ir for ret in returns for ir in inner_return_type(ret)}
@@ -4105,7 +5002,15 @@ class OpenApi:
                     for cls_name in cls_names:
                         if class_names and cls_name not in class_names:
                             continue
-                        if cls_name in ["bool", "int", "str", "datetime", "list", "dict", "Any"]:
+                        if cls_name in [
+                            "bool",
+                            "int",
+                            "str",
+                            "datetime",
+                            "list",
+                            "dict",
+                            "Any",
+                        ]:
                             continue
                         if cls_name not in available_schemas:
                             available_schemas[cls_name] = {}
@@ -4155,7 +5060,9 @@ class OpenApi:
                     print(f"- should implement schema {schema_to_implement}")
                     if schema_returned_by[schema_to_implement]:
                         print("  Properties returning the schema:")
-                        for providing_class, providing_property in sorted(schema_returned_by[schema_to_implement]):
+                        for providing_class, providing_property in sorted(
+                            schema_returned_by[schema_to_implement]
+                        ):
                             print(f"  - {providing_class}.{providing_property}")
                 # for schema_to_remove in sorted(schemas_to_remove):
                 #    print(f"- should not implement schema {schema_to_remove}")
@@ -4173,7 +5080,9 @@ class OpenApi:
                         print(f"Class name or filename for class {cls} not known")
                         sys.exit(1)
                 else:
-                    added = self.add_schema_to_class(clazz_name, filename, schemas_to_implement, dry_run)
+                    added = self.add_schema_to_class(
+                        clazz_name, filename, schemas_to_implement, dry_run
+                    )
                     schemas_added += added
             schemas_suggested += len(schemas_to_implement)
 
@@ -4184,27 +5093,48 @@ class OpenApi:
         # paths can have an optional #property appended
         for path_with_property in paths:
             path, schema_property = (
-                path_with_property.split("#", maxsplit=1) if "#" in path_with_property else (path_with_property, None)
+                path_with_property.split("#", maxsplit=1)
+                if "#" in path_with_property
+                else (path_with_property, None)
             )
             for verb in spec.get("paths", {}).get(path, {}).keys():
-                responses_of_path = spec.get("paths", {}).get(path, {}).get(verb, {}).get("responses", {})
+                responses_of_path = (
+                    spec.get("paths", {})
+                    .get(path, {})
+                    .get(verb, {})
+                    .get("responses", {})
+                )
                 schema_path = ["paths", f'"{path}"', verb, "responses"]
                 # we ignore wrapping types like lists / arrays here and assume methods comply with schema in that sense
                 schemas_of_path = [
-                    "/".join(component.rstrip("/").split("/") + ["properties", schema_property])
+                    "/".join(
+                        component.rstrip("/").split("/")
+                        + ["properties", schema_property]
+                    )
                     if schema_property
                     else component
                     for status, response in responses_of_path.items()
-                    if status.isnumeric() and int(status) < 400 and "content" in response
-                    for schema in [response.get("content").get("application/json", {}).get("schema", {})]
+                    if status.isnumeric()
+                    and int(status) < 400
+                    and "content" in response
+                    for schema in [
+                        response.get("content")
+                        .get("application/json", {})
+                        .get("schema", {})
+                    ]
                     for component in self.get_inner_spec_types(
-                        schema, schema_path + [str(status), "content", '"application/json"', "schema"]
+                        schema,
+                        schema_path
+                        + [str(status), "content", '"application/json"', "schema"],
                     )
                     for component in [component.lstrip("#")]
                     if component not in self.ignored_schemas
                 ]
                 classes_of_path = set(
-                    index.get("indices", {}).get("path_to_return_classes", {}).get(path_with_property, {}).get(verb, [])
+                    index.get("indices", {})
+                    .get("path_to_return_classes", {})
+                    .get(path_with_property, {})
+                    .get(verb, [])
                 )
 
                 for cls in classes_of_path:
@@ -4231,7 +5161,9 @@ class OpenApi:
                         for schema in schemas_of_path:
                             schema_returned_by[schema].add((verb, path_with_property))
 
-        for cls, available_verbs in sorted(available_schemas.items(), key=lambda v: v[0]):
+        for cls, available_verbs in sorted(
+            available_schemas.items(), key=lambda v: v[0]
+        ):
             if cls in ["bool", "str", "None"]:
                 continue
             if cls not in classes:
@@ -4251,7 +5183,9 @@ class OpenApi:
                 if verb not in paths:
                     paths[verb] = set()
                 paths[verb] = paths[verb].union(available_paths.keys())
-                available = available.union({a for s in available_paths.values() for a in s})
+                available = available.union(
+                    {a for s in available_paths.values() for a in s}
+                )
 
             schemas_to_implement = sorted(list(available.difference(set(implemented))))
             # schemas_to_remove = sorted(list(set(implemented).difference(available)))
@@ -4264,7 +5198,9 @@ class OpenApi:
                     for verb, verb_paths in paths.items():
                         for path in verb_paths:
                             if (verb, path) in schema_returned_by[schema_to_implement]:
-                                methods = methods.union(path_to_call_methods.get(path, {}).get(verb, set()))
+                                methods = methods.union(
+                                    path_to_call_methods.get(path, {}).get(verb, set())
+                                )
                     if methods:
                         print("  Methods returning the schema:")
                         for method in methods:
@@ -4285,7 +5221,9 @@ class OpenApi:
                         print(f"Filename for class {cls} not known")
                         sys.exit(1)
                 else:
-                    added = self.add_schema_to_class(cls, filename, schemas_to_implement, dry_run)
+                    added = self.add_schema_to_class(
+                        cls, filename, schemas_to_implement, dry_run
+                    )
                     schemas_added += added
             schemas_suggested += len(schemas_to_implement)
 
@@ -4311,14 +5249,18 @@ class OpenApi:
             index = json.load(r)
 
         github_parent_path = str(Path(github_path).parent)
-        clazz = GithubClass.from_class_name(class_name, github_parent_path=github_parent_path)
+        clazz = GithubClass.from_class_name(
+            class_name, github_parent_path=github_parent_path
+        )
         parent_class = GithubClass.from_class_name(parent_name, index)
         if filename is None and "." in class_name:
             # a long class name like github.Commit.CommitSearchResult implies --file Commit.py
             _, module, _ = class_name.split(".", 2)
             filename = f"{module}.py"
         clazz = clazz.with_filename(github_parent_path, filename)
-        print(f"Creating class {clazz.full_class_name} with parent {parent_class.full_class_name} in {clazz.filename}")
+        print(
+            f"Creating class {clazz.full_class_name} with parent {parent_class.full_class_name} in {clazz.filename}"
+        )
         if not filename and os.path.exists(clazz.filename):
             raise ValueError(f"File exists already: {clazz.filename}")
         if tests and not filename and os.path.exists(clazz.test_filename):
@@ -4463,7 +5405,9 @@ class OpenApi:
                 f"        {attr_name} = self.{attr_name}\n"
                 f'        self.assertEqual({attr_name}.__repr__(), "")\n'
             )
-            self.write_code(orig_test_source, test_source, clazz.test_filename, dry_run=False)
+            self.write_code(
+                orig_test_source, test_source, clazz.test_filename, dry_run=False
+            )
 
         success = True
         try:
@@ -4471,7 +5415,9 @@ class OpenApi:
                 with NamedTemporaryFile(delete_on_close=False) as f:
                     f.close()
                     print("Updating temporary index")
-                    self.index(github_path, spec_file, f.name, check_verbs=False, dry_run=False)
+                    self.index(
+                        github_path, spec_file, f.name, check_verbs=False, dry_run=False
+                    )
                     self.apply_properties(
                         github_path,
                         spec_file,
@@ -4483,7 +5429,13 @@ class OpenApi:
                     )
             else:
                 print("Updating index")
-                self.index(github_path, spec_file, index_filename, check_verbs=False, dry_run=False)
+                self.index(
+                    github_path,
+                    spec_file,
+                    index_filename,
+                    check_verbs=False,
+                    dry_run=False,
+                )
                 self.apply_properties(
                     github_path,
                     spec_file,
@@ -4507,10 +5459,14 @@ class OpenApi:
                         if tests:
                             with open(clazz.test_filename) as r:
                                 test_source = "".join(r.readlines())
-                            self.write_code(orig_test_source, test_source, None, dry_run=True)
+                            self.write_code(
+                                orig_test_source, test_source, None, dry_run=True
+                            )
                     else:
                         # print created files
-                        files = [clazz.filename] + ([clazz.test_filename] if tests else [])
+                        files = [clazz.filename] + (
+                            [clazz.test_filename] if tests else []
+                        )
                         for filename in files:
                             print()
                             print(f"{filename}:")
@@ -4543,8 +5499,14 @@ class OpenApi:
         name = ""
         while len(schema) >= item_pos:
             item = schema_path[-item_pos]
-            name = "".join([term[0].upper() + term[1:] for term in re.split("[-_]", item)]) + name
-            if len(schema_path) > item_pos and schema_path[-(item_pos + 1)] != "properties":
+            name = (
+                "".join([term[0].upper() + term[1:] for term in re.split("[-_]", item)])
+                + name
+            )
+            if (
+                len(schema_path) > item_pos
+                and schema_path[-(item_pos + 1)] != "properties"
+            ):
                 return name
             item_pos += 2
         return name
@@ -4567,7 +5529,11 @@ class OpenApi:
             # we probably created that class in an earlier iteration, or we have a name collision here
             return self.read_json(index_filename)
         is_completable = "url" in self.get_schema(spec, schema)[1].get("properties", [])
-        parent_name = "CompletableGithubObject" if is_completable else "NonCompletableGithubObject"
+        parent_name = (
+            "CompletableGithubObject"
+            if is_completable
+            else "NonCompletableGithubObject"
+        )
         # TODO: get path from schema via indices.path_to_return_classes, get docs from spec.paths.PATH.get.externalDocs.url
         docs_url = "https://docs.github.com/en/rest"
         print(f"Drafting class {new_class_name} for new schema {schema}")
@@ -4586,7 +5552,9 @@ class OpenApi:
         )
 
         # update index
-        self.index(github_path, spec_file, index_filename, check_verbs=False, dry_run=False)
+        self.index(
+            github_path, spec_file, index_filename, check_verbs=False, dry_run=False
+        )
         index = self.read_json(index_filename)
         classes.clear()
         classes.update(**index.get("classes", {}))
@@ -4613,7 +5581,9 @@ class OpenApi:
             index = json.load(r)
 
         clazz = GithubClass.from_class_name(class_name, index)
-        print(f"Creating method {clazz.full_class_name}.{method_name} in {clazz.filename}")
+        print(
+            f"Creating method {clazz.full_class_name}.{method_name} in {clazz.filename}"
+        )
         if not os.path.exists(clazz.filename):
             raise ValueError(f"File does not exist: {clazz.filename}")
 
@@ -4642,7 +5612,13 @@ class OpenApi:
                 classes = index.get("classes", {})
                 github_path = index.get("sources")
                 new_index = self.create_class_for_schema(
-                    github_path, spec_file, index_filename, spec, classes, tests=True, schema=schema
+                    github_path,
+                    spec_file,
+                    index_filename,
+                    spec,
+                    classes,
+                    tests=True,
+                    schema=schema,
                 )
                 index.clear()
                 index.update(**new_index)
@@ -4670,8 +5646,16 @@ class OpenApi:
         # populate the method (this only works on actual file changes)
         if not dry_run:
             print("Updating index")
-            self.index(github_path, spec_file, index_filename, check_verbs=False, dry_run=False)
-            self.apply_methods(spec_file, index_filename, [f"{class_name}.{method_name}"], dry_run, rewrite=True)
+            self.index(
+                github_path, spec_file, index_filename, check_verbs=False, dry_run=False
+            )
+            self.apply_methods(
+                spec_file,
+                index_filename,
+                [f"{class_name}.{method_name}"],
+                dry_run,
+                rewrite=True,
+            )
 
         return changed
 
@@ -4682,12 +5666,23 @@ class OpenApi:
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         args_parser.add_argument(
-            "--dry-run", default=False, action="store_true", help="Show prospect changes and do not modify any files"
+            "--dry-run",
+            default=False,
+            action="store_true",
+            help="Show prospect changes and do not modify any files",
         )
         args_parser.add_argument(
-            "--exit-code", default=False, action="store_true", help="Indicate changes via non-zeor exit code"
+            "--exit-code",
+            default=False,
+            action="store_true",
+            help="Indicate changes via non-zeor exit code",
         )
-        args_parser.add_argument("--verbose", default=False, action="store_true", help="Provide more information")
+        args_parser.add_argument(
+            "--verbose",
+            default=False,
+            action="store_true",
+            help="Provide more information",
+        )
 
         subparsers = args_parser.add_subparsers(dest="subcommand")
         fetch_parser = subparsers.add_parser("fetch")
@@ -4695,47 +5690,84 @@ class OpenApi:
             "api",
             help="Github API, e.g. api.github.com, ghec, ghes-3.15. See https://github.com/github/rest-api-description/tree/main/descriptions",
         )
-        fetch_parser.add_argument("--commit", help="Specific commit to fetch file from", nargs="?")
-        fetch_parser.add_argument("api_version", help="Github API version date, e.g. 2022-11-28")
-        fetch_parser.add_argument("spec", help="Github API OpenAPI spec file to be written")
+        fetch_parser.add_argument(
+            "--commit", help="Specific commit to fetch file from", nargs="?"
+        )
+        fetch_parser.add_argument(
+            "api_version", help="Github API version date, e.g. 2022-11-28"
+        )
+        fetch_parser.add_argument(
+            "spec", help="Github API OpenAPI spec file to be written"
+        )
 
         index_parser = subparsers.add_parser("index")
-        index_parser.add_argument("--check-verbs", help="Check verbs in doc-string matches code", action="store_true")
+        index_parser.add_argument(
+            "--check-verbs",
+            help="Check verbs in doc-string matches code",
+            action="store_true",
+        )
         index_parser.add_argument("github_path", help="Path to PyGithub Python files")
-        index_parser.add_argument("spec", help="Github API OpenAPI spec file", nargs="?")
+        index_parser.add_argument(
+            "spec", help="Github API OpenAPI spec file", nargs="?"
+        )
         index_parser.add_argument("index_filename", help="Path of index file")
 
         suggest_parser = subparsers.add_parser("suggest")
-        suggest_component_parsers = suggest_parser.add_subparsers(dest="component", required=True)
+        suggest_component_parsers = suggest_parser.add_subparsers(
+            dest="component", required=True
+        )
         suggest_paths_parser = suggest_component_parsers.add_parser("paths")
         suggest_paths_parser.add_argument("spec", help="Github API OpenAPI spec file")
         suggest_paths_parser.add_argument("index_filename", help="Path of index file")
-        suggest_paths_parser.add_argument("class_name", help="Name of the class to get suggestions for", nargs="*")
+        suggest_paths_parser.add_argument(
+            "class_name", help="Name of the class to get suggestions for", nargs="*"
+        )
 
         suggest_schemas_parser = suggest_component_parsers.add_parser("schemas")
         suggest_schemas_parser.add_argument(
-            "--add", default=False, action="store_true", help="Add suggestions to source code"
+            "--add",
+            default=False,
+            action="store_true",
+            help="Add suggestions to source code",
         )
         suggest_schemas_parser.add_argument("spec", help="Github API OpenAPI spec file")
         suggest_schemas_parser.add_argument("index_filename", help="Path of index file")
-        suggest_schemas_parser.add_argument("class_name", help="Name of the class to get suggestions for", nargs="*")
+        suggest_schemas_parser.add_argument(
+            "class_name", help="Name of the class to get suggestions for", nargs="*"
+        )
 
-        apply_parser = subparsers.add_parser("apply", description="Apply schema to source code")
+        apply_parser = subparsers.add_parser(
+            "apply", description="Apply schema to source code"
+        )
         apply_area_parsers = apply_parser.add_subparsers(dest="area", required=True)
-        apply_properties_parser = apply_area_parsers.add_parser("properties", help="Apply schema to class properties")
-        apply_properties_parser.add_argument("--tests", help="Also apply spec to test files", action="store_true")
+        apply_properties_parser = apply_area_parsers.add_parser(
+            "properties", help="Apply schema to class properties"
+        )
+        apply_properties_parser.add_argument(
+            "--tests", help="Also apply spec to test files", action="store_true"
+        )
         apply_properties_parser.add_argument(
             "--new-schemas",
             type=HandleNewSchemas,
             help="How to handle attributes that return schemas that are not implemented by any PyGithub: 'ignore', 'create-class' crates class implementation drafts, 'as-dict' return dict[str, Any]). Option 'create-class' does not support --dry-run.",
             choices=list(HandleNewSchemas),
         )
-        apply_properties_parser.add_argument("github_path", help="Path to PyGithub Python files")
-        apply_properties_parser.add_argument("spec", help="Github API OpenAPI spec file")
-        apply_properties_parser.add_argument("index_filename", help="Path of index file")
-        apply_properties_parser.add_argument("class_name", help="PyGithub GithubObject class name", nargs="*")
+        apply_properties_parser.add_argument(
+            "github_path", help="Path to PyGithub Python files"
+        )
+        apply_properties_parser.add_argument(
+            "spec", help="Github API OpenAPI spec file"
+        )
+        apply_properties_parser.add_argument(
+            "index_filename", help="Path of index file"
+        )
+        apply_properties_parser.add_argument(
+            "class_name", help="PyGithub GithubObject class name", nargs="*"
+        )
 
-        apply_methods_parser = apply_area_parsers.add_parser("methods", help="Apply schema to class method")
+        apply_methods_parser = apply_area_parsers.add_parser(
+            "methods", help="Apply schema to class method"
+        )
         apply_methods_parser.add_argument(
             "--rewrite",
             help="Applying schema to methods is free to rewrite existing code. No care is taken to preserve existing documentation or avoid breaking changes.",
@@ -4749,9 +5781,15 @@ class OpenApi:
             nargs="*",
         )
 
-        create_parser = subparsers.add_parser("create", description="Create PyGithub classes and methods")
-        create_component_parsers = create_parser.add_subparsers(dest="component", required=True)
-        create_class_parser = create_component_parsers.add_parser("class", help="Create a PyGithub class")
+        create_parser = subparsers.add_parser(
+            "create", description="Create PyGithub classes and methods"
+        )
+        create_component_parsers = create_parser.add_subparsers(
+            dest="component", required=True
+        )
+        create_class_parser = create_component_parsers.add_parser(
+            "class", help="Create a PyGithub class"
+        )
         create_class_parser.add_argument(
             "--completable",
             help="New PyGithub class is completable, implies --parent CompletableGithubObject",
@@ -4761,25 +5799,37 @@ class OpenApi:
             default="NonCompletableGithubObject",
         )
         create_class_parser.add_argument("--parent", help="A parent PyGithub class")
-        create_class_parser.add_argument("--file", help="A custom filename for the PyGithub class")
-        create_class_parser.add_argument("--tests", help="Also create test file", action="store_true")
+        create_class_parser.add_argument(
+            "--file", help="A custom filename for the PyGithub class"
+        )
+        create_class_parser.add_argument(
+            "--tests", help="Also create test file", action="store_true"
+        )
         create_class_parser.add_argument(
             "--new-schemas",
             type=HandleNewSchemas,
             help="How to handle attributes that return schemas that are not implemented by any PyGithub: 'ignore', 'create-class' crates class implementation drafts, 'as-dict' return dict[str, Any]). Option 'create-class' does not support --dry-run.",
             choices=list(HandleNewSchemas),
         )
-        create_class_parser.add_argument("github_path", help="Path to PyGithub Python files")
+        create_class_parser.add_argument(
+            "github_path", help="Path to PyGithub Python files"
+        )
         create_class_parser.add_argument("spec", help="Github API OpenAPI spec file")
         create_class_parser.add_argument("index_filename", help="Path of index file")
-        create_class_parser.add_argument("class_name", help="PyGithub GithubObject class name")
+        create_class_parser.add_argument(
+            "class_name", help="PyGithub GithubObject class name"
+        )
         create_class_parser.add_argument(
             "docs_url",
             help="Github REST API documentation URL, for instance https://docs.github.com/en/rest/commits/commits#get-a-commit-object",
         )
-        create_class_parser.add_argument("schema", help="Github API OpenAPI schema name", nargs="*")
+        create_class_parser.add_argument(
+            "schema", help="Github API OpenAPI schema name", nargs="*"
+        )
 
-        create_method_parser = create_component_parsers.add_parser("method", help="Create a PyGithub method")
+        create_method_parser = create_component_parsers.add_parser(
+            "method", help="Create a PyGithub method"
+        )
         create_method_parser.add_argument(
             "--new-schemas",
             type=HandleNewSchemas,
@@ -4791,14 +5841,20 @@ class OpenApi:
             help="Return the value of this response property, instead of the entire response object",
             nargs="?",
         )
-        create_method_parser.add_argument("github_path", help="Path to PyGithub Python files")
+        create_method_parser.add_argument(
+            "github_path", help="Path to PyGithub Python files"
+        )
         create_method_parser.add_argument("spec", help="Github API OpenAPI spec file")
         create_method_parser.add_argument("index_filename", help="Path of index file")
-        create_method_parser.add_argument("class_name", help="PyGithub GithubObject class name")
+        create_method_parser.add_argument(
+            "class_name", help="PyGithub GithubObject class name"
+        )
         create_method_parser.add_argument("method_name", help="PyGithub method name")
         create_method_parser.add_argument("api_verb", help="OpenAPI verb")
         create_method_parser.add_argument("api_path", help="OpenAPI path")
-        create_method_parser.add_argument("api_response", help="OpenAPI response, e.g. 200", nargs="?")
+        create_method_parser.add_argument(
+            "api_response", help="OpenAPI response, e.g. 200", nargs="?"
+        )
 
         if len(sys.argv) == 1:
             args_parser.print_help()
@@ -4807,7 +5863,10 @@ class OpenApi:
 
         # perform some sanity checks
         params = args.__dict__
-        if params.get("dry_run", False) is True and params.get("new_schemas") == HandleNewSchemas.create_class:
+        if (
+            params.get("dry_run", False) is True
+            and params.get("new_schemas") == HandleNewSchemas.create_class
+        ):
             raise ValueError(
                 f"Cannot combine --new-schemas {HandleNewSchemas.create_class} "
                 f"(creating classes for new schemas) with --dry-run"
@@ -4818,7 +5877,9 @@ class OpenApi:
     def main(self):
         changes = False
         if args.subcommand == "fetch":
-            changes = self.fetch(self.args.api, self.args.api_version, self.args.commit, self.args.spec)
+            changes = self.fetch(
+                self.args.api, self.args.api_version, self.args.commit, self.args.spec
+            )
         elif args.subcommand == "index":
             changes = self.index(
                 self.args.github_path,
@@ -4830,11 +5891,18 @@ class OpenApi:
         elif self.args.subcommand == "suggest":
             if self.args.component == "paths":
                 changes = self.suggest_paths(
-                    self.args.spec, self.args.index_filename, self.args.class_name, self.args.dry_run
+                    self.args.spec,
+                    self.args.index_filename,
+                    self.args.class_name,
+                    self.args.dry_run,
                 )
             if self.args.component == "schemas":
                 changes = self.suggest_schemas(
-                    self.args.spec, self.args.index_filename, self.args.class_name, self.args.add, self.args.dry_run
+                    self.args.spec,
+                    self.args.index_filename,
+                    self.args.class_name,
+                    self.args.add,
+                    self.args.dry_run,
                 )
         elif self.args.subcommand == "apply":
             if self.args.area == "properties":

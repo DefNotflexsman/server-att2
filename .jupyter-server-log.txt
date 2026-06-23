@@ -42,9 +42,9 @@ Launching jupyter-lab
       File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 816, in move
         os.rename(src, real_dst)
     OSError: [Errno 18] Invalid cross-device link: '/home/jovyan/scripts' -> '/home/jovyan/requirements/scripts'
-    
+
     During handling of the above exception, another exception occurred:
-    
+
     Traceback (most recent call last):
       File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_server/services/contents/filemanager.py", line 1071, in rename_file
         await run_sync(shutil.move, old_os_path, new_os_path)
@@ -65,9 +65,9 @@ Launching jupyter-lab
       File "/srv/conda/envs/notebook/lib/python3.10/shutil.py", line 662, in _rmtree_safe_fd
         os.rmdir(entry.name, dir_fd=topfd)
     OSError: [Errno 39] Directory not empty: 'ReplayData'
-    
+
     The above exception was the direct cause of the following exception:
-    
+
     Traceback (most recent call last):
       File "/srv/conda/envs/notebook/lib/python3.10/site-packages/tornado/web.py", line 1848, in _execute
         result = await result
@@ -109,7 +109,7 @@ Launching jupyter-lab
 [I 2026-06-23 02:22:40.309 ServerApp] Uploading file to /controller.html
 [I 2026-06-23 02:22:40.316 ServerApp] Uploading file to /automate-errorfinder-admin.py
 [I 2026-06-23 02:22:40.378 ServerApp] Uploading file to /api-trace.py
-[I 2026-06-23 02:24:26.968 ServerApp] Creating new file in 
+[I 2026-06-23 02:24:26.968 ServerApp] Creating new file in
 [I 2026-06-23 02:24:36.307 ServerApp] Saving file at /index.html.txt
 [I 2026-06-23 02:32:37.177 ServerApp] Creating new file in /server-att2
 [I 2026-06-23 02:34:06.855 ServerApp] Saving file at /server-att2/glock.py

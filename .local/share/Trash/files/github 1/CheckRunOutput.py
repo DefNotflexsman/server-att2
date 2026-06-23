@@ -47,8 +47,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CheckRunOutput(NonCompletableGithubObject):
-    """
-    This class represents the output of check run.
+    """This class represents the output of check run.
 
     The OpenAPI schema can be found at
 
@@ -61,7 +60,6 @@ class CheckRunOutput(NonCompletableGithubObject):
         only GitHub Apps can use the Checks API". Because of this you may see
         empty ``.summary``, ``.text`` or ``.title`` attributes. See
         https://github.com/PyGithub/PyGithub/issues/3227
-
     """
 
     def _initAttributes(self) -> None:
@@ -96,9 +94,13 @@ class CheckRunOutput(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "annotations_count" in attributes:  # pragma no branch
-            self._annotations_count = self._makeIntAttribute(attributes["annotations_count"])
+            self._annotations_count = self._makeIntAttribute(
+                attributes["annotations_count"]
+            )
         if "annotations_url" in attributes:  # pragma no branch
-            self._annotations_url = self._makeStringAttribute(attributes["annotations_url"])
+            self._annotations_url = self._makeStringAttribute(
+                attributes["annotations_url"]
+            )
         if "summary" in attributes:  # pragma no branch
             self._summary = self._makeStringAttribute(attributes["summary"])
         if "text" in attributes:  # pragma no branch

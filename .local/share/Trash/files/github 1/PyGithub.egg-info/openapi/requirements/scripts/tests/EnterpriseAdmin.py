@@ -71,9 +71,9 @@ class EnterpriseAdmin(Framework.TestCase):
         self.assertEqual(enterprise_users_list[42][0], "beaver-user043")
 
     def testGetEnterpriseGetUsers(self):
-        enterprise_users = self.enterprise.get_consumed_licenses(licence_users_per_page=1).get_users(
-            licence_users_per_page=100
-        )
+        enterprise_users = self.enterprise.get_consumed_licenses(
+            licence_users_per_page=1
+        ).get_users(licence_users_per_page=100)
         enterprise_users_list = list(enterprise_users)
         self.assertEqual(len(enterprise_users_list), 102)
         self.assertEqual(enterprise_users_list[42].github_com_login, "beaver-user043")

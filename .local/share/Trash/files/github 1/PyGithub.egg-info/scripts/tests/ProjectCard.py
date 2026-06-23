@@ -47,9 +47,15 @@ class ProjectCard(Framework.TestCase):
         card = self.pull_card
         self.assertFalse(card.archived)
         self.assertIsNone(card.column_name)
-        self.assertEqual(card.column_url, "https://api.github.com/projects/columns/3138831")
-        self.assertEqual(card.content_url, "https://api.github.com/repos/bbi-yggy/PyGithub/issues/1")
-        self.assertEqual(card.created_at, datetime(2018, 8, 1, 4, 53, 59, tzinfo=timezone.utc))
+        self.assertEqual(
+            card.column_url, "https://api.github.com/projects/columns/3138831"
+        )
+        self.assertEqual(
+            card.content_url, "https://api.github.com/repos/bbi-yggy/PyGithub/issues/1"
+        )
+        self.assertEqual(
+            card.created_at, datetime(2018, 8, 1, 4, 53, 59, tzinfo=timezone.utc)
+        )
         self.assertEqual(card.creator, self.repo.owner)
         self.assertEqual(card.created_at.year, 2018)
         self.assertEqual(card.id, 11780055)
@@ -57,14 +63,20 @@ class ProjectCard(Framework.TestCase):
         self.assertIsNone(card.note, None)
         self.assertIsNone(card.project_id)
         self.assertIsNone(card.project_url)
-        self.assertEqual(card.updated_at, datetime(2018, 8, 1, 4, 54, 16, tzinfo=timezone.utc))
-        self.assertEqual(card.url, "https://api.github.com/projects/columns/cards/11780055")
+        self.assertEqual(
+            card.updated_at, datetime(2018, 8, 1, 4, 54, 16, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            card.url, "https://api.github.com/projects/columns/cards/11780055"
+        )
         self.assertEqual(repr(card), "ProjectCard(id=11780055)")
 
     def testGetContent(self):
         pull = self.pull_card.get_content("PullRequest")
         self.assertIsInstance(pull, github.PullRequest.PullRequest)
-        self.assertEqual(pull.title, "Work in progress on support for GitHub projects API.")
+        self.assertEqual(
+            pull.title, "Work in progress on support for GitHub projects API."
+        )
         self.assertRaises(ValueError, self.pull_card.get_content, "foo")
 
         issue = self.issue_card.get_content()
@@ -98,7 +110,9 @@ class ProjectCard(Framework.TestCase):
         self.assertEqual(cards, expectedCards)
 
     def testCreateWithNote(self):
-        project = self.repo.create_project("Project created by PyGithub", "Project Body")
+        project = self.repo.create_project(
+            "Project created by PyGithub", "Project Body"
+        )
         column = project.create_column(
             "Project Column created by PyGithub",
         )
@@ -106,7 +120,9 @@ class ProjectCard(Framework.TestCase):
         self.assertEqual(card1.id, 16039019)
 
     def testCreateFromIssue(self):
-        project = self.repo.create_project("Project created by PyGithub", "Project Body")
+        project = self.repo.create_project(
+            "Project created by PyGithub", "Project Body"
+        )
         column = project.create_column(
             "Project Column created by PyGithub",
         )

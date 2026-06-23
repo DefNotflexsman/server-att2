@@ -51,8 +51,7 @@ if TYPE_CHECKING:
 
 
 class RateLimit(NonCompletableGithubObject):
-    """
-    This class represents RateLimits.
+    """This class represents RateLimits.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/rate-limit
@@ -60,7 +59,6 @@ class RateLimit(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/rate-limit-overview/properties/resources
-
     """
 
     def _initAttributes(self) -> None:
@@ -82,9 +80,7 @@ class RateLimit(NonCompletableGithubObject):
 
     @property
     def actions_runner_registration(self) -> Rate:
-        """
-        Rate limit for registering self-hosted runners in GitHub Actions.
-        """
+        """Rate limit for registering self-hosted runners in GitHub Actions."""
         return self._actions_runner_registration.value
 
     @property
@@ -93,23 +89,17 @@ class RateLimit(NonCompletableGithubObject):
 
     @property
     def code_scanning_upload(self) -> Rate:
-        """
-        Rate limit for uploading SARIF results to code scanning.
-        """
+        """Rate limit for uploading SARIF results to code scanning."""
         return self._code_scanning_upload.value
 
     @property
     def code_search(self) -> Rate:
-        """
-        Rate limit for the REST API for searching code.
-        """
+        """Rate limit for the REST API for searching code."""
         return self._code_search.value
 
     @property
     def core(self) -> Rate:
-        """
-        Rate limit for the non-search-related API.
-        """
+        """Rate limit for the non-search-related API."""
         return self._core.value
 
     @property
@@ -118,23 +108,17 @@ class RateLimit(NonCompletableGithubObject):
 
     @property
     def dependency_snapshots(self) -> Rate:
-        """
-        Rate limit for submitting snapshots to the dependency graph.
-        """
+        """Rate limit for submitting snapshots to the dependency graph."""
         return self._dependency_snapshots.value
 
     @property
     def graphql(self) -> Rate:
-        """
-        (Experimental) Rate limit for GraphQL API, use with caution.
-        """
+        """(Experimental) Rate limit for GraphQL API, use with caution."""
         return self._graphql.value
 
     @property
     def integration_manifest(self) -> Rate:
-        """
-        Rate limit for POST /app-manifests/{code}/conversions operation.
-        """
+        """Rate limit for POST /app-manifests/{code}/conversions operation."""
         return self._integration_manifest.value
 
     @property
@@ -143,9 +127,7 @@ class RateLimit(NonCompletableGithubObject):
 
     @property
     def search(self) -> Rate:
-        """
-        Rate limit for the Search API.
-        """
+        """Rate limit for the Search API."""
         return self._search.value
 
     @property
@@ -162,22 +144,38 @@ class RateLimit(NonCompletableGithubObject):
                 github.Rate.Rate, attributes["code_scanning_autofix"]
             )
         if "code_scanning_upload" in attributes:  # pragma no branch
-            self._code_scanning_upload = self._makeClassAttribute(github.Rate.Rate, attributes["code_scanning_upload"])
+            self._code_scanning_upload = self._makeClassAttribute(
+                github.Rate.Rate, attributes["code_scanning_upload"]
+            )
         if "code_search" in attributes:  # pragma no branch
-            self._code_search = self._makeClassAttribute(github.Rate.Rate, attributes["code_search"])
+            self._code_search = self._makeClassAttribute(
+                github.Rate.Rate, attributes["code_search"]
+            )
         if "core" in attributes:  # pragma no branch
             self._core = self._makeClassAttribute(github.Rate.Rate, attributes["core"])
         if "dependency_sbom" in attributes:  # pragma no branch
-            self._dependency_sbom = self._makeClassAttribute(github.Rate.Rate, attributes["dependency_sbom"])
+            self._dependency_sbom = self._makeClassAttribute(
+                github.Rate.Rate, attributes["dependency_sbom"]
+            )
         if "dependency_snapshots" in attributes:  # pragma no branch
-            self._dependency_snapshots = self._makeClassAttribute(github.Rate.Rate, attributes["dependency_snapshots"])
+            self._dependency_snapshots = self._makeClassAttribute(
+                github.Rate.Rate, attributes["dependency_snapshots"]
+            )
         if "graphql" in attributes:  # pragma no branch
-            self._graphql = self._makeClassAttribute(github.Rate.Rate, attributes["graphql"])
+            self._graphql = self._makeClassAttribute(
+                github.Rate.Rate, attributes["graphql"]
+            )
         if "integration_manifest" in attributes:  # pragma no branch
-            self._integration_manifest = self._makeClassAttribute(github.Rate.Rate, attributes["integration_manifest"])
+            self._integration_manifest = self._makeClassAttribute(
+                github.Rate.Rate, attributes["integration_manifest"]
+            )
         if "scim" in attributes:  # pragma no branch
             self._scim = self._makeClassAttribute(github.Rate.Rate, attributes["scim"])
         if "search" in attributes:  # pragma no branch
-            self._search = self._makeClassAttribute(github.Rate.Rate, attributes["search"])
+            self._search = self._makeClassAttribute(
+                github.Rate.Rate, attributes["search"]
+            )
         if "source_import" in attributes:  # pragma no branch
-            self._source_import = self._makeClassAttribute(github.Rate.Rate, attributes["source_import"])
+            self._source_import = self._makeClassAttribute(
+                github.Rate.Rate, attributes["source_import"]
+            )

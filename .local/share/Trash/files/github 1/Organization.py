@@ -159,15 +159,16 @@ if TYPE_CHECKING:
     from github.PublicKey import PublicKey
     from github.Repository import Repository
     from github.SelfHostedActionsRunner import SelfHostedActionsRunner
-    from github.SelfHostedActionsRunnerApplication import SelfHostedActionsRunnerApplication
+    from github.SelfHostedActionsRunnerApplication import (
+        SelfHostedActionsRunnerApplication,
+    )
     from github.SelfHostedActionsRunnerJitConfig import SelfHostedActionsRunnerJitConfig
     from github.SelfHostedActionsRunnerToken import SelfHostedActionsRunnerToken
     from github.Team import Team
 
 
 class Organization(CompletableGithubObject):
-    """
-    This class represents Organizations.
+    """This class represents Organizations.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/orgs
@@ -180,7 +181,6 @@ class Organization(CompletableGithubObject):
     - /components/schemas/organization-full
     - /components/schemas/organization-simple
     - /components/schemas/team-organization
-
     """
 
     def _initAttributes(self) -> None:
@@ -195,7 +195,9 @@ class Organization(CompletableGithubObject):
         self._default_repository_branch: Attribute[str] = NotSet
         self._default_repository_permission: Attribute[str] = NotSet
         self._dependabot_alerts_enabled_for_new_repositories: Attribute[bool] = NotSet
-        self._dependabot_security_updates_enabled_for_new_repositories: Attribute[bool] = NotSet
+        self._dependabot_security_updates_enabled_for_new_repositories: Attribute[
+            bool
+        ] = NotSet
         self._dependency_graph_enabled_for_new_repositories: Attribute[bool] = NotSet
         self._deploy_keys_enabled_for_repositories: Attribute[bool] = NotSet
         self._description: Attribute[str] = NotSet
@@ -249,8 +251,12 @@ class Organization(CompletableGithubObject):
         self._repos_url: Attribute[str] = NotSet
         self._secret_scanning_enabled_for_new_repositories: Attribute[bool] = NotSet
         self._secret_scanning_push_protection_custom_link: Attribute[str] = NotSet
-        self._secret_scanning_push_protection_custom_link_enabled: Attribute[bool] = NotSet
-        self._secret_scanning_push_protection_enabled_for_new_repositories: Attribute[bool] = NotSet
+        self._secret_scanning_push_protection_custom_link_enabled: Attribute[
+            bool
+        ] = NotSet
+        self._secret_scanning_push_protection_enabled_for_new_repositories: Attribute[
+            bool
+        ] = NotSet
         self._site_admin: Attribute[bool] = NotSet
         self._starred_at: Attribute[str] = NotSet
         self._starred_url: Attribute[str] = NotSet
@@ -324,7 +330,9 @@ class Organization(CompletableGithubObject):
 
     @property
     def dependabot_security_updates_enabled_for_new_repositories(self) -> bool:
-        self._completeIfNotSet(self._dependabot_security_updates_enabled_for_new_repositories)
+        self._completeIfNotSet(
+            self._dependabot_security_updates_enabled_for_new_repositories
+        )
         return self._dependabot_security_updates_enabled_for_new_repositories.value
 
     @property
@@ -594,12 +602,16 @@ class Organization(CompletableGithubObject):
 
     @property
     def secret_scanning_push_protection_custom_link_enabled(self) -> bool:
-        self._completeIfNotSet(self._secret_scanning_push_protection_custom_link_enabled)
+        self._completeIfNotSet(
+            self._secret_scanning_push_protection_custom_link_enabled
+        )
         return self._secret_scanning_push_protection_custom_link_enabled.value
 
     @property
     def secret_scanning_push_protection_enabled_for_new_repositories(self) -> bool:
-        self._completeIfNotSet(self._secret_scanning_push_protection_enabled_for_new_repositories)
+        self._completeIfNotSet(
+            self._secret_scanning_push_protection_enabled_for_new_repositories
+        )
         return self._secret_scanning_push_protection_enabled_for_new_repositories.value
 
     @property
@@ -730,7 +742,9 @@ class Organization(CompletableGithubObject):
             input=post_parameters,
             headers={"Accept": "application/vnd.github.v3+json"},
         )
-        return github.Repository.Repository(self._requester, headers, data, completed=True)
+        return github.Repository.Repository(
+            self._requester, headers, data, completed=True
+        )
 
     def create_hook(
         self,
@@ -759,7 +773,9 @@ class Organization(CompletableGithubObject):
                 "active": active,
             }
         )
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/hooks", input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/hooks", input=post_parameters
+        )
         return github.Hook.Hook(self._requester, headers, data, completed=True)
 
     def create_project(self, name: str, body: Opt[str] = NotSet) -> Project:
@@ -768,7 +784,9 @@ class Organization(CompletableGithubObject):
         """
         assert isinstance(name, str), name
         assert is_optional(body, str), body
-        post_parameters: dict[str, Any] = NotSet.remove_unset_items({"name": name, "body": body})
+        post_parameters: dict[str, Any] = NotSet.remove_unset_items(
+            {"name": name, "body": body}
+        )
 
         headers, data = self._requester.requestJsonAndCheck(
             "POST",
@@ -830,16 +848,31 @@ class Organization(CompletableGithubObject):
         assert is_optional(allow_update_branch, bool), allow_update_branch
         assert is_optional(is_template, bool), is_template
         assert is_optional(allow_auto_merge, bool), allow_auto_merge
-        assert is_optional(use_squash_pr_title_as_default, bool), use_squash_pr_title_as_default
-        assert squash_merge_commit_title in ["PR_TITLE", "COMMIT_OR_PR_TITLE", NotSet], squash_merge_commit_title
+        assert is_optional(
+            use_squash_pr_title_as_default, bool
+        ), use_squash_pr_title_as_default
+        assert squash_merge_commit_title in [
+            "PR_TITLE",
+            "COMMIT_OR_PR_TITLE",
+            NotSet,
+        ], squash_merge_commit_title
         assert squash_merge_commit_message in [
             "PR_BODY",
             "COMMIT_MESSAGES",
             "BLANK",
             NotSet,
         ], squash_merge_commit_message
-        assert merge_commit_title in ["PR_TITLE", "MERGE_MESSAGE", NotSet], merge_commit_title
-        assert merge_commit_message in ["PR_TITLE", "PR_BODY", "BLANK", NotSet], merge_commit_message
+        assert merge_commit_title in [
+            "PR_TITLE",
+            "MERGE_MESSAGE",
+            NotSet,
+        ], merge_commit_title
+        assert merge_commit_message in [
+            "PR_TITLE",
+            "PR_BODY",
+            "BLANK",
+            NotSet,
+        ], merge_commit_message
         assert is_optional(custom_properties, dict), custom_properties
         post_parameters = NotSet.remove_unset_items(
             {
@@ -878,7 +911,9 @@ class Organization(CompletableGithubObject):
             input=post_parameters,
             headers={"Accept": Consts.repoVisibilityPreview},
         )
-        return github.Repository.Repository(self._requester, headers, data, completed=True)
+        return github.Repository.Repository(
+            self._requester, headers, data, completed=True
+        )
 
     def create_secret(
         self,
@@ -901,12 +936,18 @@ class Organization(CompletableGithubObject):
         assert isinstance(secret_name, str), secret_name
         assert isinstance(unencrypted_value, str), unencrypted_value
         assert isinstance(visibility, str), visibility
-        assert is_optional_list(selected_repositories, github.Repository.Repository), selected_repositories
-        assert secret_type in ["actions", "dependabot"], "secret_type should be actions or dependabot"
+        assert is_optional_list(
+            selected_repositories, github.Repository.Repository
+        ), selected_repositories
+        assert secret_type in [
+            "actions",
+            "dependabot",
+        ], "secret_type should be actions or dependabot"
 
         if visibility == "selected":
             assert isinstance(selected_repositories, list) and all(
-                isinstance(element, github.Repository.Repository) for element in selected_repositories
+                isinstance(element, github.Repository.Repository)
+                for element in selected_repositories
             ), selected_repositories
         else:
             assert selected_repositories is NotSet
@@ -923,9 +964,13 @@ class Organization(CompletableGithubObject):
             # https://docs.github.com/en/rest/dependabot/secrets?apiVersion=2022-11-28#create-or-update-an-organization-secret
             # https://docs.github.com/en/rest/actions/secrets?apiVersion=2022-11-28#create-or-update-an-organization-secret
             if secret_type == "actions":
-                put_parameters["selected_repository_ids"] = [element.id for element in selected_repositories]
+                put_parameters["selected_repository_ids"] = [
+                    element.id for element in selected_repositories
+                ]
             if secret_type == "dependabot":
-                put_parameters["selected_repository_ids"] = [str(element.id) for element in selected_repositories]
+                put_parameters["selected_repository_ids"] = [
+                    str(element.id) for element in selected_repositories
+                ]
 
         quoted_secret_name = urllib.parse.quote(secret_name, safe="")
         url = f"{self.url}/{secret_type}/secrets/{quoted_secret_name}"
@@ -942,16 +987,21 @@ class Organization(CompletableGithubObject):
             completed=False,
         )
 
-    def get_secrets(self, secret_type: str = "actions") -> PaginatedList[OrganizationSecret]:
-        """
-        Gets all organization secrets :param secret_type: string options actions or dependabot :rtype:
+    def get_secrets(
+        self, secret_type: str = "actions"
+    ) -> PaginatedList[OrganizationSecret]:
+        """Gets all organization secrets :param secret_type: string options
+        actions or dependabot :rtype:
 
-        :calls: `GET /orgs/{org}/actions/secrets <https://docs.github.com/rest/actions/secrets#list-organization-
+        :calls: `GET /orgs/{org}/actions/secrets
+        <https://docs.github.com/rest/actions/secrets#list-organization-
         secrets>`_ :calls: `GET /orgs/{org}/dependabot/secrets
         <https://docs.github.com/rest/dependabot/secrets#list-organization-secrets>`_
-
         """
-        assert secret_type in ["actions", "dependabot"], "secret_type should be actions or dependabot"
+        assert secret_type in [
+            "actions",
+            "dependabot",
+        ], "secret_type should be actions or dependabot"
         return PaginatedList(
             github.OrganizationSecret.OrganizationSecret,
             self._requester,
@@ -960,7 +1010,9 @@ class Organization(CompletableGithubObject):
             list_item="secrets",
         )
 
-    def get_secret(self, secret_name: str, secret_type: str = "actions") -> OrganizationSecret:
+    def get_secret(
+        self, secret_name: str, secret_type: str = "actions"
+    ) -> OrganizationSecret:
         """
         :calls: `GET /orgs/{org}/actions/secrets/{secret_name} <https://docs.github.com/rest/actions/secrets#get-an-organization-secret>`_
         :calls: `GET /orgs/{org}/dependabot/secrets/{secret_name} <https://docs.github.com/rest/actions/secrets#get-an-organization-secret>`_
@@ -969,7 +1021,10 @@ class Organization(CompletableGithubObject):
         :rtype: github.OrganizationSecret.OrganizationSecret
         """
         assert isinstance(secret_name, str), secret_name
-        assert secret_type in ["actions", "dependabot"], "secret_type should be actions or dependabot"
+        assert secret_type in [
+            "actions",
+            "dependabot",
+        ], "secret_type should be actions or dependabot"
         secret_name = urllib.parse.quote(secret_name, safe="")
         url = f"{self.url}/{secret_type}/secrets/{secret_name}"
         return github.OrganizationSecret.OrganizationSecret(self._requester, url=url)
@@ -1004,7 +1059,11 @@ class Organization(CompletableGithubObject):
         assert is_optional(permission, str), permission
         assert is_optional(privacy, str), privacy
         assert is_optional(description, str), description
-        assert notification_setting in ["notifications_enabled", "notifications_disabled", NotSet], notification_setting
+        assert notification_setting in [
+            "notifications_enabled",
+            "notifications_disabled",
+            NotSet,
+        ], notification_setting
         post_parameters: dict[str, Any] = NotSet.remove_unset_items(
             {
                 "name": name,
@@ -1017,8 +1076,12 @@ class Organization(CompletableGithubObject):
             }
         )
         if is_defined(repo_names):
-            post_parameters["repo_names"] = [element._identity for element in repo_names]
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/teams", input=post_parameters)
+            post_parameters["repo_names"] = [
+                element._identity for element in repo_names
+            ]
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/teams", input=post_parameters
+        )
         return github.Team.Team(self._requester, headers, data, completed=True)
 
     def create_variable(
@@ -1041,7 +1104,8 @@ class Organization(CompletableGithubObject):
         assert isinstance(visibility, str), visibility
         if visibility == "selected":
             assert isinstance(selected_repositories, list) and all(
-                isinstance(element, github.Repository.Repository) for element in selected_repositories
+                isinstance(element, github.Repository.Repository)
+                for element in selected_repositories
             ), selected_repositories
         else:
             assert selected_repositories is NotSet
@@ -1052,9 +1116,13 @@ class Organization(CompletableGithubObject):
             "visibility": visibility,
         }
         if is_defined(selected_repositories):
-            post_parameters["selected_repository_ids"] = [element.id for element in selected_repositories]
+            post_parameters["selected_repository_ids"] = [
+                element.id for element in selected_repositories
+            ]
 
-        self._requester.requestJsonAndCheck("POST", f"{self.url}/actions/variables", input=post_parameters)
+        self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/actions/variables", input=post_parameters
+        )
 
         quoted_variable_name = urllib.parse.quote(variable_name, safe="")
         url = f"{self.url}/actions/variables/{quoted_variable_name}"
@@ -1072,10 +1140,8 @@ class Organization(CompletableGithubObject):
         )
 
     def get_variables(self) -> PaginatedList[OrganizationVariable]:
-        """
-        Gets all organization variables :rtype: :class:`PaginatedList` of
-        :class:`github.OrganizationVariable.OrganizationVariable`
-        """
+        """Gets all organization variables :rtype: :class:`PaginatedList` of
+        :class:`github.OrganizationVariable.OrganizationVariable`"""
         return PaginatedList(
             github.OrganizationVariable.OrganizationVariable,
             self._requester,
@@ -1093,7 +1159,9 @@ class Organization(CompletableGithubObject):
         assert isinstance(variable_name, str), variable_name
         variable_name = urllib.parse.quote(variable_name, safe="")
         url = f"{self.url}/actions/variables/{variable_name}"
-        return github.OrganizationVariable.OrganizationVariable(self._requester, url=url)
+        return github.OrganizationVariable.OrganizationVariable(
+            self._requester, url=url
+        )
 
     def delete_hook(self, id: int) -> None:
         """
@@ -1102,7 +1170,9 @@ class Organization(CompletableGithubObject):
         :rtype: None`
         """
         assert isinstance(id, int), id
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/hooks/{id}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/hooks/{id}"
+        )
 
     def edit(
         self,
@@ -1136,7 +1206,9 @@ class Organization(CompletableGithubObject):
             }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -1161,7 +1233,9 @@ class Organization(CompletableGithubObject):
             {"name": name, "config": config, "events": events, "active": active}
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", f"{self.url}/hooks/{id}", input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", f"{self.url}/hooks/{id}", input=post_parameters
+        )
         return github.Hook.Hook(self._requester, headers, data, completed=True)
 
     def get_events(self) -> PaginatedList[Event]:
@@ -1169,7 +1243,9 @@ class Organization(CompletableGithubObject):
         :calls: `GET /orgs/{org}/events <https://docs.github.com/en/rest/reference/activity#events>`_
         :rtype: :class:`PaginatedList` of :class:`github.Event.Event`
         """
-        return PaginatedList(github.Event.Event, self._requester, f"{self.url}/events", None)
+        return PaginatedList(
+            github.Event.Event, self._requester, f"{self.url}/events", None
+        )
 
     def get_hook(self, id: int) -> Hook:
         """
@@ -1183,7 +1259,9 @@ class Organization(CompletableGithubObject):
         """
         :calls: `GET /orgs/{org}/hooks <https://docs.github.com/en/rest/reference/orgs#webhooks>`_
         """
-        return PaginatedList(github.Hook.Hook, self._requester, f"{self.url}/hooks", None)
+        return PaginatedList(
+            github.Hook.Hook, self._requester, f"{self.url}/hooks", None
+        )
 
     def get_hook_delivery(self, hook_id: int, delivery_id: int) -> HookDelivery:
         """
@@ -1246,7 +1324,9 @@ class Organization(CompletableGithubObject):
             url_parameters["labels"] = ",".join(label.name for label in labels)
         if is_defined(since):
             url_parameters["since"] = since.strftime("%Y-%m-%dT%H:%M:%SZ")
-        return PaginatedList(github.Issue.Issue, self._requester, f"{self.url}/issues", url_parameters)
+        return PaginatedList(
+            github.Issue.Issue, self._requester, f"{self.url}/issues", url_parameters
+        )
 
     def get_members(
         self,
@@ -1295,7 +1375,9 @@ class Organization(CompletableGithubObject):
             None,
         )
 
-    def get_outside_collaborators(self, filter_: Opt[str] = NotSet) -> PaginatedList[NamedUser]:
+    def get_outside_collaborators(
+        self, filter_: Opt[str] = NotSet
+    ) -> PaginatedList[NamedUser]:
         """
         :calls: `GET /orgs/{org}/outside_collaborators <https://docs.github.com/en/rest/reference/orgs#outside-collaborators>`_
         """
@@ -1338,15 +1420,17 @@ class Organization(CompletableGithubObject):
         :param secret_type: string options actions or dependabot
         :rtype: :class:`github.PublicKey.PublicKey`
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.url}/{secret_type}/secrets/public-key")
-        return github.PublicKey.PublicKey(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.url}/{secret_type}/secrets/public-key"
+        )
+        return github.PublicKey.PublicKey(
+            self._requester, headers, data, completed=True
+        )
 
     def get_copilot(self) -> Copilot:
-        """
-        Provides various Copilot-related endpoints for this organization.
+        """Provides various Copilot-related endpoints for this organization.
 
         :rtype: :class:`github.Copilot.Copilot`
-
         """
         return github.Copilot.Copilot(self._requester, self.login)
 
@@ -1359,7 +1443,9 @@ class Organization(CompletableGithubObject):
         assert isinstance(name, str), name
         name = urllib.parse.quote(name, safe="")
         url = f"/repos/{self.login}/{name}"
-        return github.Repository.Repository(self._requester, url=url, accept=Consts.repoVisibilityPreview)
+        return github.Repository.Repository(
+            self._requester, url=url, accept=Consts.repoVisibilityPreview
+        )
 
     def get_repos(
         self,
@@ -1377,7 +1463,9 @@ class Organization(CompletableGithubObject):
         assert is_optional(sort, str), sort
         assert is_optional(direction, str), direction
 
-        url_parameters = NotSet.remove_unset_items({"type": type, "sort": sort, "direction": direction})
+        url_parameters = NotSet.remove_unset_items(
+            {"type": type, "sort": sort, "direction": direction}
+        )
 
         return PaginatedList(
             github.Repository.Repository,
@@ -1408,7 +1496,9 @@ class Organization(CompletableGithubObject):
         """
         :calls: `GET /orgs/{org}/teams <https://docs.github.com/en/rest/reference/teams#list-teams>`_
         """
-        return PaginatedList(github.Team.Team, self._requester, f"{self.url}/teams", None)
+        return PaginatedList(
+            github.Team.Team, self._requester, f"{self.url}/teams", None
+        )
 
     def invitations(self) -> PaginatedList[OrganizationInvitation]:
         """
@@ -1439,12 +1529,20 @@ class Organization(CompletableGithubObject):
         """
         assert is_optional(user, github.NamedUser.NamedUser), user
         assert is_optional(email, str), email
-        assert is_defined(email) != is_defined(user), "specify only one of email or user"
+        assert is_defined(email) != is_defined(
+            user
+        ), "specify only one of email or user"
 
-        assert is_undefined(role) or role in ["admin", "direct_member", "billing_manager"], role
+        assert is_undefined(role) or role in [
+            "admin",
+            "direct_member",
+            "billing_manager",
+        ], role
         assert is_optional_list(teams, github.Team.Team), teams
 
-        parameters: dict[str, Any] = NotSet.remove_unset_items({"email": email, "role": role})
+        parameters: dict[str, Any] = NotSet.remove_unset_items(
+            {"email": email, "role": role}
+        )
 
         if is_defined(user):
             parameters["invitee_id"] = user.id
@@ -1465,7 +1563,9 @@ class Organization(CompletableGithubObject):
         :rtype: bool
         """
         assert isinstance(invitee, github.NamedUser.NamedUser), invitee
-        status, headers, data = self._requester.requestJson("DELETE", f"{self.url}/invitations/{invitee.id}")
+        status, headers, data = self._requester.requestJson(
+            "DELETE", f"{self.url}/invitations/{invitee.id}"
+        )
         return status == 204
 
     def has_in_members(self, member: NamedUser) -> bool:
@@ -1475,9 +1575,13 @@ class Organization(CompletableGithubObject):
         :rtype: bool
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        status, headers, data = self._requester.requestJson("GET", f"{self.url}/members/{member._identity}")
+        status, headers, data = self._requester.requestJson(
+            "GET", f"{self.url}/members/{member._identity}"
+        )
         if status == 302:
-            status, headers, data = self._requester.requestJson("GET", headers["location"])
+            status, headers, data = self._requester.requestJson(
+                "GET", headers["location"]
+            )
         return status == 204
 
     def has_in_public_members(self, public_member: NamedUser) -> bool:
@@ -1499,7 +1603,9 @@ class Organization(CompletableGithubObject):
         :rtype: None
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/memberships/{member._identity}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/memberships/{member._identity}"
+        )
 
     def remove_from_members(self, member: NamedUser) -> None:
         """
@@ -1508,7 +1614,9 @@ class Organization(CompletableGithubObject):
         :rtype: None
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/members/{member._identity}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/members/{member._identity}"
+        )
 
     def remove_from_public_members(self, public_member: NamedUser) -> None:
         """
@@ -1552,7 +1660,9 @@ class Organization(CompletableGithubObject):
             input=post_parameters,
             headers={"Accept": Consts.mediaTypeMigrationPreview},
         )
-        return github.Migration.Migration(self._requester, headers, data, completed=True)
+        return github.Migration.Migration(
+            self._requester, headers, data, completed=True
+        )
 
     def get_migrations(self) -> PaginatedList[Migration]:
         """
@@ -1605,16 +1715,38 @@ class Organization(CompletableGithubObject):
         """
         allowed_states = ["auto_dismissed", "dismissed", "fixed", "open"]
         allowed_severities = ["low", "medium", "high", "critical"]
-        allowed_ecosystems = ["composer", "go", "maven", "npm", "nuget", "pip", "pub", "rubygems", "rust"]
+        allowed_ecosystems = [
+            "composer",
+            "go",
+            "maven",
+            "npm",
+            "nuget",
+            "pip",
+            "pub",
+            "rubygems",
+            "rust",
+        ]
         allowed_scopes = ["development", "runtime"]
         allowed_sorts = ["created", "updated"]
         allowed_directions = ["asc", "desc"]
-        assert state in allowed_states + [NotSet], f"State can be one of {', '.join(allowed_states)}"
-        assert severity in allowed_severities + [NotSet], f"Severity can be one of {', '.join(allowed_severities)}"
-        assert ecosystem in allowed_ecosystems + [NotSet], f"Ecosystem can be one of {', '.join(allowed_ecosystems)}"
-        assert scope in allowed_scopes + [NotSet], f"Scope can be one of {', '.join(allowed_scopes)}"
-        assert sort in allowed_sorts + [NotSet], f"Sort can be one of {', '.join(allowed_sorts)}"
-        assert direction in allowed_directions + [NotSet], f"Direction can be one of {', '.join(allowed_directions)}"
+        assert state in allowed_states + [
+            NotSet
+        ], f"State can be one of {', '.join(allowed_states)}"
+        assert severity in allowed_severities + [
+            NotSet
+        ], f"Severity can be one of {', '.join(allowed_severities)}"
+        assert ecosystem in allowed_ecosystems + [
+            NotSet
+        ], f"Ecosystem can be one of {', '.join(allowed_ecosystems)}"
+        assert scope in allowed_scopes + [
+            NotSet
+        ], f"Scope can be one of {', '.join(allowed_scopes)}"
+        assert sort in allowed_sorts + [
+            NotSet
+        ], f"Sort can be one of {', '.join(allowed_sorts)}"
+        assert direction in allowed_directions + [
+            NotSet
+        ], f"Direction can be one of {', '.join(allowed_directions)}"
         url_parameters = NotSet.remove_unset_items(
             {
                 "state": state,
@@ -1659,7 +1791,15 @@ class Organization(CompletableGithubObject):
         allowed_sorts = ["created", "updated"]
         allowed_directions = ["asc", "desc"]
         allowed_states = ["open", "closed", "dismissed", "fixed"]
-        allowed_severities = ["critical", "high", "medium", "low", "warning", "note", "error"]
+        allowed_severities = [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "warning",
+            "note",
+            "error",
+        ]
         assert is_optional(tool_name, str), tool_name
         assert is_optional(tool_guid, str), tool_guid
         assert (
@@ -1667,10 +1807,18 @@ class Organization(CompletableGithubObject):
         ), "You can specify the tool by using either tool_guid or tool_name, but not both."
         assert is_optional(ref, str), ref
         assert is_optional(pr, int), pr
-        assert sort in allowed_sorts + [NotSet], f"Sort can be one of {', '.join(allowed_sorts)}"
-        assert direction in allowed_directions + [NotSet], f"Direction can be one of {', '.join(allowed_directions)}"
-        assert state in allowed_states + [NotSet], f"State can be one of {', '.join(allowed_states)}"
-        assert severity in allowed_severities + [NotSet], f"Severity can be one of {', '.join(allowed_severities)}"
+        assert sort in allowed_sorts + [
+            NotSet
+        ], f"Sort can be one of {', '.join(allowed_sorts)}"
+        assert direction in allowed_directions + [
+            NotSet
+        ], f"Direction can be one of {', '.join(allowed_directions)}"
+        assert state in allowed_states + [
+            NotSet
+        ], f"State can be one of {', '.join(allowed_states)}"
+        assert severity in allowed_severities + [
+            NotSet
+        ], f"Severity can be one of {', '.join(allowed_severities)}"
         url_parameters = NotSet.remove_unset_items(
             {
                 "tool_name": tool_name,
@@ -1728,16 +1876,24 @@ class Organization(CompletableGithubObject):
         allowed_sorts = ["created", "updated"]
         allowed_directions = ["asc", "desc"]
         allowed_validities = ["active", "inactive", "unknown"]
-        assert state in allowed_states + [NotSet], f"State can be one of {', '.join(allowed_states)}"
+        assert state in allowed_states + [
+            NotSet
+        ], f"State can be one of {', '.join(allowed_states)}"
         # assert secret_type in allowed_secret_types + [NotSet], \
         # "Secret_type can be one of the tokens listed on \
         # https://docs.github.com/en/code-security/secret-scanning/introduction/supported-secret-scanning-patterns#supported-secrets"
         assert resolution in allowed_resolutions + [
             NotSet
         ], f"Resolution can be one of {', '.join(allowed_resolutions)}"
-        assert sort in allowed_sorts + [NotSet], f"Sort can be one of {', '.join(allowed_sorts)}"
-        assert direction in allowed_directions + [NotSet], f"Direction can be one of {', '.join(allowed_directions)}"
-        assert validity in allowed_validities + [NotSet], f"Validity can be one of {', '.join(allowed_validities)}"
+        assert sort in allowed_sorts + [
+            NotSet
+        ], f"Sort can be one of {', '.join(allowed_sorts)}"
+        assert direction in allowed_directions + [
+            NotSet
+        ], f"Direction can be one of {', '.join(allowed_directions)}"
+        assert validity in allowed_validities + [
+            NotSet
+        ], f"Validity can be one of {', '.join(allowed_validities)}"
         assert is_optional(is_publicly_leaked, bool), is_publicly_leaked
         assert is_optional(is_multi_repo, bool), is_multi_repo
         assert is_optional(hide_secret, bool), hide_secret
@@ -1789,7 +1945,9 @@ class Organization(CompletableGithubObject):
             attributes=data,
         )
 
-    def create_custom_properties(self, properties: list[CustomProperty]) -> list[OrganizationCustomProperty]:
+    def create_custom_properties(
+        self, properties: list[CustomProperty]
+    ) -> list[OrganizationCustomProperty]:
         """
         Create or update custom properties for an organization
         :calls: `PATCH /orgs/{org}/properties/schema <https://docs.github.com/en/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization>`_
@@ -1797,7 +1955,10 @@ class Organization(CompletableGithubObject):
         :rtype: list of :class:`github.OrganizationCustomProperty.OrganizationCustomProperty`
         """
         assert isinstance(properties, list), properties
-        assert all(isinstance(p, github.OrganizationCustomProperty.CustomProperty) for p in properties), properties
+        assert all(
+            isinstance(p, github.OrganizationCustomProperty.CustomProperty)
+            for p in properties
+        ), properties
         patch_parameters = {"properties": [p.to_dict() for p in properties]}
         headers, data = self._requester.requestJsonAndCheck(
             "PATCH", f"{self.url}/properties/schema", input=patch_parameters
@@ -1809,20 +1970,26 @@ class Organization(CompletableGithubObject):
             for property in data
         ]
 
-    def create_custom_property(self, property: CustomProperty) -> OrganizationCustomProperty:
+    def create_custom_property(
+        self, property: CustomProperty
+    ) -> OrganizationCustomProperty:
         """
         Create or update a custom property for an organization
         :calls: `PUT /orgs/{org}/properties/schema/{custom_property_name} <https://docs.github.com/en/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization>`_
         :param property: :class:`github.OrganizationCustomProperty.CustomProperty`
         :rtype: :class:`github.OrganizationCustomProperty.OrganizationCustomProperty`
         """
-        assert isinstance(property, github.OrganizationCustomProperty.CustomProperty), property
+        assert isinstance(
+            property, github.OrganizationCustomProperty.CustomProperty
+        ), property
         assert property.values_editable_by is NotSet
 
         post_parameters = property.to_dict()
         property_name = post_parameters.pop("property_name")
         headers, data = self._requester.requestJsonAndCheck(
-            "PUT", f"{self.url}/properties/schema/{property_name}", input=post_parameters
+            "PUT",
+            f"{self.url}/properties/schema/{property_name}",
+            input=post_parameters,
         )
         return github.OrganizationCustomProperty.OrganizationCustomProperty(
             requester=self._requester, headers=headers, attributes=data
@@ -1835,7 +2002,9 @@ class Organization(CompletableGithubObject):
         :rtype: None
         """
         assert isinstance(property_name, str), property_name
-        self._requester.requestJsonAndCheck("DELETE", f"{self.url}/properties/schema/{property_name}")
+        self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/properties/schema/{property_name}"
+        )
 
     def list_custom_property_values(
         self, repository_query: Opt[str] = NotSet
@@ -1848,7 +2017,9 @@ class Organization(CompletableGithubObject):
             contentClass=github.OrganizationCustomProperty.RepositoryCustomPropertyValues,
             requester=self._requester,
             firstUrl=f"{self.url}/properties/values",
-            firstParams=NotSet.remove_unset_items({"repository_query": repository_query}),
+            firstParams=NotSet.remove_unset_items(
+                {"repository_query": repository_query}
+            ),
         )
 
     def create_custom_property_values(
@@ -1864,14 +2035,22 @@ class Organization(CompletableGithubObject):
         assert isinstance(repository_names, list), repository_names
         assert all(isinstance(repo, str) for repo in repository_names), repository_names
         assert isinstance(properties, dict), properties
-        assert all(isinstance(value, (str, list, type(None))) for value in properties.values()), properties
+        assert all(
+            isinstance(value, (str, list, type(None))) for value in properties.values()
+        ), properties
         patch_parameters = {
             "repository_names": repository_names,
-            "properties": [{"property_name": k, "value": v} for k, v in properties.items()],
+            "properties": [
+                {"property_name": k, "value": v} for k, v in properties.items()
+            ],
         }
-        self._requester.requestJsonAndCheck("PATCH", f"{self.url}/properties/values", input=patch_parameters)
+        self._requester.requestJsonAndCheck(
+            "PATCH", f"{self.url}/properties/values", input=patch_parameters
+        )
 
-    def get_code_security_configs(self, target_type: Opt[str] = NotSet) -> PaginatedList[CodeSecurityConfig]:
+    def get_code_security_configs(
+        self, target_type: Opt[str] = NotSet
+    ) -> PaginatedList[CodeSecurityConfig]:
         """
         :calls: `GET /orgs/{org}/code-security/configurations <https://docs.github.com/en/rest/code-security/configurations#get-code-security-configurations-for-an-organization>`_
         :rtype: :class:`CodeSecurityConfig`
@@ -1909,16 +2088,32 @@ class Organization(CompletableGithubObject):
         assert isinstance(description, str), description
         assert is_optional(advanced_security, str), advanced_security
         assert is_optional(dependency_graph, str), dependency_graph
-        assert is_optional(dependency_graph_autosubmit_action, str), dependency_graph_autosubmit_action
+        assert is_optional(
+            dependency_graph_autosubmit_action, str
+        ), dependency_graph_autosubmit_action
         assert is_optional(dependabot_alerts, str), dependabot_alerts
-        assert is_optional(dependabot_security_updates, str), dependabot_security_updates
-        assert is_optional(code_scanning_default_setup, str), code_scanning_default_setup
+        assert is_optional(
+            dependabot_security_updates, str
+        ), dependabot_security_updates
+        assert is_optional(
+            code_scanning_default_setup, str
+        ), code_scanning_default_setup
         assert is_optional(secret_scanning, str), secret_scanning
-        assert is_optional(secret_scanning_push_protection, str), secret_scanning_push_protection
-        assert is_optional(secret_scanning_delegated_bypass, str), secret_scanning_delegated_bypass
-        assert is_optional(secret_scanning_validity_checks, str), secret_scanning_validity_checks
-        assert is_optional(secret_scanning_non_provider_patterns, str), secret_scanning_non_provider_patterns
-        assert is_optional(private_vulnerability_reporting, str), private_vulnerability_reporting
+        assert is_optional(
+            secret_scanning_push_protection, str
+        ), secret_scanning_push_protection
+        assert is_optional(
+            secret_scanning_delegated_bypass, str
+        ), secret_scanning_delegated_bypass
+        assert is_optional(
+            secret_scanning_validity_checks, str
+        ), secret_scanning_validity_checks
+        assert is_optional(
+            secret_scanning_non_provider_patterns, str
+        ), secret_scanning_non_provider_patterns
+        assert is_optional(
+            private_vulnerability_reporting, str
+        ), private_vulnerability_reporting
         assert is_optional(enforcement, str), enforcement
         post_parameters = NotSet.remove_unset_items(
             {
@@ -1946,7 +2141,9 @@ class Organization(CompletableGithubObject):
             input=post_parameters,
             headers={"Accept": Consts.repoVisibilityPreview},
         )
-        return github.CodeSecurityConfig.CodeSecurityConfig(self._requester, headers, data)
+        return github.CodeSecurityConfig.CodeSecurityConfig(
+            self._requester, headers, data
+        )
 
     def edit_code_security_config(
         self,
@@ -1975,16 +2172,32 @@ class Organization(CompletableGithubObject):
         assert is_optional(description, str), description
         assert is_optional(advanced_security, str), advanced_security
         assert is_optional(dependency_graph, str), dependency_graph
-        assert is_optional(dependency_graph_autosubmit_action, str), dependency_graph_autosubmit_action
+        assert is_optional(
+            dependency_graph_autosubmit_action, str
+        ), dependency_graph_autosubmit_action
         assert is_optional(dependabot_alerts, str), dependabot_alerts
-        assert is_optional(dependabot_security_updates, str), dependabot_security_updates
-        assert is_optional(code_scanning_default_setup, str), code_scanning_default_setup
+        assert is_optional(
+            dependabot_security_updates, str
+        ), dependabot_security_updates
+        assert is_optional(
+            code_scanning_default_setup, str
+        ), code_scanning_default_setup
         assert is_optional(secret_scanning, str), secret_scanning
-        assert is_optional(secret_scanning_push_protection, str), secret_scanning_push_protection
-        assert is_optional(secret_scanning_delegated_bypass, str), secret_scanning_delegated_bypass
-        assert is_optional(secret_scanning_validity_checks, str), secret_scanning_validity_checks
-        assert is_optional(secret_scanning_non_provider_patterns, str), secret_scanning_non_provider_patterns
-        assert is_optional(private_vulnerability_reporting, str), private_vulnerability_reporting
+        assert is_optional(
+            secret_scanning_push_protection, str
+        ), secret_scanning_push_protection
+        assert is_optional(
+            secret_scanning_delegated_bypass, str
+        ), secret_scanning_delegated_bypass
+        assert is_optional(
+            secret_scanning_validity_checks, str
+        ), secret_scanning_validity_checks
+        assert is_optional(
+            secret_scanning_non_provider_patterns, str
+        ), secret_scanning_non_provider_patterns
+        assert is_optional(
+            private_vulnerability_reporting, str
+        ), private_vulnerability_reporting
         assert is_optional(enforcement, str), enforcement
         post_parameters = NotSet.remove_unset_items(
             {
@@ -2007,9 +2220,13 @@ class Organization(CompletableGithubObject):
         )
 
         headers, data = self._requester.requestJsonAndCheck(
-            "PATCH", f"{self.url}/code-security/configurations/{id}", input=post_parameters
+            "PATCH",
+            f"{self.url}/code-security/configurations/{id}",
+            input=post_parameters,
         )
-        return github.CodeSecurityConfig.CodeSecurityConfig(self._requester, headers, data)
+        return github.CodeSecurityConfig.CodeSecurityConfig(
+            self._requester, headers, data
+        )
 
     def delete_code_security_config(self, id: int) -> None:
         """
@@ -2018,7 +2235,9 @@ class Organization(CompletableGithubObject):
         :rtype: None`
         """
         assert isinstance(id, int), id
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/code-security/configurations/{id}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/code-security/configurations/{id}"
+        )
 
     def get_code_security_config(self, id: int) -> CodeSecurityConfig:
         """
@@ -2028,21 +2247,33 @@ class Organization(CompletableGithubObject):
         """
         assert isinstance(id, int), id
 
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.url}/code-security/configurations/{id}")
-        return github.CodeSecurityConfig.CodeSecurityConfig(self._requester, headers, data)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.url}/code-security/configurations/{id}"
+        )
+        return github.CodeSecurityConfig.CodeSecurityConfig(
+            self._requester, headers, data
+        )
 
-    def set_default_code_security_config(self, id: int, default_for_new_repos: Opt[str] = NotSet) -> None:
+    def set_default_code_security_config(
+        self, id: int, default_for_new_repos: Opt[str] = NotSet
+    ) -> None:
         """
         :calls: `PUT /orgs/{org}/code-security/configurations/{configuration_id}/defaults <https://docs.github.com/en/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization>`_
         """
         assert isinstance(id, int), id
         assert is_optional(default_for_new_repos, str), default_for_new_repos
-        put_parameters = NotSet.remove_unset_items({"default_for_new_repos": default_for_new_repos})
+        put_parameters = NotSet.remove_unset_items(
+            {"default_for_new_repos": default_for_new_repos}
+        )
         headers, data = self._requester.requestJsonAndCheck(
-            "PUT", f"{self.url}/code-security/configurations/{id}/defaults", input=put_parameters
+            "PUT",
+            f"{self.url}/code-security/configurations/{id}/defaults",
+            input=put_parameters,
         )
 
-    def get_default_code_security_configs(self) -> PaginatedList[DefaultCodeSecurityConfig]:
+    def get_default_code_security_configs(
+        self,
+    ) -> PaginatedList[DefaultCodeSecurityConfig]:
         """
         :calls: `GET /orgs/{org}/code-security/configurations/defaults <https://docs.github.com/en/rest/code-security/configurations#get-default-code-security-configurations>`_
         :rtype: :class:`github.DefaultCodeSecurityConfig.DefaultCodeSecurityConfig`
@@ -2077,7 +2308,9 @@ class Organization(CompletableGithubObject):
             headers={"Accept": Consts.repoVisibilityPreview},
         )
 
-    def detach_security_config_from_repositories(self, selected_repository_ids: list[int]) -> None:
+    def detach_security_config_from_repositories(
+        self, selected_repository_ids: list[int]
+    ) -> None:
         """
         :calls: `DELETE /orgs/{org}/code-security/configurations/detach <https://docs.github.com/en/rest/code-security/configurations#detach-configurations-from-repositories>`_
         """
@@ -2113,7 +2346,9 @@ class Organization(CompletableGithubObject):
             headers={"Accept": Consts.repoVisibilityPreview},
         )
 
-    def get_self_hosted_runners(self, name: Opt[str] = NotSet) -> PaginatedList[SelfHostedActionsRunner]:
+    def get_self_hosted_runners(
+        self, name: Opt[str] = NotSet
+    ) -> PaginatedList[SelfHostedActionsRunner]:
         """
         :calls: `GET /orgs/{org}/actions/runners <https://docs.github.com/en/rest/actions/self-hosted-runners#list-self-hosted-runners-for-an-organization>`_
         """
@@ -2130,7 +2365,9 @@ class Organization(CompletableGithubObject):
             list_item="runners",
         )
 
-    def get_self_hosted_runner_applications(self) -> PaginatedList[SelfHostedActionsRunnerApplication]:
+    def get_self_hosted_runner_applications(
+        self,
+    ) -> PaginatedList[SelfHostedActionsRunnerApplication]:
         """
         :calls: `GET /orgs/{org}/actions/runners/downloads <https://docs.github.com/en/rest/actions/self-hosted-runners#list-runner-applications-for-an-organization>`_
         """
@@ -2141,7 +2378,11 @@ class Organization(CompletableGithubObject):
         )
 
     def create_self_hosted_runner_jitconfig(
-        self, name: str, runner_group_id: int, labels: list[str], work_folder: Opt[str] = NotSet
+        self,
+        name: str,
+        runner_group_id: int,
+        labels: list[str],
+        work_folder: Opt[str] = NotSet,
     ) -> SelfHostedActionsRunnerJitConfig:
         """
         :calls: `POST /orgs/{org}/actions/runners/generate-jitconfig <https://docs.github.com/en/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-an-organization>`_
@@ -2160,9 +2401,13 @@ class Organization(CompletableGithubObject):
             input=body_parameters,
             headers={"Accept": Consts.repoVisibilityPreview},
         )
-        return github.SelfHostedActionsRunnerJitConfig.SelfHostedActionsRunnerJitConfig(self._requester, headers, data)
+        return github.SelfHostedActionsRunnerJitConfig.SelfHostedActionsRunnerJitConfig(
+            self._requester, headers, data
+        )
 
-    def create_self_hosted_runner_registration_token(self) -> SelfHostedActionsRunnerToken:
+    def create_self_hosted_runner_registration_token(
+        self,
+    ) -> SelfHostedActionsRunnerToken:
         """
         :calls: `POST /orgs/{org}/actions/runners/registration-token <https://docs.github.com/en/rest/actions/self-hosted-runners#create-a-registration-token-for-an-organization>`_
         """
@@ -2170,7 +2415,9 @@ class Organization(CompletableGithubObject):
             "POST",
             f"{self.url}/actions/runners/registration-token",
         )
-        return github.SelfHostedActionsRunnerToken.SelfHostedActionsRunnerToken(self._requester, headers, data)
+        return github.SelfHostedActionsRunnerToken.SelfHostedActionsRunnerToken(
+            self._requester, headers, data
+        )
 
     def create_self_hosted_runner_remove_token(self) -> SelfHostedActionsRunnerToken:
         """
@@ -2180,7 +2427,9 @@ class Organization(CompletableGithubObject):
             "POST",
             f"{self.url}/actions/runners/remove-token",
         )
-        return github.SelfHostedActionsRunnerToken.SelfHostedActionsRunnerToken(self._requester, headers, data)
+        return github.SelfHostedActionsRunnerToken.SelfHostedActionsRunnerToken(
+            self._requester, headers, data
+        )
 
     def get_self_hosted_runner(self, runner_id: int) -> SelfHostedActionsRunner:
         """
@@ -2191,7 +2440,9 @@ class Organization(CompletableGithubObject):
             "GET",
             f"{self.url}/actions/runners/{runner_id}",
         )
-        return github.SelfHostedActionsRunner.SelfHostedActionsRunner(self._requester, headers, data)
+        return github.SelfHostedActionsRunner.SelfHostedActionsRunner(
+            self._requester, headers, data
+        )
 
     def delete_self_hosted_runner(self, runner_id: int) -> None:
         """
@@ -2205,14 +2456,18 @@ class Organization(CompletableGithubObject):
         )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
-        if "advanced_security_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._advanced_security_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["advanced_security_enabled_for_new_repositories"]
+        if (
+            "advanced_security_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._advanced_security_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes["advanced_security_enabled_for_new_repositories"]
+                )
             )
         if "archived_at" in attributes:  # pragma no branch
-            assert attributes["archived_at"] is None or isinstance(attributes["archived_at"], str), attributes[
-                "archived_at"
-            ]
+            assert attributes["archived_at"] is None or isinstance(
+                attributes["archived_at"], str
+            ), attributes["archived_at"]
             self._archived_at = self._makeDatetimeAttribute(attributes["archived_at"])
         if "avatar_url" in attributes:  # pragma no branch
             self._avatar_url = self._makeStringAttribute(attributes["avatar_url"])
@@ -2227,20 +2482,38 @@ class Organization(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "default_repository_branch" in attributes:  # pragma no branch
-            self._default_repository_branch = self._makeStringAttribute(attributes["default_repository_branch"])
+            self._default_repository_branch = self._makeStringAttribute(
+                attributes["default_repository_branch"]
+            )
         if "default_repository_permission" in attributes:  # pragma no branch
-            self._default_repository_permission = self._makeStringAttribute(attributes["default_repository_permission"])
-        if "dependabot_alerts_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._dependabot_alerts_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["dependabot_alerts_enabled_for_new_repositories"]
+            self._default_repository_permission = self._makeStringAttribute(
+                attributes["default_repository_permission"]
             )
-        if "dependabot_security_updates_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._dependabot_security_updates_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["dependabot_security_updates_enabled_for_new_repositories"]
+        if (
+            "dependabot_alerts_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._dependabot_alerts_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes["dependabot_alerts_enabled_for_new_repositories"]
+                )
             )
-        if "dependency_graph_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._dependency_graph_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["dependency_graph_enabled_for_new_repositories"]
+        if (
+            "dependabot_security_updates_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._dependabot_security_updates_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes[
+                        "dependabot_security_updates_enabled_for_new_repositories"
+                    ]
+                )
+            )
+        if (
+            "dependency_graph_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._dependency_graph_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes["dependency_graph_enabled_for_new_repositories"]
+                )
             )
         if "deploy_keys_enabled_for_repositories" in attributes:  # pragma no branch
             self._deploy_keys_enabled_for_repositories = self._makeBoolAttribute(
@@ -2250,7 +2523,9 @@ class Organization(CompletableGithubObject):
             self._description = self._makeStringAttribute(attributes["description"])
         if "disk_usage" in attributes:  # pragma no branch
             self._disk_usage = self._makeIntAttribute(attributes["disk_usage"])
-        if "display_commenter_full_name_setting_enabled" in attributes:  # pragma no branch
+        if (
+            "display_commenter_full_name_setting_enabled" in attributes
+        ):  # pragma no branch
             self._display_commenter_full_name_setting_enabled = self._makeBoolAttribute(
                 attributes["display_commenter_full_name_setting_enabled"]
             )
@@ -2273,9 +2548,13 @@ class Organization(CompletableGithubObject):
         if "gravatar_id" in attributes:  # pragma no branch
             self._gravatar_id = self._makeStringAttribute(attributes["gravatar_id"])
         if "has_organization_projects" in attributes:  # pragma no branch
-            self._has_organization_projects = self._makeBoolAttribute(attributes["has_organization_projects"])
+            self._has_organization_projects = self._makeBoolAttribute(
+                attributes["has_organization_projects"]
+            )
         if "has_repository_projects" in attributes:  # pragma no branch
-            self._has_repository_projects = self._makeBoolAttribute(attributes["has_repository_projects"])
+            self._has_repository_projects = self._makeBoolAttribute(
+                attributes["has_repository_projects"]
+            )
         if "hooks_url" in attributes:  # pragma no branch
             self._hooks_url = self._makeStringAttribute(attributes["hooks_url"])
         if "html_url" in attributes:  # pragma no branch
@@ -2305,7 +2584,9 @@ class Organization(CompletableGithubObject):
                 attributes["members_can_create_internal_repositories"]
             )
         if "members_can_create_pages" in attributes:  # pragma no branch
-            self._members_can_create_pages = self._makeBoolAttribute(attributes["members_can_create_pages"])
+            self._members_can_create_pages = self._makeBoolAttribute(
+                attributes["members_can_create_pages"]
+            )
         if "members_can_create_private_pages" in attributes:  # pragma no branch
             self._members_can_create_private_pages = self._makeBoolAttribute(
                 attributes["members_can_create_private_pages"]
@@ -2327,9 +2608,13 @@ class Organization(CompletableGithubObject):
                 attributes["members_can_create_repositories"]
             )
         if "members_can_create_teams" in attributes:  # pragma no branch
-            self._members_can_create_teams = self._makeBoolAttribute(attributes["members_can_create_teams"])
+            self._members_can_create_teams = self._makeBoolAttribute(
+                attributes["members_can_create_teams"]
+            )
         if "members_can_delete_issues" in attributes:  # pragma no branch
-            self._members_can_delete_issues = self._makeBoolAttribute(attributes["members_can_delete_issues"])
+            self._members_can_delete_issues = self._makeBoolAttribute(
+                attributes["members_can_delete_issues"]
+            )
         if "members_can_delete_repositories" in attributes:  # pragma no branch
             self._members_can_delete_repositories = self._makeBoolAttribute(
                 attributes["members_can_delete_repositories"]
@@ -2353,9 +2638,13 @@ class Organization(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "organizations_url" in attributes:  # pragma no branch
-            self._organizations_url = self._makeStringAttribute(attributes["organizations_url"])
+            self._organizations_url = self._makeStringAttribute(
+                attributes["organizations_url"]
+            )
         if "owned_private_repos" in attributes:  # pragma no branch
-            self._owned_private_repos = self._makeIntAttribute(attributes["owned_private_repos"])
+            self._owned_private_repos = self._makeIntAttribute(
+                attributes["owned_private_repos"]
+            )
         if "plan" in attributes:  # pragma no branch
             self._plan = self._makeClassAttribute(github.Plan.Plan, attributes["plan"])
         if "private_gists" in attributes:  # pragma no branch
@@ -2363,30 +2652,54 @@ class Organization(CompletableGithubObject):
         if "public_gists" in attributes:  # pragma no branch
             self._public_gists = self._makeIntAttribute(attributes["public_gists"])
         if "public_members_url" in attributes:  # pragma no branch
-            self._public_members_url = self._makeStringAttribute(attributes["public_members_url"])
+            self._public_members_url = self._makeStringAttribute(
+                attributes["public_members_url"]
+            )
         if "public_repos" in attributes:  # pragma no branch
             self._public_repos = self._makeIntAttribute(attributes["public_repos"])
         if "readers_can_create_discussions" in attributes:  # pragma no branch
-            self._readers_can_create_discussions = self._makeBoolAttribute(attributes["readers_can_create_discussions"])
+            self._readers_can_create_discussions = self._makeBoolAttribute(
+                attributes["readers_can_create_discussions"]
+            )
         if "received_events_url" in attributes:  # pragma no branch
-            self._received_events_url = self._makeStringAttribute(attributes["received_events_url"])
+            self._received_events_url = self._makeStringAttribute(
+                attributes["received_events_url"]
+            )
         if "repos_url" in attributes:  # pragma no branch
             self._repos_url = self._makeStringAttribute(attributes["repos_url"])
-        if "secret_scanning_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._secret_scanning_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["secret_scanning_enabled_for_new_repositories"]
+        if (
+            "secret_scanning_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._secret_scanning_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes["secret_scanning_enabled_for_new_repositories"]
+                )
             )
-        if "secret_scanning_push_protection_custom_link" in attributes:  # pragma no branch
-            self._secret_scanning_push_protection_custom_link = self._makeStringAttribute(
-                attributes["secret_scanning_push_protection_custom_link"]
+        if (
+            "secret_scanning_push_protection_custom_link" in attributes
+        ):  # pragma no branch
+            self._secret_scanning_push_protection_custom_link = (
+                self._makeStringAttribute(
+                    attributes["secret_scanning_push_protection_custom_link"]
+                )
             )
-        if "secret_scanning_push_protection_custom_link_enabled" in attributes:  # pragma no branch
-            self._secret_scanning_push_protection_custom_link_enabled = self._makeBoolAttribute(
-                attributes["secret_scanning_push_protection_custom_link_enabled"]
+        if (
+            "secret_scanning_push_protection_custom_link_enabled" in attributes
+        ):  # pragma no branch
+            self._secret_scanning_push_protection_custom_link_enabled = (
+                self._makeBoolAttribute(
+                    attributes["secret_scanning_push_protection_custom_link_enabled"]
+                )
             )
-        if "secret_scanning_push_protection_enabled_for_new_repositories" in attributes:  # pragma no branch
-            self._secret_scanning_push_protection_enabled_for_new_repositories = self._makeBoolAttribute(
-                attributes["secret_scanning_push_protection_enabled_for_new_repositories"]
+        if (
+            "secret_scanning_push_protection_enabled_for_new_repositories" in attributes
+        ):  # pragma no branch
+            self._secret_scanning_push_protection_enabled_for_new_repositories = (
+                self._makeBoolAttribute(
+                    attributes[
+                        "secret_scanning_push_protection_enabled_for_new_repositories"
+                    ]
+                )
             )
         if "site_admin" in attributes:  # pragma no branch
             self._site_admin = self._makeBoolAttribute(attributes["site_admin"])
@@ -2395,13 +2708,21 @@ class Organization(CompletableGithubObject):
         if "starred_url" in attributes:  # pragma no branch
             self._starred_url = self._makeStringAttribute(attributes["starred_url"])
         if "subscriptions_url" in attributes:  # pragma no branch
-            self._subscriptions_url = self._makeStringAttribute(attributes["subscriptions_url"])
+            self._subscriptions_url = self._makeStringAttribute(
+                attributes["subscriptions_url"]
+            )
         if "total_private_repos" in attributes:  # pragma no branch
-            self._total_private_repos = self._makeIntAttribute(attributes["total_private_repos"])
+            self._total_private_repos = self._makeIntAttribute(
+                attributes["total_private_repos"]
+            )
         if "twitter_username" in attributes:  # pragma no branch
-            self._twitter_username = self._makeStringAttribute(attributes["twitter_username"])
+            self._twitter_username = self._makeStringAttribute(
+                attributes["twitter_username"]
+            )
         if "two_factor_requirement_enabled" in attributes:  # pragma no branch
-            self._two_factor_requirement_enabled = self._makeBoolAttribute(attributes["two_factor_requirement_enabled"])
+            self._two_factor_requirement_enabled = self._makeBoolAttribute(
+                attributes["two_factor_requirement_enabled"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "updated_at" in attributes:  # pragma no branch
@@ -2409,6 +2730,10 @@ class Organization(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user_view_type" in attributes:  # pragma no branch
-            self._user_view_type = self._makeStringAttribute(attributes["user_view_type"])
+            self._user_view_type = self._makeStringAttribute(
+                attributes["user_view_type"]
+            )
         if "web_commit_signoff_required" in attributes:  # pragma no branch
-            self._web_commit_signoff_required = self._makeBoolAttribute(attributes["web_commit_signoff_required"])
+            self._web_commit_signoff_required = self._makeBoolAttribute(
+                attributes["web_commit_signoff_required"]
+            )

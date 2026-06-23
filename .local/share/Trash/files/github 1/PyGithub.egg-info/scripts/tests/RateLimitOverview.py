@@ -37,7 +37,10 @@ class RateLimitOverview(Framework.TestCase):
         self.assertIsNotNone(self.rate_limit_overview.resources)
         self.assertEqual(self.rate_limit_overview.rate.limit, 5000)
         self.assertEqual(self.rate_limit_overview.rate.remaining, 4988)
-        self.assertEqual(self.rate_limit_overview.rate.reset, datetime(2024, 12, 13, 6, 43, 18, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.rate_limit_overview.rate.reset,
+            datetime(2024, 12, 13, 6, 43, 18, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.rate_limit_overview.rate.used, 12)
 
         self.assertEqual(

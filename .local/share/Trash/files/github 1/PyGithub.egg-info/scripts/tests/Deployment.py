@@ -45,10 +45,15 @@ from . import Framework
 class Deployment(Framework.TestCase):
     def setUp(self):
         super().setUp()
-        self.deployment = self.g.get_user().get_repo("PyGithub").get_deployment(263877258)
+        self.deployment = (
+            self.g.get_user().get_repo("PyGithub").get_deployment(263877258)
+        )
 
     def testAttributes(self):
-        self.assertEqual(self.deployment.created_at, datetime(2020, 8, 26, 11, 44, 53, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.deployment.created_at,
+            datetime(2020, 8, 26, 11, 44, 53, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.deployment.creator.login, "jacquev6")
         self.assertEqual(self.deployment.description, "Test deployment")
         self.assertEqual(self.deployment.environment, "test")
@@ -58,22 +63,36 @@ class Deployment(Framework.TestCase):
         self.assertEqual(self.deployment.payload, {"test": True})
         self.assertIsNone(self.deployment.performed_via_github_app)
         self.assertEqual(self.deployment.production_environment, False)
-        self.assertEqual(self.deployment.ref, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5")
-        self.assertEqual(self.deployment.repository_url, "https://api.github.com/repos/jacquev6/PyGithub")
-        self.assertEqual(self.deployment.sha, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5")
+        self.assertEqual(
+            self.deployment.ref, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5"
+        )
+        self.assertEqual(
+            self.deployment.repository_url,
+            "https://api.github.com/repos/jacquev6/PyGithub",
+        )
+        self.assertEqual(
+            self.deployment.sha, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5"
+        )
         self.assertEqual(
             self.deployment.statuses_url,
             "https://api.github.com/repos/jacquev6/PyGithub/deployments/263877258/statuses",
         )
         self.assertEqual(self.deployment.task, "deploy")
         self.assertEqual(self.deployment.transient_environment, True)
-        self.assertEqual(self.deployment.updated_at, datetime(2020, 8, 26, 11, 44, 53, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.deployment.updated_at,
+            datetime(2020, 8, 26, 11, 44, 53, tzinfo=timezone.utc),
+        )
         self.assertEqual(
             self.deployment.url,
             "https://api.github.com/repos/jacquev6/PyGithub/deployments/263877258",
         )
-        self.assertEqual(self.deployment.ref, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5")
-        self.assertEqual(self.deployment.sha, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5")
+        self.assertEqual(
+            self.deployment.ref, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5"
+        )
+        self.assertEqual(
+            self.deployment.sha, "743f5a58b0bce91c4eab744ff7e39dfca9e6e8a5"
+        )
         self.assertEqual(self.deployment.task, "deploy")
         self.assertEqual(self.deployment.payload, {"test": True})
         self.assertEqual(self.deployment.original_environment, "test")
@@ -100,6 +119,8 @@ class Deployment(Framework.TestCase):
 
     def testLazyAttributes(self):
         deploy = self.g.withLazy(True).get_repo("lazy/repo").get_deployment(42)
-        self.assertEqual(str(deploy), 'Deployment(url="/repos/lazy/repo/deployments/42", id=42)')
+        self.assertEqual(
+            str(deploy), 'Deployment(url="/repos/lazy/repo/deployments/42", id=42)'
+        )
         self.assertEqual(deploy.id, 42)
         self.assertEqual(deploy.url, "/repos/lazy/repo/deployments/42")

@@ -45,8 +45,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class Permissions(NonCompletableGithubObject):
-    """
-    This class represents Permissions.
+    """This class represents Permissions.
 
     The OpenAPI schema can be found at
 
@@ -58,7 +57,6 @@ class Permissions(NonCompletableGithubObject):
     - /components/schemas/repository/properties/permissions
     - /components/schemas/team-repository/properties/permissions
     - /components/schemas/team/properties/permissions
-
     """
 
     def _initAttributes(self) -> None:

@@ -45,8 +45,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class SelfHostedActionsRunner(NonCompletableGithubObject):
-    """
-    This class represents Self-hosted GitHub Actions Runners.
+    """This class represents Self-hosted GitHub Actions Runners.
 
     The reference can be found at
     https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#self-hosted-runners
@@ -54,7 +53,6 @@ class SelfHostedActionsRunner(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/runner
-
     """
 
     def _initAttributes(self) -> None:
@@ -116,6 +114,8 @@ class SelfHostedActionsRunner(NonCompletableGithubObject):
         if "os" in attributes:  # pragma no branch
             self._os = self._makeStringAttribute(attributes["os"])
         if "runner_group_id" in attributes:  # pragma no branch
-            self._runner_group_id = self._makeIntAttribute(attributes["runner_group_id"])
+            self._runner_group_id = self._makeIntAttribute(
+                attributes["runner_group_id"]
+            )
         if "status" in attributes:  # pragma no branch
             self._status = self._makeStringAttribute(attributes["status"])

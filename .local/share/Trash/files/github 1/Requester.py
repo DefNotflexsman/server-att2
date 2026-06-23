@@ -257,7 +257,14 @@ class HTTPRequestsConnectionClass:
         )
         self.session.mount("http://", self.adapter)
 
-    def request(self, verb: str, url: str, input: None, headers: dict[str, str], stream: bool = False) -> None:
+    def request(
+        self,
+        verb: str,
+        url: str,
+        input: None,
+        headers: dict[str, str],
+        stream: bool = False,
+    ) -> None:
         self.verb = verb
         self.url = url
         self.input = input
@@ -293,7 +300,9 @@ class Requester:
     _frameBuffer: list[Any]
 
     @staticmethod
-    def noopAuth(request: requests.models.PreparedRequest) -> requests.models.PreparedRequest:
+    def noopAuth(
+        request: requests.models.PreparedRequest,
+    ) -> requests.models.PreparedRequest:
         return request
 
     @classmethod
@@ -347,17 +356,20 @@ class Requester:
         """
         if self.DEBUG_FLAG:  # pragma no branch (Flag always set in tests)
             new_frame = [requestHeader, None, None, None]
-            if self._frameCount < self.DEBUG_FRAME_BUFFER_SIZE - 1:  # pragma no branch (Should be covered)
+            if (
+                self._frameCount < self.DEBUG_FRAME_BUFFER_SIZE - 1
+            ):  # pragma no branch (Should be covered)
                 self._frameBuffer.append(new_frame)
             else:
                 self._frameBuffer[0] = new_frame  # pragma no cover (Should be covered)
 
             self._frameCount = len(self._frameBuffer) - 1
 
-    def DEBUG_ON_RESPONSE(self, statusCode: int, responseHeader: dict[str, str | int], data: str) -> None:
-        """
-        Update current frame with response Current frame index will be attached to responseHeader.
-        """
+    def DEBUG_ON_RESPONSE(
+        self, statusCode: int, responseHeader: dict[str, str | int], data: str
+    ) -> None:
+        """Update current frame with response Current frame index will be
+        attached to responseHeader."""
         if self.DEBUG_FLAG:  # pragma no branch (Flag always set in tests)
             self._frameBuffer[self._frameCount][1:4] = [
                 statusCode,
@@ -367,7 +379,9 @@ class Requester:
             responseHeader[self.DEBUG_HEADER_KEY] = self._frameCount
 
     def check_me(self, obj: GithubObject) -> None:
-        if self.DEBUG_FLAG and self.ON_CHECK_ME is not None:  # pragma no branch (Flag always set in tests)
+        if (
+            self.DEBUG_FLAG and self.ON_CHECK_ME is not None
+        ):  # pragma no branch (Flag always set in tests)
             frame = None
             if self.DEBUG_HEADER_KEY in obj._headers:
                 frame_index = obj._headers[self.DEBUG_HEADER_KEY]
@@ -381,7 +395,9 @@ class Requester:
     #############################################################
 
     _frameCount: int
-    __connectionClass: type[HTTPRequestsConnectionClass] | type[HTTPSRequestsConnectionClass]
+    __connectionClass: type[HTTPRequestsConnectionClass] | type[
+        HTTPSRequestsConnectionClass
+    ]
     __hostname: str
     __authorizationHeader: str | None
     __seconds_between_requests: float | None
@@ -410,7 +426,9 @@ class Requester:
 
         o = urllib.parse.urlparse(base_url)
         self.__graphql_prefix = self.get_graphql_prefix(o.path)
-        self.__graphql_url = urllib.parse.urlunparse(o._replace(path=self.__graphql_prefix))
+        self.__graphql_url = urllib.parse.urlunparse(
+            o._replace(path=self.__graphql_prefix)
+        )
         self.__hostname = o.hostname  # type: ignore
         if base_url == Consts.DEFAULT_BASE_URL:
             self.__domains = ["github.com", "githubusercontent.com"]
@@ -431,9 +449,13 @@ class Requester:
             self.__connectionClass = self.__httpConnectionClass
         else:
             assert False, "Unknown URL scheme"
-        self.__connection: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None
+        self.__connection: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = (
+            None
+        )
         self.__connection_lock = threading.Lock()
-        self.__custom_connections: Deque[HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass] = deque()
+        self.__custom_connections: Deque[
+            HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass
+        ] = deque()
         self.rate_limiting = (-1, -1)
         self.rate_limiting_resettime = 0
         self.FIX_REPO_GET_GIT_REF = True
@@ -502,7 +524,9 @@ class Requester:
         scheme, netloc, url, params, query, fragment = urllib.parse.urlparse(url)
         url_params = urllib.parse.parse_qs(query)
         # union parameters in url with given parameters, the latter has precedence
-        url_params.update(**{k: v if isinstance(v, list) else [v] for k, v in parameters.items()})
+        url_params.update(
+            **{k: v if isinstance(v, list) else [v] for k, v in parameters.items()}
+        )
         # GitHub expects lowercase booleans (true/false) in the query string
         parameter_list = [
             (key, str(value).lower() if isinstance(value, bool) else value)
@@ -519,9 +543,7 @@ class Requester:
             return f"{url}?{urllib.parse.urlencode(sorted(parameter_list))}"
 
     def close(self) -> None:
-        """
-        Close the connection to the server.
-        """
+        """Close the connection to the server."""
         with self.__connection_lock:
             if self.__connection is not None:
                 self.__connection.close()
@@ -531,10 +553,9 @@ class Requester:
 
     @property
     def kwargs(self) -> dict[str, Any]:
-        """
-        Returns arguments required to recreate this Requester with Requester.__init__, as well as with
-        MainClass.__init__ and GithubIntegration.__init__.
-        """
+        """Returns arguments required to recreate this Requester with
+        Requester.__init__, as well as with MainClass.__init__ and
+        GithubIntegration.__init__."""
         return dict(
             auth=self.__auth,
             base_url=self.__base_url,
@@ -577,12 +598,11 @@ class Requester:
         return self.__auth
 
     def withAuth(self, auth: Auth | None) -> Requester:
-        """
-        Create a new requester instance with identical configuration but the given authentication method.
+        """Create a new requester instance with identical configuration but the
+        given authentication method.
 
         :param auth: authentication method
         :return: new Requester instance
-
         """
         kwargs = self.kwargs
         kwargs.update(auth=auth)
@@ -597,13 +617,14 @@ class Requester:
         return not self.__lazy
 
     def withLazy(self, lazy: Opt[bool]) -> Requester:
-        """
-        Create a new requester instance with identical configuration but the given lazy setting.
+        """Create a new requester instance with identical configuration but the
+        given lazy setting.
 
-        :param lazy: if True, completable objects created from this instance are lazy, as well as completable objects
-            created from those, and so on.
-        :return: new Requester instance if is_defined(lazy) and lazy != self.is_lazy, this instance otherwise
-
+        :param lazy: if True, completable objects created from this
+            instance are lazy, as well as completable objects created
+            from those, and so on.
+        :return: new Requester instance if is_defined(lazy) and lazy !=
+            self.is_lazy, this instance otherwise
         """
         if is_undefined(lazy) or self.is_lazy == lazy:
             return self
@@ -617,14 +638,16 @@ class Requester:
         return self.__apiVersion
 
     def withApiVersion(self, api_version: str | None) -> Requester:
-        """
-        Create a new requester instance with identical configuration but the given API version setting.
+        """Create a new requester instance with identical configuration but the
+        given API version setting.
 
-        :param api_version: string, GitHub API version to use (see https://docs.github.com/en/rest/about-the-rest-
-            api/api-versions). Note that some PyGithub methods might downgrade this version if it is not supported by
-            the implementation. Set to None to not specify any version
-        :return: new Requester instance if is_defined(lazy) and lazy != self.is_lazy, this instance otherwise
-
+        :param api_version: string, GitHub API version to use (see
+            https://docs.github.com/en/rest/about-the-rest- api/api-
+            versions). Note that some PyGithub methods might downgrade
+            this version if it is not supported by the implementation.
+            Set to None to not specify any version
+        :return: new Requester instance if is_defined(lazy) and lazy !=
+            self.is_lazy, this instance otherwise
         """
         if api_version == self.api_version:
             return self
@@ -642,14 +665,12 @@ class Requester:
         input: Any | None = None,
         follow_302_redirect: bool = False,
     ) -> tuple[dict[str, Any], Any]:
-        """
-        Send a request with JSON body.
+        """Send a request with JSON body.
 
         :param input: request body, serialized to JSON if specified
 
         :return: ``(headers: dict, JSON Response: Any)``
         :raises: :class:`GithubException` for error status codes
-
         """
         return self.__postProcess(
             verb,
@@ -675,19 +696,21 @@ class Requester:
         headers: dict[str, Any] | None = None,
         input: dict[str, str] | None = None,
     ) -> tuple[dict[str, Any], dict[str, Any] | None]:
-        """
-        Send a request with multi-part-encoded body.
+        """Send a request with multi-part-encoded body.
 
         :param input: request body, will be multi-part encoded if specified
 
         :return: ``(headers: dict, JSON Response: Any)``
         :raises: :class:`GithubException` for error status codes
-
         """
         return self.__postProcess(
             verb,
             url,
-            *self.__check(*self.requestMultipart(verb, url, parameters, headers, input, self.__customConnection(url))),
+            *self.__check(
+                *self.requestMultipart(
+                    verb, url, parameters, headers, input, self.__customConnection(url)
+                )
+            ),
         )
 
     def requestBlobAndCheck(
@@ -699,62 +722,81 @@ class Requester:
         input: str | None = None,
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Send a request with a file for the body.
+        """Send a request with a file for the body.
 
         :param input: path to a file to use for the request body
 
         :return: ``(headers: dict, JSON Response: Any)``
         :raises: :class:`GithubException` for error status codes
-
         """
         return self.__postProcess(
             verb,
             url,
-            *self.__check(*self.requestBlob(verb, url, parameters, headers, input, self.__customConnection(url))),
+            *self.__check(
+                *self.requestBlob(
+                    verb, url, parameters, headers, input, self.__customConnection(url)
+                )
+            ),
         )
 
     @classmethod
     def paths_of_dict(cls, d: dict) -> dict:
-        return {key: cls.paths_of_dict(val) if isinstance(val, dict) else None for key, val in d.items()}
+        return {
+            key: cls.paths_of_dict(val) if isinstance(val, dict) else None
+            for key, val in d.items()
+        }
 
     def data_as_class(
-        self, headers: dict[str, Any], data: dict[str, Any], data_path: list[str], klass: type[T_gh]
+        self,
+        headers: dict[str, Any],
+        data: dict[str, Any],
+        data_path: list[str],
+        klass: type[T_gh],
     ) -> T_gh:
         for item in data_path:
             if item not in data:
-                raise RuntimeError(f"GraphQL path {data_path} not found in data: {self.paths_of_dict(data)}")
+                raise RuntimeError(
+                    f"GraphQL path {data_path} not found in data: {self.paths_of_dict(data)}"
+                )
             data = data[item]
         if klass.is_rest():
             data = as_rest_api_attributes(data)
         return klass(self, headers, data)
 
-    def graphql_query(self, query: str, variables: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Queries the GraphQL API.
+    def graphql_query(
+        self, query: str, variables: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Queries the GraphQL API.
 
         :param query: GraphQL query
         :param variables: GraphQL variables
         :return: ``(headers: dict, JSON Response: dict)``
         :raises: :class:`GithubException` for error status codes
-
         """
         input_ = {"query": query, "variables": variables}
 
-        response_headers, data = self.requestJsonAndCheck("POST", self.graphql_url, input=input_)
+        response_headers, data = self.requestJsonAndCheck(
+            "POST", self.graphql_url, input=input_
+        )
         if "errors" in data:
             if len(data["errors"]) == 1:
                 error = data["errors"][0]
                 if error.get("type") == "NOT_FOUND":
-                    raise github.UnknownObjectException(404, data, response_headers, error.get("message"))
+                    raise github.UnknownObjectException(
+                        404, data, response_headers, error.get("message")
+                    )
             raise self.createException(400, response_headers, data)
         return response_headers, data
 
     def graphql_query_class(
-        self, query: str, variables: dict[str, Any], data_path: list[str], klass: type[T_gh]
+        self,
+        query: str,
+        variables: dict[str, Any],
+        data_path: list[str],
+        klass: type[T_gh],
     ) -> T_gh:
-        """
-        Queries the GraphQL API, extracts data from a given path, populates and returns a PyGithub class instance.
+        """Queries the GraphQL API, extracts data from a given path, populates
+        and returns a PyGithub class instance.
 
         Uses :func:`graphql_query` to query the GraphQL API.
 
@@ -763,14 +805,14 @@ class Requester:
         :param klass: PyGithub class
         :return: PyGithub class instance
         :raises: :class:`GithubException` for error status codes
-
         """
         headers, data = self.graphql_query(query, variables)
         return self.data_as_class(headers, data, ["data"] + data_path, klass)
 
-    def graphql_node(self, node_id: str, output_schema: str, node_type: str) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Fetches a GraphQL node by id in the give schema.
+    def graphql_node(
+        self, node_id: str, output_schema: str, node_type: str
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Fetches a GraphQL node by id in the give schema.
 
         This sends the following GraphQL request::
 
@@ -788,7 +830,6 @@ class Requester:
         :param node_type: The GraphQL node type
         :return: ``(headers: dict, JSON Response: dict)``
         :raises: :class:`GithubException` for error status codes
-
         """
         if not output_schema.startswith("\n"):
             output_schema = f" {output_schema} "
@@ -806,7 +847,9 @@ class Requester:
         )
 
         headers, data = self.graphql_query(query, {"id": node_id})
-        actual_node_type = data.get("data", {}).get("node", {}).get("__typename", node_type)
+        actual_node_type = (
+            data.get("data", {}).get("node", {}).get("__typename", node_type)
+        )
         if actual_node_type != node_type:
             raise github.GithubException(
                 400,
@@ -816,11 +859,15 @@ class Requester:
         return headers, data
 
     def graphql_node_class(
-        self, node_id: str, output_schema: str, klass: type[T_gh], node_type: str | None = None
+        self,
+        node_id: str,
+        output_schema: str,
+        klass: type[T_gh],
+        node_type: str | None = None,
     ) -> T_gh:
-        """
-        Fetches a GraphQL node by id in the give schema, and returns a PyGithub instance of the given class populated
-        with the retrieved properties.
+        """Fetches a GraphQL node by id in the give schema, and returns a
+        PyGithub instance of the given class populated with the retrieved
+        properties.
 
         Uses :func:`graph_node` to retrieve the GraphQl node.
 
@@ -830,7 +877,6 @@ class Requester:
         :param node_type: Optional GraphQL node type, defaults to the name of the PyGithub class
         :return: PyGithub class instance
         :raises: :class:`GithubException` for error status codes
-
         """
         if node_type is None:
             node_type = klass.__name__
@@ -841,8 +887,7 @@ class Requester:
     def graphql_named_mutation(
         self, mutation_name: str, mutation_input: dict[str, Any], output_schema: str
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        Send a GraphQL mutation to the GraphQL API.
+        """Send a GraphQL mutation to the GraphQL API.
 
         This sends the following GraphQL request::
 
@@ -859,7 +904,6 @@ class Requester:
         :param output_schema: The schema of the retrieved properties of the mutation, without enclosing curly brackets
         :return: ``(headers: dict, JSON Response: dict)``
         :raises: :class:`GithubException` for error status codes
-
         """
         mutation_input_name = mutation_name[:1].upper() + mutation_name[1:] + "Input!"
         query = f"mutation Mutation($input: {mutation_input_name}) {{ {mutation_name}(input: $input) {{ {output_schema} }} }}"
@@ -867,10 +911,15 @@ class Requester:
         return headers, data.get("data", {}).get(mutation_name, {})
 
     def graphql_named_mutation_class(
-        self, mutation_name: str, mutation_input: dict[str, Any], output_schema: str, item: str, klass: type[T_gh]
+        self,
+        mutation_name: str,
+        mutation_input: dict[str, Any],
+        output_schema: str,
+        item: str,
+        klass: type[T_gh],
     ) -> T_gh:
-        """
-        Send a GraphQL mutation to the GraphQL API, populates and returns a PyGithub class instance.
+        """Send a GraphQL mutation to the GraphQL API, populates and returns a
+        PyGithub class instance.
 
         Uses :func:`graphql_named_mutation` to send the mutation to the GraphQL API.
 
@@ -880,9 +929,10 @@ class Requester:
         :param item: property in the response to extract the properties for the class to return
         :return: PyGithub class instance
         :raises: :class:`GithubException` for error status codes
-
         """
-        headers, data = self.graphql_named_mutation(mutation_name, mutation_input, output_schema)
+        headers, data = self.graphql_named_mutation(
+            mutation_name, mutation_input, output_schema
+        )
         return self.data_as_class(headers, data, [item], klass)
 
     def __check(
@@ -913,7 +963,9 @@ class Requester:
         return responseHeaders, data
 
     @classmethod
-    def __hostnameHasDomain(cls, hostname: str, domain_or_domains: str | list[str]) -> bool:
+    def __hostnameHasDomain(
+        cls, hostname: str, domain_or_domains: str | list[str]
+    ) -> bool:
         if isinstance(domain_or_domains, str):
             if hostname == domain_or_domains:
                 return True
@@ -931,7 +983,9 @@ class Requester:
         else:
             assert self.__hostnameHasDomain(o.hostname, self.__domains), o.hostname
 
-    def __customConnection(self, url: str) -> HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None:
+    def __customConnection(
+        self, url: str
+    ) -> HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None:
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None
         if not url.startswith("/"):
             # check URL is allowed
@@ -942,7 +996,10 @@ class Requester:
             if (
                 o.hostname != self.__hostname
                 or (o.port and o.port != self.__port)
-                or (o.scheme != self.__scheme and not (o.scheme == "https" and self.__scheme == "http"))
+                or (
+                    o.scheme != self.__scheme
+                    and not (o.scheme == "https" and self.__scheme == "http")
+                )
             ):  # issue80
                 if o.scheme == "http":
                     cnx = self.__httpConnectionClass(
@@ -976,13 +1033,21 @@ class Requester:
         exc = GithubException.GithubException
         if status == 401 and lc_message == "bad credentials":
             exc = GithubException.BadCredentialsException
-        elif status == 401 and Consts.headerOTP in headers and re.match(r".*required.*", headers[Consts.headerOTP]):
+        elif (
+            status == 401
+            and Consts.headerOTP in headers
+            and re.match(r".*required.*", headers[Consts.headerOTP])
+        ):
             exc = GithubException.TwoFactorException
-        elif status == 403 and lc_message.startswith("missing or invalid user agent string"):
+        elif status == 403 and lc_message.startswith(
+            "missing or invalid user agent string"
+        ):
             exc = GithubException.BadUserAgentException
         elif status == 403 and cls.isRateLimitError(lc_message):
             exc = GithubException.RateLimitExceededException
-        elif status == 404 and ("not found" in lc_message or "no object found" in lc_message):
+        elif status == 404 and (
+            "not found" in lc_message or "no object found" in lc_message
+        ):
             exc = GithubException.UnknownObjectException
             if lc_message != "not found":
                 msg = message
@@ -994,7 +1059,9 @@ class Requester:
 
     @classmethod
     def isRateLimitError(cls, message: str) -> bool:
-        return cls.isPrimaryRateLimitError(message) or cls.isSecondaryRateLimitError(message)
+        return cls.isPrimaryRateLimitError(message) or cls.isSecondaryRateLimitError(
+            message
+        )
 
     @classmethod
     def isPrimaryRateLimitError(cls, message: str) -> bool:
@@ -1038,10 +1105,11 @@ class Requester:
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
         chunk_size: int | None | None = 1,
     ) -> None:
-        """
-        GET a file from the server and save it to the given path, which includes the filename.
-        """
-        _, _, stream_chunk_iterator = self.getStream(url, parameters, headers, cnx, chunk_size=chunk_size)
+        """GET a file from the server and save it to the given path, which
+        includes the filename."""
+        _, _, stream_chunk_iterator = self.getStream(
+            url, parameters, headers, cnx, chunk_size=chunk_size
+        )
         with open(path, "wb") as f:
             for chunk in stream_chunk_iterator:
                 if chunk:
@@ -1055,11 +1123,9 @@ class Requester:
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
         chunk_size: int | None | None = 1,
     ) -> tuple[int, dict[str, Any], Iterator]:
-        """
-        GET a stream from the server.
+        """GET a stream from the server.
 
         :returns:``(status, headers, stream_chunk_iterator)``
-
         """
         if headers is None:
             headers = {}
@@ -1069,7 +1135,15 @@ class Requester:
             return "", ""
 
         status, responseHeaders, output = self.__requestEncode(
-            cnx, "GET", url, parameters, headers, None, encode, stream=True, follow_302_redirect=True
+            cnx,
+            "GET",
+            url,
+            parameters,
+            headers,
+            None,
+            encode,
+            stream=True,
+            follow_302_redirect=True,
         )
         if isinstance(output, RequestsResponse) or (
             hasattr(output, "iter_content") and hasattr(output, "raise_for_status")
@@ -1088,19 +1162,24 @@ class Requester:
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
         follow_302_redirect: bool = False,
     ) -> tuple[int, dict[str, Any], str]:
-        """
-        Send a request with JSON input.
+        """Send a request with JSON input.
 
         :param input: request body, will be serialized as JSON
         :returns:``(status, headers, body)``
-
         """
 
         def encode(input: Any) -> tuple[str, str]:
             return "application/json", json.dumps(input)
 
         status, responseHeaders, output = self.__requestEncode(
-            cnx, verb, url, parameters, headers, input, encode, follow_302_redirect=follow_302_redirect
+            cnx,
+            verb,
+            url,
+            parameters,
+            headers,
+            input,
+            encode,
+            follow_302_redirect=follow_302_redirect,
         )
         if isinstance(output, str):
             return status, responseHeaders, output
@@ -1115,12 +1194,11 @@ class Requester:
         input: dict[str, str] | None = None,
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
     ) -> tuple[int, dict[str, Any], str]:
-        """
-        Send a request with multi-part encoding.
+        """Send a request with multi-part encoding.
 
-        :param input: request body, will be serialized as multipart form data
+        :param input: request body, will be serialized as multipart form
+            data
         :returns:``(status, headers, body)``
-
         """
 
         def encode(input: dict[str, Any]) -> tuple[str, str]:
@@ -1136,7 +1214,9 @@ class Requester:
             encoded_input += f"--{boundary}--{eol}"
             return f"multipart/form-data; boundary={boundary}", encoded_input
 
-        status, responseHeaders, output = self.__requestEncode(cnx, verb, url, parameters, headers, input, encode)
+        status, responseHeaders, output = self.__requestEncode(
+            cnx, verb, url, parameters, headers, input, encode
+        )
         if isinstance(output, str):
             return status, responseHeaders, output
         raise ValueError("requestMultipart() Expected a str, should never happen")
@@ -1150,12 +1230,10 @@ class Requester:
         input: str | None = None,
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
     ) -> tuple[int, dict[str, Any], str]:
-        """
-        Send a request with a file as request body.
+        """Send a request with a file as request body.
 
         :param input: path to a local file to use for request body
         :returns:``(status, headers, body)``
-
         """
         if headers is None:
             headers = {}
@@ -1165,14 +1243,20 @@ class Requester:
                 mime_type = headers["Content-Type"]  # type: ignore
             else:
                 guessed_type = mimetypes.guess_type(local_path)
-                mime_type = guessed_type[0] if guessed_type[0] is not None else Consts.defaultMediaType
+                mime_type = (
+                    guessed_type[0]
+                    if guessed_type[0] is not None
+                    else Consts.defaultMediaType
+                )
             f = open(local_path, "rb")
             return mime_type, f
 
         if input:
             headers["Content-Length"] = str(os.path.getsize(input))
 
-        status, responseHeaders, output = self.__requestEncode(cnx, verb, url, parameters, headers, input, encode)
+        status, responseHeaders, output = self.__requestEncode(
+            cnx, verb, url, parameters, headers, input, encode
+        )
         if isinstance(output, str):
             return status, responseHeaders, output
         raise ValueError("requestBlob() Expected a str, should never happen")
@@ -1186,13 +1270,11 @@ class Requester:
         file_like: BinaryIO,
         cnx: HTTPRequestsConnectionClass | HTTPSRequestsConnectionClass | None = None,
     ) -> tuple[dict[str, Any], Any]:
-        """
-        Send a request with a binary file-like for the body.
+        """Send a request with a binary file-like for the body.
 
         :param file_like: file-like object to use for the request body
         :return: ``(headers: dict, JSON Response: Any)``
         :raises: :class:`GithubException` for error status codes
-
         """
 
         # The expected signature of encode means that the argument is ignored.
@@ -1202,10 +1284,16 @@ class Requester:
         if not cnx:
             cnx = self.__customConnection(url)
 
-        status, responseHeaders, output = self.__requestEncode(cnx, verb, url, parameters, headers, file_like, encode)
+        status, responseHeaders, output = self.__requestEncode(
+            cnx, verb, url, parameters, headers, file_like, encode
+        )
         if isinstance(output, str):
-            return self.__postProcess(verb, url, *self.__check(status, responseHeaders, output))
-        raise ValueError("requestMemoryBlobAndCheck() Expected a str, should never happen")
+            return self.__postProcess(
+                verb, url, *self.__check(status, responseHeaders, output)
+            )
+        raise ValueError(
+            "requestMemoryBlobAndCheck() Expected a str, should never happen"
+        )
 
     def __requestEncode(
         self,
@@ -1241,10 +1329,19 @@ class Requester:
         self.NEW_DEBUG_FRAME(requestHeaders)
 
         status, responseHeaders, output = self.__requestRaw(
-            cnx, verb, url, requestHeaders, encoded_input, stream=stream, follow_302_redirect=follow_302_redirect
+            cnx,
+            verb,
+            url,
+            requestHeaders,
+            encoded_input,
+            stream=stream,
+            follow_302_redirect=follow_302_redirect,
         )
 
-        if Consts.headerRateRemaining in responseHeaders and Consts.headerRateLimit in responseHeaders:
+        if (
+            Consts.headerRateRemaining in responseHeaders
+            and Consts.headerRateLimit in responseHeaders
+        ):
             self.rate_limiting = (
                 # ints expected but sometimes floats returned: https://github.com/PyGithub/PyGithub/pull/2697
                 int(float(responseHeaders[Consts.headerRateRemaining])),
@@ -1252,12 +1349,16 @@ class Requester:
             )
         if Consts.headerRateReset in responseHeaders:
             # ints expected but sometimes floats returned: https://github.com/PyGithub/PyGithub/pull/2697
-            self.rate_limiting_resettime = int(float(responseHeaders[Consts.headerRateReset]))
+            self.rate_limiting_resettime = int(
+                float(responseHeaders[Consts.headerRateReset])
+            )
 
         if Consts.headerOAuthScopes in responseHeaders:
             self.oauth_scopes = responseHeaders[Consts.headerOAuthScopes].split(", ")
 
-        self.DEBUG_ON_RESPONSE(status, responseHeaders, output if isinstance(output, str) else "stream")
+        self.DEBUG_ON_RESPONSE(
+            status, responseHeaders, output if isinstance(output, str) else "stream"
+        )
 
         return status, responseHeaders, output
 
@@ -1287,13 +1388,17 @@ class Requester:
                 if isinstance(input, IOBase):
                     input.close()
 
-            self.__log(verb, url, requestHeaders, input, status, responseHeaders, output)
+            self.__log(
+                verb, url, requestHeaders, input, status, responseHeaders, output
+            )
 
             if status == 202 and (
                 verb == "GET" or verb == "HEAD"
             ):  # only for requests that are considered 'safe' in RFC 2616
                 time.sleep(Consts.PROCESSING_202_WAIT_TIME)
-                return self.__requestRaw(original_cnx, verb, url, requestHeaders, input, stream=stream)
+                return self.__requestRaw(
+                    original_cnx, verb, url, requestHeaders, input, stream=stream
+                )
 
             if status == 301 and "location" in responseHeaders:
                 location = responseHeaders["location"]
@@ -1310,27 +1415,43 @@ class Requester:
                     )
                 if o.path == url:
                     port = ":" + str(self.__port) if self.__port is not None else ""
-                    requested_location = f"{self.__scheme}://{self.__hostname}{port}{url}"
+                    requested_location = (
+                        f"{self.__scheme}://{self.__hostname}{port}{url}"
+                    )
                     raise RuntimeError(
                         f"Requested {requested_location} but server redirected to {location}, "
                         f"you may need to correct your Github server URL "
                         f"via base_url: Github(base_url=...)"
                     )
                 if self._logger.isEnabledFor(logging.INFO):
-                    self._logger.info(f"Following Github server redirection from {url} to {o.path}")
-                return self.__requestRaw(original_cnx, verb, o.path, requestHeaders, input, stream=stream)
+                    self._logger.info(
+                        f"Following Github server redirection from {url} to {o.path}"
+                    )
+                return self.__requestRaw(
+                    original_cnx, verb, o.path, requestHeaders, input, stream=stream
+                )
             if status == 302 and follow_302_redirect and "location" in responseHeaders:
                 location = responseHeaders["location"]
                 o = urllib.parse.urlparse(location)
                 cnx = self.__customConnection(location)
                 path = self.__makeAbsoluteUrl(location)
                 if self._logger.isEnabledFor(logging.DEBUG):
-                    self._logger.debug(f"Following Github server redirection (302) from {url} to {o.path}")
+                    self._logger.debug(
+                        f"Following Github server redirection (302) from {url} to {o.path}"
+                    )
                 # remove auth to not leak authentication to redirection location
                 if o.hostname != self.__hostname:
-                    requestHeaders = {k: v for k, v in requestHeaders.items() if k != "Authorization"}
+                    requestHeaders = {
+                        k: v for k, v in requestHeaders.items() if k != "Authorization"
+                    }
                 return self.__requestRaw(
-                    cnx, verb, path, requestHeaders, input, stream=stream, follow_302_redirect=True
+                    cnx,
+                    verb,
+                    path,
+                    requestHeaders,
+                    input,
+                    stream=stream,
+                    follow_302_redirect=True,
                 )
             return status, responseHeaders, output
         finally:
@@ -1348,8 +1469,16 @@ class Requester:
         last_request = max(requests) if requests else 0
         last_write = max(writes) if writes else 0
 
-        next_request = (last_request + self.__seconds_between_requests) if self.__seconds_between_requests else 0
-        next_write = (last_write + self.__seconds_between_writes) if self.__seconds_between_writes else 0
+        next_request = (
+            (last_request + self.__seconds_between_requests)
+            if self.__seconds_between_requests
+            else 0
+        )
+        next_write = (
+            (last_write + self.__seconds_between_writes)
+            if self.__seconds_between_writes
+            else 0
+        )
 
         next = next_request if verb == "GET" else max(next_request, next_write)
         defer = max(next - datetime.now(timezone.utc).timestamp(), 0)
@@ -1381,11 +1510,19 @@ class Requester:
         if hostname is None:
             hostname = self.__hostname
 
-        if self.__persist and self.__connection is not None and hostname == self.__connection.host:
+        if (
+            self.__persist
+            and self.__connection is not None
+            and hostname == self.__connection.host
+        ):
             return self.__connection
 
         with self.__connection_lock:
-            if self.__persist and self.__connection is not None and hostname == self.__connection.host:
+            if (
+                self.__persist
+                and self.__connection is not None
+                and hostname == self.__connection.host
+            ):
                 return self.__connection
             if self.__connection is not None:
                 self.__connection.close()
@@ -1436,9 +1573,7 @@ class Requester:
 
 
 class WithRequester(Generic[T]):
-    """
-    Mixin class that allows to set a requester.
-    """
+    """Mixin class that allows to set a requester."""
 
     __requester: Requester
 

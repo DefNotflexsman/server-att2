@@ -47,16 +47,23 @@ class RequiredPullRequestReviews(Framework.TestCase):
     def setUp(self):
         super().setUp()
         self.required_pull_request_reviews = (
-            self.g.get_user().get_repo("PyGithub").get_branch("integrations").get_required_pull_request_reviews()
+            self.g.get_user()
+            .get_repo("PyGithub")
+            .get_branch("integrations")
+            .get_required_pull_request_reviews()
         )
 
     def testAttributes(self):
-        self.assertIsNone(self.required_pull_request_reviews.bypass_pull_request_allowances)
+        self.assertIsNone(
+            self.required_pull_request_reviews.bypass_pull_request_allowances
+        )
         self.assertTrue(self.required_pull_request_reviews.dismiss_stale_reviews)
         self.assertIsNone(self.required_pull_request_reviews.dismissal_restrictions)
         self.assertTrue(self.required_pull_request_reviews.require_code_owner_reviews)
         self.assertIsNone(self.required_pull_request_reviews.require_last_push_approval)
-        self.assertEqual(self.required_pull_request_reviews.required_approving_review_count, 3)
+        self.assertEqual(
+            self.required_pull_request_reviews.required_approving_review_count, 3
+        )
         self.assertEqual(
             self.required_pull_request_reviews.url,
             "https://api.github.com/repos/jacquev6/PyGithub/branches/integrations/protection/required_pull_request_reviews",
@@ -74,7 +81,9 @@ class RequiredPullRequestReviews(Framework.TestCase):
             .get_branch("integrations")
             .get_required_pull_request_reviews()
         )
-        self.assertIsNone(required_pull_request_reviews.bypass_pull_request_allowances.apps)
+        self.assertIsNone(
+            required_pull_request_reviews.bypass_pull_request_allowances.apps
+        )
         self.assertListKeyEqual(
             required_pull_request_reviews.bypass_pull_request_allowances.users,
             lambda u: u.login,

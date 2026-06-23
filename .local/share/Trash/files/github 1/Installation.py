@@ -75,8 +75,7 @@ INTEGRATION_PREVIEW_HEADERS = {"Accept": Consts.mediaTypeIntegrationPreview}
 
 
 class Installation(NonCompletableGithubObject):
-    """
-    This class represents Installations.
+    """This class represents Installations.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/apps#installations
@@ -84,7 +83,6 @@ class Installation(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/installation
-
     """
 
     def __init__(
@@ -186,11 +184,10 @@ class Installation(NonCompletableGithubObject):
 
     @property
     def requester(self) -> Requester:
-        """
-        Return my Requester object.
+        """Return my Requester object.
 
-        For example, to make requests to API endpoints not yet supported by PyGitHub.
-
+        For example, to make requests to API endpoints not yet supported
+        by PyGitHub.
         """
         return self._requester
 
@@ -242,7 +239,9 @@ class Installation(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "access_tokens_url" in attributes:  # pragma no branch
-            self._access_tokens_url = self._makeStringAttribute(attributes["access_tokens_url"])
+            self._access_tokens_url = self._makeStringAttribute(
+                attributes["access_tokens_url"]
+            )
         if "account" in attributes:  # pragma no branch
             self._account = self._makeUnionClassAttributeFromTypeKeyAndValueKey(
                 "target_type",
@@ -265,7 +264,9 @@ class Installation(NonCompletableGithubObject):
         if "events" in attributes:  # pragma no branch
             self._events = self._makeListOfStringsAttribute(attributes["events"])
         if "has_multiple_single_files" in attributes:  # pragma no branch
-            self._has_multiple_single_files = self._makeBoolAttribute(attributes["has_multiple_single_files"])
+            self._has_multiple_single_files = self._makeBoolAttribute(
+                attributes["has_multiple_single_files"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
@@ -273,17 +274,27 @@ class Installation(NonCompletableGithubObject):
         if "permissions" in attributes:  # pragma no branch
             self._permissions = self._makeDictAttribute(attributes["permissions"])
         if "repositories_url" in attributes:  # pragma no branch
-            self._repositories_url = self._makeStringAttribute(attributes["repositories_url"])
+            self._repositories_url = self._makeStringAttribute(
+                attributes["repositories_url"]
+            )
         if "repository_selection" in attributes:  # pragma no branch
-            self._repository_selection = self._makeStringAttribute(attributes["repository_selection"])
+            self._repository_selection = self._makeStringAttribute(
+                attributes["repository_selection"]
+            )
         if "single_file_name" in attributes:  # pragma no branch
-            self._single_file_name = self._makeStringAttribute(attributes["single_file_name"])
+            self._single_file_name = self._makeStringAttribute(
+                attributes["single_file_name"]
+            )
         if "single_file_paths" in attributes:  # pragma no branch
-            self._single_file_paths = self._makeListOfStringsAttribute(attributes["single_file_paths"])
+            self._single_file_paths = self._makeListOfStringsAttribute(
+                attributes["single_file_paths"]
+            )
         if "suspended_at" in attributes:  # pragma no branch
             self._suspended_at = self._makeDatetimeAttribute(attributes["suspended_at"])
         if "suspended_by" in attributes:  # pragma no branch
-            self._suspended_by = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["suspended_by"])
+            self._suspended_by = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["suspended_by"]
+            )
         if "target_id" in attributes:  # pragma no branch
             self._target_id = self._makeIntAttribute(attributes["target_id"])
         if "target_type" in attributes:  # pragma no branch

@@ -66,22 +66,38 @@ class Issue(Framework.TestCase):
         self.assertEqual(self.issue.body, "Body edited by PyGithub\n")
         self.assertIsNone(self.issue.body_html)
         self.assertIsNone(self.issue.body_text)
-        self.assertEqual(self.issue.closed_at, datetime(2012, 5, 26, 14, 59, 33, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.issue.closed_at, datetime(2012, 5, 26, 14, 59, 33, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.issue.closed_by.login, "jacquev6")
         self.assertEqual(self.issue.comments, 3)
-        self.assertEqual(self.issue.comments_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28/comments")
-        self.assertEqual(self.issue.created_at, datetime(2012, 5, 19, 10, 38, 23, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.issue.comments_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/28/comments",
+        )
+        self.assertEqual(
+            self.issue.created_at,
+            datetime(2012, 5, 19, 10, 38, 23, tzinfo=timezone.utc),
+        )
         self.assertIsNone(self.issue.draft)
-        self.assertEqual(self.issue.events_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28/events")
-        self.assertEqual(self.issue.html_url, "https://github.com/PyGithub/PyGithub/issues/28")
+        self.assertEqual(
+            self.issue.events_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/28/events",
+        )
+        self.assertEqual(
+            self.issue.html_url, "https://github.com/PyGithub/PyGithub/issues/28"
+        )
         self.assertEqual(self.issue.id, 4653757)
         self.assertEqual(self.issue.issue_dependencies_summary.blocking, 0)
         self.assertEqual(self.issue.issue_dependencies_summary.blocked_by, 0)
         self.assertEqual(self.issue.issue_dependencies_summary.total_blocking, 1)
         self.assertEqual(self.issue.issue_dependencies_summary.total_blocked_by, 1)
-        self.assertListKeyEqual(self.issue.labels, lambda lb: lb.name, ["bug", "question"])
+        self.assertListKeyEqual(
+            self.issue.labels, lambda lb: lb.name, ["bug", "question"]
+        )
         self.assertEqual(
-            self.issue.labels_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28/labels{/name}"
+            self.issue.labels_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/28/labels{/name}",
         )
         self.assertEqual(self.issue.locked, False)
         self.assertEqual(self.issue.milestone.title, "Version 1.4")
@@ -106,23 +122,35 @@ class Issue(Framework.TestCase):
             },
         )
         self.assertEqual(self.issue.repository.full_name, "PyGithub/PyGithub")
-        self.assertEqual(self.issue.repository_url, "https://api.github.com/repos/PyGithub/PyGithub")
+        self.assertEqual(
+            self.issue.repository_url, "https://api.github.com/repos/PyGithub/PyGithub"
+        )
         self.assertEqual(self.issue.state, "closed")
         self.assertEqual(self.issue.state_reason, "completed")
         self.assertEqual(self.issue.sub_issues_summary.completed, 1)
         self.assertEqual(self.issue.sub_issues_summary.percent_completed, 100)
         self.assertEqual(self.issue.sub_issues_summary.total, 1)
         self.assertIsNone(self.issue.text_matches)
-        self.assertEqual(self.issue.timeline_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28/timeline")
+        self.assertEqual(
+            self.issue.timeline_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/28/timeline",
+        )
         self.assertEqual(self.issue.title, "Issue created by PyGithub")
         self.assertEqual(self.issue.type.name, "Bug")
-        self.assertEqual(self.issue.updated_at, datetime(2025, 8, 15, 19, 35, 40, tzinfo=timezone.utc))
-        self.assertEqual(self.issue.url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28")
+        self.assertEqual(
+            self.issue.updated_at,
+            datetime(2025, 8, 15, 19, 35, 40, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.issue.url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28"
+        )
         self.assertFalse(self.issue.locked)
         self.assertIsNone(self.issue.active_lock_reason)
         self.assertEqual(self.issue.user.login, "jacquev6")
         self.assertEqual(self.issue.repository.name, "PyGithub")
-        self.assertEqual(repr(self.issue), 'Issue(title="Issue created by PyGithub", number=28)')
+        self.assertEqual(
+            repr(self.issue), 'Issue(title="Issue created by PyGithub", number=28)'
+        )
         self.assertEqual(
             self.issue.reactions,
             {
@@ -200,17 +228,23 @@ class Issue(Framework.TestCase):
         self.assertEqual(comment.id, 5808311)
 
     def testGetComments(self):
-        self.assertListKeyEqual(self.issue.get_comments(), lambda c: c.user.login, ["jacquev6", "roskakori"])
+        self.assertListKeyEqual(
+            self.issue.get_comments(), lambda c: c.user.login, ["jacquev6", "roskakori"]
+        )
 
     def testGetCommentsSince(self):
         self.assertListKeyEqual(
-            self.issue.get_comments(datetime(2012, 5, 26, 13, 59, 33, tzinfo=timezone.utc)),
+            self.issue.get_comments(
+                datetime(2012, 5, 26, 13, 59, 33, tzinfo=timezone.utc)
+            ),
             lambda c: c.user.login,
             ["jacquev6", "roskakori"],
         )
 
     def testGetEvents(self):
-        self.assertListKeyEqual(self.issue.get_events(), lambda e: e.id, [15819975, 15820048])
+        self.assertListKeyEqual(
+            self.issue.get_events(), lambda e: e.id, [15819975, 15820048]
+        )
 
     def testGetLabels(self):
         self.assertListKeyEqual(
@@ -247,7 +281,9 @@ class Issue(Framework.TestCase):
             ["Project management", "Question"],
         )
         self.issue.remove_from_labels(question)
-        self.assertListKeyEqual(self.issue.get_labels(), lambda lb: lb.name, ["Project management"])
+        self.assertListKeyEqual(
+            self.issue.get_labels(), lambda lb: lb.name, ["Project management"]
+        )
         self.issue.add_to_labels(bug, question)
         self.assertListKeyEqual(
             self.issue.get_labels(),
@@ -270,7 +306,9 @@ class Issue(Framework.TestCase):
             ["Project management", "Question"],
         )
         self.issue.remove_from_labels(question)
-        self.assertListKeyEqual(self.issue.get_labels(), lambda lb: lb.name, ["Project management"])
+        self.assertListKeyEqual(
+            self.issue.get_labels(), lambda lb: lb.name, ["Project management"]
+        )
         self.issue.add_to_labels(bug, question)
         self.assertListKeyEqual(
             self.issue.get_labels(),
@@ -289,7 +327,9 @@ class Issue(Framework.TestCase):
         self.issue.delete_labels()
         self.assertListKeyEqual(self.issue.get_labels(), None, [])
         self.issue.set_labels(bug, question)
-        self.assertListKeyEqual(self.issue.get_labels(), lambda lb: lb.name, ["Bug", "Question"])
+        self.assertListKeyEqual(
+            self.issue.get_labels(), lambda lb: lb.name, ["Bug", "Question"]
+        )
 
     def testDeleteAndSetLabelsWithStringArguments(self):
         bug = "Bug"
@@ -302,7 +342,9 @@ class Issue(Framework.TestCase):
         self.issue.delete_labels()
         self.assertListKeyEqual(self.issue.get_labels(), None, [])
         self.issue.set_labels(bug, question)
-        self.assertListKeyEqual(self.issue.get_labels(), lambda lb: lb.name, ["Bug", "Question"])
+        self.assertListKeyEqual(
+            self.issue.get_labels(), lambda lb: lb.name, ["Bug", "Question"]
+        )
 
     def testGetReactions(self):
         reactions = self.issue.get_reactions()
@@ -355,7 +397,9 @@ class Issue(Framework.TestCase):
                 self.assertIsNotNone(event.source)
                 self.assertEqual(event.source.type, "issue")
                 self.assertEqual(event.source.issue.number, 857)
-                self.assertEqual(repr(event.source), 'TimelineEventSource(type="issue")')
+                self.assertEqual(
+                    repr(event.source), 'TimelineEventSource(type="issue")'
+                )
             else:
                 self.assertIsNotNone(event.id)
                 self.assertIsNotNone(event.node_id)

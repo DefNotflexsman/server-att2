@@ -53,7 +53,9 @@ class CheckSuite(Framework.TestCase):
             "https://api.github.com/repos/wrecker/PySample/check-suites/1004503837/check-runs",
         )
         self.assertEqual(cs.conclusion, "success")
-        self.assertEqual(cs.created_at, datetime(2020, 8, 4, 5, 6, 54, tzinfo=timezone.utc))
+        self.assertEqual(
+            cs.created_at, datetime(2020, 8, 4, 5, 6, 54, tzinfo=timezone.utc)
+        )
         self.assertEqual(cs.head_branch, "wrecker-patch-1")
         self.assertEqual(cs.head_commit.sha, "fd09d934bcce792176d6b79d6d0387e938b62b7a")
         self.assertEqual(cs.head_sha, "fd09d934bcce792176d6b79d6d0387e938b62b7a")
@@ -63,11 +65,15 @@ class CheckSuite(Framework.TestCase):
         self.assertEqual(cs.node_id, "MDEwOkNoZWNrU3VpdGUxMDA0NTAzODM3")
         self.assertEqual(len(cs.pull_requests), 1)
         self.assertEqual(cs.pull_requests[0].id, 462527907)
-        self.assertEqual(cs.repository.url, "https://api.github.com/repos/wrecker/PySample")
+        self.assertEqual(
+            cs.repository.url, "https://api.github.com/repos/wrecker/PySample"
+        )
         self.assertEqual(cs.rerequestable, True)
         self.assertEqual(cs.runs_rerequestable, True)
         self.assertEqual(cs.status, "completed")
-        self.assertEqual(cs.updated_at, datetime(2020, 8, 4, 5, 7, 40, tzinfo=timezone.utc))
+        self.assertEqual(
+            cs.updated_at, datetime(2020, 8, 4, 5, 7, 40, tzinfo=timezone.utc)
+        )
         self.assertEqual(
             cs.url,
             "https://api.github.com/repos/wrecker/PySample/check-suites/1004503837",
@@ -75,7 +81,9 @@ class CheckSuite(Framework.TestCase):
 
     def testLazyAttributes(self):
         suite = self.g.withLazy(True).get_repo("lazy/repo").get_check_suite(42)
-        self.assertEqual(str(suite), 'CheckSuite(url="/repos/lazy/repo/check-suites/42", id=42)')
+        self.assertEqual(
+            str(suite), 'CheckSuite(url="/repos/lazy/repo/check-suites/42", id=42)'
+        )
         self.assertEqual(suite.id, 42)
         self.assertEqual(suite.url, "/repos/lazy/repo/check-suites/42")
 
@@ -173,7 +181,9 @@ class CheckSuite(Framework.TestCase):
             if app["app_id"] == data[0]["app_id"]:
                 setting = app["setting"]
         self.assertFalse(setting)
-        self.assertEqual(repo_preferences.repository.full_name, "dhruvmanila/pygithub-testing")
+        self.assertEqual(
+            repo_preferences.repository.full_name, "dhruvmanila/pygithub-testing"
+        )
         data = [{"app_id": 85429, "setting": True}]
         repo_preferences = self.test_repo.update_check_suites_preferences(data)
         for app in repo_preferences.preferences["auto_trigger_checks"]:

@@ -46,7 +46,9 @@ class UserKey(Framework.TestCase):
         self.key = self.g.get_user().get_key(2626650)
 
     def testAttributes(self):
-        self.assertEqual(self.key.created_at, datetime(2024, 12, 23, 12, 34, 56, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.key.created_at, datetime(2024, 12, 23, 12, 34, 56, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.key.id, 2626650)
         self.assertEqual(
             self.key.key,

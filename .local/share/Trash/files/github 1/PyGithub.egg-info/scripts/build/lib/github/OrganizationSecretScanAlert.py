@@ -37,8 +37,7 @@ if TYPE_CHECKING:
 
 
 class OrganizationSecretScanAlert(SecretScanAlert):
-    """
-    This class represents a Secret Scanning Alert on an organization.
+    """This class represents a Secret Scanning Alert on an organization.
 
     The reference can be found here
     https://docs.github.com/en/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-an-organization
@@ -46,7 +45,6 @@ class OrganizationSecretScanAlert(SecretScanAlert):
     The OpenAPI schema can be found at
 
     - /components/schemas/organization-secret-scanning-alert
-
     """
 
     def _initAttributes(self) -> None:
@@ -60,4 +58,6 @@ class OrganizationSecretScanAlert(SecretScanAlert):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         super()._useAttributes(attributes)
         if "repository" in attributes:
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )

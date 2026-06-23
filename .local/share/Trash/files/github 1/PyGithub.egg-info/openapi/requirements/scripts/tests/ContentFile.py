@@ -54,15 +54,23 @@ class ContentFile(Framework.TestCase):
             },
         )
         self.assertIsNone(self.file.commit)
-        self.assertTrue(self.file.content.startswith("IyBQeUdpdEh1YgoKWyFbUHlQSV0oaHR0cHM6Ly9p"))
-        self.assertEqual(self.file.download_url, "https://raw.githubusercontent.com/PyGithub/PyGithub/main/README.md")
+        self.assertTrue(
+            self.file.content.startswith("IyBQeUdpdEh1YgoKWyFbUHlQSV0oaHR0cHM6Ly9p")
+        )
+        self.assertEqual(
+            self.file.download_url,
+            "https://raw.githubusercontent.com/PyGithub/PyGithub/main/README.md",
+        )
         self.assertEqual(self.file.encoding, "base64")
         self.assertIsNone(self.file.file_size)
         self.assertEqual(
             self.file.git_url,
             "https://api.github.com/repos/PyGithub/PyGithub/git/blobs/0d9df5bfb7d4b93443c130bc8f4eea5dd3f01205",
         )
-        self.assertEqual(self.file.html_url, "https://github.com/PyGithub/PyGithub/blob/main/README.md")
+        self.assertEqual(
+            self.file.html_url,
+            "https://github.com/PyGithub/PyGithub/blob/main/README.md",
+        )
         self.assertIsNone(self.file.language)
         self.assertIsNone(self.file.last_modified_at)
         self.assertIsNone(self.file.license)
@@ -82,7 +90,13 @@ class ContentFile(Framework.TestCase):
         self.assertEqual(len(self.file.content), 3425)
         self.assertEqual(len(self.file.decoded_content), 2524)
         self.assertEqual(self.file.sha, "0d9df5bfb7d4b93443c130bc8f4eea5dd3f01205")
-        self.assertEqual(self.file.download_url, "https://raw.githubusercontent.com/PyGithub/PyGithub/main/README.md")
+        self.assertEqual(
+            self.file.download_url,
+            "https://raw.githubusercontent.com/PyGithub/PyGithub/main/README.md",
+        )
         self.assertIsNone(self.file.license)
         self.assertEqual(repr(self.file), 'ContentFile(path="README.md")')
-        self.assertEqual(self.file.url, "https://api.github.com/repos/PyGithub/PyGithub/contents/README.md?ref=main")
+        self.assertEqual(
+            self.file.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/contents/README.md?ref=main",
+        )

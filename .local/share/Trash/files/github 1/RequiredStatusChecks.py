@@ -43,12 +43,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from github.GithubObject import Attribute, CompletableGithubObject, NonCompletableGithubObject, NotSet
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NonCompletableGithubObject,
+    NotSet,
+)
 
 
 class Check(NonCompletableGithubObject):
-    """
-    This class represents Check.
+    """This class represents Check.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-status-checks-protection
@@ -57,7 +61,6 @@ class Check(NonCompletableGithubObject):
 
     - /components/schemas/protected-branch-required-status-check/properties/checks/items
     - /components/schemas/status-check-policy/properties/checks/items
-
     """
 
     def _initAttributes(self) -> None:
@@ -65,7 +68,9 @@ class Check(NonCompletableGithubObject):
         self._context: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"app_id": self._app_id.value, "context": self._context.value})
+        return self.get__repr__(
+            {"app_id": self._app_id.value, "context": self._context.value}
+        )
 
     @property
     def app_id(self) -> int:
@@ -83,8 +88,7 @@ class Check(NonCompletableGithubObject):
 
 
 class RequiredStatusChecks(CompletableGithubObject):
-    """
-    This class represents Required Status Checks.
+    """This class represents Required Status Checks.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-status-checks-protection
@@ -93,7 +97,6 @@ class RequiredStatusChecks(CompletableGithubObject):
 
     - /components/schemas/protected-branch-required-status-check
     - /components/schemas/status-check-policy
-
     """
 
     def _initAttributes(self) -> None:
@@ -145,7 +148,9 @@ class RequiredStatusChecks(CompletableGithubObject):
         if "contexts_url" in attributes:  # pragma no branch
             self._contexts_url = self._makeStringAttribute(attributes["contexts_url"])
         if "enforcement_level" in attributes:  # pragma no branch
-            self._enforcement_level = self._makeStringAttribute(attributes["enforcement_level"])
+            self._enforcement_level = self._makeStringAttribute(
+                attributes["enforcement_level"]
+            )
         if "strict" in attributes:  # pragma no branch
             self._strict = self._makeBoolAttribute(attributes["strict"])
         if "url" in attributes:  # pragma no branch

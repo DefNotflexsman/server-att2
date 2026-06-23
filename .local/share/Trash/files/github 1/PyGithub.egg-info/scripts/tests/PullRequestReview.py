@@ -88,7 +88,9 @@ class PullRequestReview(Framework.TestCase):
         self.assertIsNone(self.pullreview.node_id)
         self.assertEqual(self.pullreview.user.login, "jzelinskie")
         self.assertEqual(self.pullreview.body, "")
-        self.assertEqual(self.pullreview.commit_id, "7a0fcb27b7cd6c346fc3f76216ccb6e0f4ca3bcc")
+        self.assertEqual(
+            self.pullreview.commit_id, "7a0fcb27b7cd6c346fc3f76216ccb6e0f4ca3bcc"
+        )
         self.assertEqual(self.pullreview.state, "APPROVED")
         self.assertEqual(
             self.pullreview.html_url,

@@ -54,8 +54,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class RepositoryKey(CompletableGithubObject):
-    """
-    This class represents RepositoryKeys.
+    """This class represents RepositoryKeys.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#deploy-keys
@@ -63,7 +62,6 @@ class RepositoryKey(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/deploy-key
-
     """
 
     def _initAttributes(self) -> None:
@@ -153,7 +151,9 @@ class RepositoryKey(CompletableGithubObject):
         if "key" in attributes:  # pragma no branch
             self._key = self._makeStringAttribute(attributes["key"])
         if "last_used" in attributes:  # pragma no branch
-            assert attributes["last_used"] is None or isinstance(attributes["last_used"], str), attributes["last_used"]
+            assert attributes["last_used"] is None or isinstance(
+                attributes["last_used"], str
+            ), attributes["last_used"]
             self._last_used = self._makeDatetimeAttribute(attributes["last_used"])
         if "read_only" in attributes:  # pragma no branch
             self._read_only = self._makeBoolAttribute(attributes["read_only"])

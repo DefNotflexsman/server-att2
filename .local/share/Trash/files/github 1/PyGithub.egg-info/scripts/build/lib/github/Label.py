@@ -47,12 +47,17 @@ import urllib.parse
 from typing import Any
 
 from github import Consts
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_optional
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_optional,
+)
 
 
 class Label(CompletableGithubObject):
-    """
-    This class represents Labels.
+    """This class represents Labels.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#labels
@@ -66,7 +71,6 @@ class Label(CompletableGithubObject):
     - /components/schemas/nullable-issue/properties/labels/items/oneOf/1
     - /components/schemas/pull-request-simple/properties/labels/items
     - /components/schemas/pull-request/properties/labels/items
-
     """
 
     def _initAttributes(self) -> None:
@@ -133,7 +137,9 @@ class Label(CompletableGithubObject):
         assert isinstance(name, str), name
         assert isinstance(color, str), color
         assert is_optional(description, str), description
-        post_parameters = NotSet.remove_unset_items({"new_name": name, "color": color, "description": description})
+        post_parameters = NotSet.remove_unset_items(
+            {"new_name": name, "color": color, "description": description}
+        )
         headers, data = self._requester.requestJsonAndCheck(
             "PATCH",
             self.url,

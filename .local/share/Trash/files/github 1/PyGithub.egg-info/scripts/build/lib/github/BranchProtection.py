@@ -51,8 +51,7 @@ if TYPE_CHECKING:
 
 
 class BranchProtection(github.GithubObject.CompletableGithubObject):
-    """
-    This class represents Branch Protection.
+    """This class represents Branch Protection.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-branch-protection
@@ -61,7 +60,6 @@ class BranchProtection(github.GithubObject.CompletableGithubObject):
 
     - /components/schemas/branch-protection
     - /components/schemas/protected-branch
-
     """
 
     def _initAttributes(self) -> None:
@@ -76,7 +74,9 @@ class BranchProtection(github.GithubObject.CompletableGithubObject):
         self._protection_url: Attribute[str] = NotSet
         self._required_conversation_resolution: Attribute[bool] = NotSet
         self._required_linear_history: Attribute[bool] = github.GithubObject.NotSet
-        self._required_pull_request_reviews: Attribute[RequiredPullRequestReviews] = NotSet
+        self._required_pull_request_reviews: Attribute[
+            RequiredPullRequestReviews
+        ] = NotSet
         self._required_signatures: Attribute[bool] = NotSet
         self._required_status_checks: Attribute[RequiredStatusChecks] = NotSet
         self._restrictions: Attribute[dict[str, Any]] = NotSet
@@ -173,40 +173,60 @@ class BranchProtection(github.GithubObject.CompletableGithubObject):
     def get_team_push_restrictions(self) -> PaginatedList[Team] | None:
         if not is_defined(self._team_push_restrictions):
             return None
-        return github.PaginatedList.PaginatedList(github.Team.Team, self._requester, self._team_push_restrictions, None)
+        return github.PaginatedList.PaginatedList(
+            github.Team.Team, self._requester, self._team_push_restrictions, None
+        )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "allow_deletions" in attributes:  # pragma no branch
-            self._allow_deletions = self._makeBoolAttribute(attributes["allow_deletions"]["enabled"])
+            self._allow_deletions = self._makeBoolAttribute(
+                attributes["allow_deletions"]["enabled"]
+            )
         if "allow_force_pushes" in attributes:  # pragma no branch
-            self._allow_force_pushes = self._makeBoolAttribute(attributes["allow_force_pushes"]["enabled"])
+            self._allow_force_pushes = self._makeBoolAttribute(
+                attributes["allow_force_pushes"]["enabled"]
+            )
         if "allow_fork_syncing" in attributes:  # pragma no branch
-            self._allow_fork_syncing = self._makeBoolAttribute(attributes["allow_fork_syncing"]["enabled"])
+            self._allow_fork_syncing = self._makeBoolAttribute(
+                attributes["allow_fork_syncing"]["enabled"]
+            )
         if "block_creations" in attributes:  # pragma no branch
-            self._block_creations = self._makeBoolAttribute(attributes["block_creations"]["enabled"])
+            self._block_creations = self._makeBoolAttribute(
+                attributes["block_creations"]["enabled"]
+            )
         if "enabled" in attributes:  # pragma no branch
             self._enabled = self._makeBoolAttribute(attributes["enabled"])
         if "enforce_admins" in attributes:  # pragma no branch
-            self._enforce_admins = self._makeBoolAttribute(attributes["enforce_admins"]["enabled"])
+            self._enforce_admins = self._makeBoolAttribute(
+                attributes["enforce_admins"]["enabled"]
+            )
         if "lock_branch" in attributes:  # pragma no branch
-            self._lock_branch = self._makeBoolAttribute(attributes["lock_branch"]["enabled"])
+            self._lock_branch = self._makeBoolAttribute(
+                attributes["lock_branch"]["enabled"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "protection_url" in attributes:  # pragma no branch
-            self._protection_url = self._makeStringAttribute(attributes["protection_url"])
+            self._protection_url = self._makeStringAttribute(
+                attributes["protection_url"]
+            )
         if "required_conversation_resolution" in attributes:  # pragma no branch
             self._required_conversation_resolution = self._makeBoolAttribute(
                 attributes["required_conversation_resolution"]["enabled"]
             )
         if "required_linear_history" in attributes:  # pragma no branch
-            self._required_linear_history = self._makeBoolAttribute(attributes["required_linear_history"]["enabled"])
+            self._required_linear_history = self._makeBoolAttribute(
+                attributes["required_linear_history"]["enabled"]
+            )
         if "required_pull_request_reviews" in attributes:  # pragma no branch
             self._required_pull_request_reviews = self._makeClassAttribute(
                 github.RequiredPullRequestReviews.RequiredPullRequestReviews,
                 attributes["required_pull_request_reviews"],
             )
         if "required_signatures" in attributes:  # pragma no branch
-            self._required_signatures = self._makeBoolAttribute(attributes["required_signatures"]["enabled"])
+            self._required_signatures = self._makeBoolAttribute(
+                attributes["required_signatures"]["enabled"]
+            )
         if "required_status_checks" in attributes:  # pragma no branch
             self._required_status_checks = self._makeClassAttribute(
                 github.RequiredStatusChecks.RequiredStatusChecks,

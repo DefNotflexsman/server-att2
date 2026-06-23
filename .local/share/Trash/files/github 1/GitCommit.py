@@ -47,7 +47,13 @@ from typing import TYPE_CHECKING, Any
 import github.GitAuthor
 import github.GitCommitVerification
 import github.GitTree
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, is_defined, is_undefined
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    is_defined,
+    is_undefined,
+)
 
 if TYPE_CHECKING:
     from github.GitAuthor import GitAuthor
@@ -56,8 +62,7 @@ if TYPE_CHECKING:
 
 
 class GitCommit(CompletableGithubObject):
-    """
-    This class represents GitCommits.
+    """This class represents GitCommits.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/git#commits
@@ -72,7 +77,6 @@ class GitCommit(CompletableGithubObject):
     - /components/schemas/git-commit/properties/parents/items
     - /components/schemas/nullable-simple-commit
     - /components/schemas/simple-commit
-
     """
 
     def _initAttributes(self) -> None:
@@ -155,7 +159,9 @@ class GitCommit(CompletableGithubObject):
     def tree(self) -> GitTree:
         # if populated from a simple-commit, tree_id holds the sha
         if is_undefined(self._tree) and is_defined(self._tree_id):
-            return github.GitTree.GitTree(self._requester, self._headers, {"sha": self._tree_id.value})
+            return github.GitTree.GitTree(
+                self._requester, self._headers, {"sha": self._tree_id.value}
+            )
         self._completeIfNotSet(self._tree)
         return self._tree.value
 
@@ -176,11 +182,15 @@ class GitCommit(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author" in attributes:  # pragma no branch
-            self._author = self._makeClassAttribute(github.GitAuthor.GitAuthor, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.GitAuthor.GitAuthor, attributes["author"]
+            )
         if "comment_count" in attributes:  # pragma no branch
             self._comment_count = self._makeIntAttribute(attributes["comment_count"])
         if "committer" in attributes:  # pragma no branch
-            self._committer = self._makeClassAttribute(github.GitAuthor.GitAuthor, attributes["committer"])
+            self._committer = self._makeClassAttribute(
+                github.GitAuthor.GitAuthor, attributes["committer"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
@@ -190,18 +200,23 @@ class GitCommit(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "parents" in attributes:  # pragma no branch
-            self._parents = self._makeListOfClassesAttribute(GitCommit, attributes["parents"])
+            self._parents = self._makeListOfClassesAttribute(
+                GitCommit, attributes["parents"]
+            )
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "timestamp" in attributes:  # pragma no branch
             self._timestamp = self._makeDatetimeAttribute(attributes["timestamp"])
         if "tree" in attributes:  # pragma no branch
-            self._tree = self._makeClassAttribute(github.GitTree.GitTree, attributes["tree"])
+            self._tree = self._makeClassAttribute(
+                github.GitTree.GitTree, attributes["tree"]
+            )
         if "tree_id" in attributes:  # pragma no branch
             self._tree_id = self._makeStringAttribute(attributes["tree_id"])
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "verification" in attributes:  # pragma no branch
             self._verification = self._makeClassAttribute(
-                github.GitCommitVerification.GitCommitVerification, attributes["verification"]
+                github.GitCommitVerification.GitCommitVerification,
+                attributes["verification"],
             )

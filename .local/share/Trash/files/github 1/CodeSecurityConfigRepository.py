@@ -35,8 +35,7 @@ if TYPE_CHECKING:
 
 
 class CodeSecurityConfigRepository(NonCompletableGithubObject):
-    """
-    This class represents CodeSecurityConfigRepository.
+    """This class represents CodeSecurityConfigRepository.
 
     The reference can be found here
     https://docs.github.com/en/rest/code-security/configurations
@@ -44,7 +43,6 @@ class CodeSecurityConfigRepository(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-security-configuration-repositories
-
     """
 
     def _initAttributes(self) -> None:
@@ -64,6 +62,8 @@ class CodeSecurityConfigRepository(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "status" in attributes:  # pragma no branch
             self._status = self._makeStringAttribute(attributes["status"])

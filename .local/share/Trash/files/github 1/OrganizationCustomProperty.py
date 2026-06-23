@@ -27,16 +27,21 @@ from __future__ import annotations
 
 from typing import Any
 
-from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet, Opt, is_optional
+from github.GithubObject import (
+    Attribute,
+    NonCompletableGithubObject,
+    NotSet,
+    Opt,
+    is_optional,
+)
 
 
 class CustomProperty:
-    """
-    This class represents a CustomProperty for an Organization. Use this class to create a new post parameter object.
+    """This class represents a CustomProperty for an Organization. Use this
+    class to create a new post parameter object.
 
     The reference can be found here
     https://docs.github.com/en/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization
-
     """
 
     def __init__(
@@ -51,14 +56,22 @@ class CustomProperty:
     ):
         assert isinstance(property_name, str), property_name
         assert isinstance(value_type, str), value_type
-        assert value_type in ["string", "single_select", "multi_select", "true_false"], value_type
+        assert value_type in [
+            "string",
+            "single_select",
+            "multi_select",
+            "true_false",
+        ], value_type
         assert is_optional(required, bool), required
         assert is_optional(default_value, (type(None), str, list)), default_value
         assert is_optional(description, (str, type(None))), description
         assert is_optional(allowed_values, (list, type(None))), allowed_values
         assert is_optional(values_editable_by, (str, type(None))), values_editable_by
         if values_editable_by is not NotSet:
-            assert values_editable_by in ["org_actors", "org_and_repo_actors"], values_editable_by
+            assert values_editable_by in [
+                "org_actors",
+                "org_and_repo_actors",
+            ], values_editable_by
 
         self.property_name = property_name
         self.value_type = value_type
@@ -73,8 +86,7 @@ class CustomProperty:
 
 
 class OrganizationCustomProperty(NonCompletableGithubObject):
-    """
-    This class represents a CustomProperty for an Organization.
+    """This class represents a CustomProperty for an Organization.
 
     The reference can be found here
     https://docs.github.com/en/rest/orgs/custom-properties
@@ -82,7 +94,6 @@ class OrganizationCustomProperty(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/custom-property
-
     """
 
     def _initAttributes(self) -> None:
@@ -134,7 +145,9 @@ class OrganizationCustomProperty(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "allowed_values" in attributes:
-            self._allowed_values = self._makeListOfStringsAttribute(attributes["allowed_values"])
+            self._allowed_values = self._makeListOfStringsAttribute(
+                attributes["allowed_values"]
+            )
         if "default_value" in attributes:
             self._default_value = self._makeStringAttribute(attributes["default_value"])
         if "description" in attributes:
@@ -150,12 +163,13 @@ class OrganizationCustomProperty(NonCompletableGithubObject):
         if "value_type" in attributes:  # pragma no branch
             self._value_type = self._makeStringAttribute(attributes["value_type"])
         if "values_editable_by" in attributes:
-            self._values_editable_by = self._makeStringAttribute(attributes["values_editable_by"])
+            self._values_editable_by = self._makeStringAttribute(
+                attributes["values_editable_by"]
+            )
 
 
 class RepositoryCustomPropertyValues(NonCompletableGithubObject):
-    """
-    This class represents CustomPropertyValues for a Repository.
+    """This class represents CustomPropertyValues for a Repository.
 
     The reference can be found here
     https://docs.github.com/en/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories
@@ -163,7 +177,6 @@ class RepositoryCustomPropertyValues(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/org-repo-custom-property-values
-
     """
 
     def _initAttributes(self) -> None:
@@ -190,11 +203,17 @@ class RepositoryCustomPropertyValues(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "properties" in attributes:  # pragma no branch
-            properties = {p["property_name"]: p["value"] for p in attributes["properties"]}
+            properties = {
+                p["property_name"]: p["value"] for p in attributes["properties"]
+            }
             self._properties = self._makeDictAttribute(properties)
         if "repository_full_name" in attributes:  # pragma no branch
-            self._repository_full_name = self._makeStringAttribute(attributes["repository_full_name"])
+            self._repository_full_name = self._makeStringAttribute(
+                attributes["repository_full_name"]
+            )
         if "repository_id" in attributes:  # pragma no branch
             self._repository_id = self._makeIntAttribute(attributes["repository_id"])
         if "repository_name" in attributes:  # pragma no branch
-            self._repository_name = self._makeStringAttribute(attributes["repository_name"])
+            self._repository_name = self._makeStringAttribute(
+                attributes["repository_name"]
+            )

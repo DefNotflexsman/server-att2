@@ -49,11 +49,18 @@ class Membership(Framework.TestCase):
 
     def testAttributes(self):
         self.assertIsNone(self.membership.direct_membership)
-        self.assertIsNone(self.membership.enterprise_teams_providing_indirect_membership)
+        self.assertIsNone(
+            self.membership.enterprise_teams_providing_indirect_membership
+        )
         self.assertEqual(self.membership.organization.login, "github")
-        self.assertEqual(self.membership.organization_url, "https://api.github.com/orgs/invitocat")
+        self.assertEqual(
+            self.membership.organization_url, "https://api.github.com/orgs/invitocat"
+        )
         self.assertIsNone(self.membership.permissions)
         self.assertEqual(self.membership.role, "admin")
         self.assertEqual(self.membership.state, "pending")
-        self.assertEqual(self.membership.url, "https://api.github.com/orgs/invitocat/memberships/defunkt")
+        self.assertEqual(
+            self.membership.url,
+            "https://api.github.com/orgs/invitocat/memberships/defunkt",
+        )
         self.assertEqual(self.membership.user.login, "octocat")

@@ -56,8 +56,7 @@ if TYPE_CHECKING:
 
 
 class Membership(CompletableGithubObject):
-    """
-    This class represents Membership of an organization.
+    """This class represents Membership of an organization.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/orgs
@@ -66,12 +65,13 @@ class Membership(CompletableGithubObject):
 
     - /components/schemas/org-membership
     - /components/schemas/team-membership
-
     """
 
     def _initAttributes(self) -> None:
         self._direct_membership: Attribute[bool] = NotSet
-        self._enterprise_teams_providing_indirect_membership: Attribute[list[str]] = NotSet
+        self._enterprise_teams_providing_indirect_membership: Attribute[
+            list[str]
+        ] = NotSet
         self._organization: Attribute[Organization] = NotSet
         self._organization_url: Attribute[str] = NotSet
         self._permissions: Attribute[dict[str, Any]] = NotSet
@@ -130,15 +130,25 @@ class Membership(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "direct_membership" in attributes:  # pragma no branch
-            self._direct_membership = self._makeBoolAttribute(attributes["direct_membership"])
-        if "enterprise_teams_providing_indirect_membership" in attributes:  # pragma no branch
-            self._enterprise_teams_providing_indirect_membership = self._makeListOfStringsAttribute(
-                attributes["enterprise_teams_providing_indirect_membership"]
+            self._direct_membership = self._makeBoolAttribute(
+                attributes["direct_membership"]
+            )
+        if (
+            "enterprise_teams_providing_indirect_membership" in attributes
+        ):  # pragma no branch
+            self._enterprise_teams_providing_indirect_membership = (
+                self._makeListOfStringsAttribute(
+                    attributes["enterprise_teams_providing_indirect_membership"]
+                )
             )
         if "organization" in attributes:  # pragma no branch
-            self._organization = self._makeClassAttribute(github.Organization.Organization, attributes["organization"])
+            self._organization = self._makeClassAttribute(
+                github.Organization.Organization, attributes["organization"]
+            )
         if "organization_url" in attributes:  # pragma no branch
-            self._organization_url = self._makeStringAttribute(attributes["organization_url"])
+            self._organization_url = self._makeStringAttribute(
+                attributes["organization_url"]
+            )
         if "permissions" in attributes:  # pragma no branch
             self._permissions = self._makeDictAttribute(attributes["permissions"])
         if "role" in attributes:  # pragma no branch
@@ -148,4 +158,6 @@ class Membership(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

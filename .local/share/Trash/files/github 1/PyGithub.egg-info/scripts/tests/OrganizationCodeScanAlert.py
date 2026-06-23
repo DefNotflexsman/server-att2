@@ -43,16 +43,30 @@ class OrganizationCodeScanAlert(Framework.TestCase):
     def testMultipleAlerts(self):
         multiple_alerts = self.org.get_codescan_alerts()
         self.assertIsInstance(multiple_alerts, github.PaginatedList.PaginatedList)
-        self.assertIsInstance(multiple_alerts[0], github.OrganizationCodeScanAlert.OrganizationCodeScanAlert)
+        self.assertIsInstance(
+            multiple_alerts[0],
+            github.OrganizationCodeScanAlert.OrganizationCodeScanAlert,
+        )
         alert_list = [alert for alert in multiple_alerts]
         self.assertEqual(len(alert_list), 2)  # Update this when more alerts are added
 
         test_alert = alert_list[0]
         self.assertEqual(test_alert.number, 4)
-        self.assertEqual(test_alert.created_at, datetime(2020, 2, 13, 12, 29, 18, tzinfo=timezone.utc))
-        self.assertEqual(test_alert.updated_at, datetime(2025, 8, 25, 16, 3, 10, tzinfo=timezone.utc))
-        self.assertEqual(test_alert.url, "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/4")
-        self.assertEqual(test_alert.html_url, "https://github.com/octocat/hello-world/code-scanning/4")
+        self.assertEqual(
+            test_alert.created_at,
+            datetime(2020, 2, 13, 12, 29, 18, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            test_alert.updated_at, datetime(2025, 8, 25, 16, 3, 10, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            test_alert.url,
+            "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/4",
+        )
+        self.assertEqual(
+            test_alert.html_url,
+            "https://github.com/octocat/hello-world/code-scanning/4",
+        )
         self.assertEqual(test_alert.state, "open")
         self.assertIsNone(test_alert.dismissed_by)
         self.assertIsNone(test_alert.dismissed_at)
@@ -60,7 +74,9 @@ class OrganizationCodeScanAlert(Framework.TestCase):
         self.assertIsNone(test_alert.dismissed_comment)
         self.assertEqual(test_alert.rule.id, "js/zipslip")
         self.assertEqual(test_alert.rule.severity, "error")
-        self.assertEqual(test_alert.rule.description, "Arbitrary file write during zip extraction")
+        self.assertEqual(
+            test_alert.rule.description, "Arbitrary file write during zip extraction"
+        )
         self.assertEqual(test_alert.rule.name, "js/zipslip")
         self.assertEqual(test_alert.rule.tags[0], "security")
         self.assertEqual(test_alert.rule.tags[1], "external/cwe/cwe-022")
@@ -69,14 +85,27 @@ class OrganizationCodeScanAlert(Framework.TestCase):
         self.assertEqual(test_alert.tool.version, "2.4.0")
         self.assertEqual(test_alert.most_recent_instance.ref, "refs/heads/main")
         self.assertEqual(
-            test_alert.most_recent_instance.analysis_key, ".github/workflows/codeql-analysis.yml:CodeQL-Build"
+            test_alert.most_recent_instance.analysis_key,
+            ".github/workflows/codeql-analysis.yml:CodeQL-Build",
         )
         self.assertEqual(test_alert.most_recent_instance.environment, "{}")
-        self.assertEqual(test_alert.most_recent_instance.category, ".github/workflows/codeql-analysis.yml:CodeQL-Build")
+        self.assertEqual(
+            test_alert.most_recent_instance.category,
+            ".github/workflows/codeql-analysis.yml:CodeQL-Build",
+        )
         self.assertEqual(test_alert.most_recent_instance.state, "open")
-        self.assertEqual(test_alert.most_recent_instance.commit_sha, "39406e42cb832f683daa691dd652a8dc36ee8930")
-        self.assertEqual(test_alert.most_recent_instance.message["text"], "This path depends on a user-provided value.")
-        self.assertEqual(test_alert.most_recent_instance.location.path, "spec-main/api-session-spec.ts")
+        self.assertEqual(
+            test_alert.most_recent_instance.commit_sha,
+            "39406e42cb832f683daa691dd652a8dc36ee8930",
+        )
+        self.assertEqual(
+            test_alert.most_recent_instance.message["text"],
+            "This path depends on a user-provided value.",
+        )
+        self.assertEqual(
+            test_alert.most_recent_instance.location.path,
+            "spec-main/api-session-spec.ts",
+        )
         self.assertEqual(test_alert.most_recent_instance.location.start_line, 917)
         self.assertEqual(test_alert.most_recent_instance.location.end_line, 917)
         self.assertEqual(test_alert.most_recent_instance.location.start_column, 7)
@@ -95,11 +124,18 @@ class OrganizationCodeScanAlert(Framework.TestCase):
         multiple_alerts = self.org.get_codescan_alerts()
         alert_list = [alert for alert in multiple_alerts]
         test_alert = alert_list[0]
-        self.assertEqual(repr(test_alert), 'OrganizationCodeScanAlert(number=4, id="js/zipslip")')
+        self.assertEqual(
+            repr(test_alert), 'OrganizationCodeScanAlert(number=4, id="js/zipslip")'
+        )
 
     def testGetAlertsWithArguments(self):
         alerts = self.org.get_codescan_alerts(
-            tool_name="CodeQL", ref="refs/heads/main", sort="created", direction="asc", state="open", severity="error"
+            tool_name="CodeQL",
+            ref="refs/heads/main",
+            sort="created",
+            direction="asc",
+            state="open",
+            severity="error",
         )
         # Note, this doesn't test "tool_guid" or "pr" arguments as they are not found in the test data
         self.assertEqual(len(list(alerts)), 2)  # Update this when more alerts are added

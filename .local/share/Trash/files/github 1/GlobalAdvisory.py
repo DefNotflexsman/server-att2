@@ -42,15 +42,13 @@ if TYPE_CHECKING:
 
 
 class GlobalAdvisory(AdvisoryBase):
-    """
-    This class represents a GlobalAdvisory.
+    """This class represents a GlobalAdvisory.
 
     https://docs.github.com/en/rest/security-advisories/global-advisories
 
     The OpenAPI schema can be found at
 
     - /components/schemas/global-advisory
-
     """
 
     def _initAttributes(self) -> None:
@@ -118,18 +116,28 @@ class GlobalAdvisory(AdvisoryBase):
             assert attributes["github_reviewed_at"] is None or isinstance(
                 attributes["github_reviewed_at"], str
             ), attributes["github_reviewed_at"]
-            self._github_reviewed_at = self._makeDatetimeAttribute(attributes["github_reviewed_at"])
+            self._github_reviewed_at = self._makeDatetimeAttribute(
+                attributes["github_reviewed_at"]
+            )
         if "nvd_published_at" in attributes:  # pragma no branch
             assert attributes["nvd_published_at"] is None or isinstance(
                 attributes["nvd_published_at"], str
             ), attributes["nvd_published_at"]
-            self._nvd_published_at = self._makeDatetimeAttribute(attributes["nvd_published_at"])
+            self._nvd_published_at = self._makeDatetimeAttribute(
+                attributes["nvd_published_at"]
+            )
         if "references" in attributes:  # pragma no branch
-            self._references = self._makeListOfStringsAttribute(attributes["references"])
+            self._references = self._makeListOfStringsAttribute(
+                attributes["references"]
+            )
         if "repository_advisory_url" in attributes:  # pragma no branch
-            self._repository_advisory_url = self._makeStringAttribute(attributes["repository_advisory_url"])
+            self._repository_advisory_url = self._makeStringAttribute(
+                attributes["repository_advisory_url"]
+            )
         if "source_code_location" in attributes:  # pragma no branch
-            self._source_code_location = self._makeStringAttribute(attributes["source_code_location"])
+            self._source_code_location = self._makeStringAttribute(
+                attributes["source_code_location"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "vulnerabilities" in attributes:

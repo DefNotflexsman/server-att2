@@ -105,7 +105,9 @@ class Exceptions(Framework.TestCase):
 
     def testBadAuthentication(self):
         with self.assertRaises(github.GithubException) as raisedexp:
-            github.Github(auth=github.Auth.Login("BadUser", "BadPassword")).get_user().login
+            github.Github(
+                auth=github.Auth.Login("BadUser", "BadPassword")
+            ).get_user().login
         self.assertIsInstance(raisedexp.exception, github.BadCredentialsException)
         self.assertIsNone(raisedexp.exception.message)
         self.assertEqual(raisedexp.exception.status, 401)
@@ -116,7 +118,9 @@ class Exceptions(Framework.TestCase):
         pickle.loads(pickle.dumps(github.GithubException("foo", "bar", None)))
 
     def testBytesData(self):
-        exc = github.GithubException(403, b"<html>rate limit</html>", message="rate limit")
+        exc = github.GithubException(
+            403, b"<html>rate limit</html>", message="rate limit"
+        )
         self.assertEqual(str(exc), 'rate limit: 403 "<html>rate limit</html>"')
 
     def testJSONParseError(self):
@@ -129,17 +133,23 @@ class SpecificExceptions(Framework.TestCase):
     def testBadCredentials(self):
         self.assertRaises(
             github.BadCredentialsException,
-            lambda: github.Github(auth=github.Auth.Login("BadUser", "BadPassword")).get_user().login,
+            lambda: github.Github(auth=github.Auth.Login("BadUser", "BadPassword"))
+            .get_user()
+            .login,
         )
 
     def test2FARequired(self):
         self.assertRaises(
             github.TwoFactorException,
-            lambda: github.Github(auth=github.Auth.Login("2fauser", "password")).get_user().login,
+            lambda: github.Github(auth=github.Auth.Login("2fauser", "password"))
+            .get_user()
+            .login,
         )
 
     def testUnknownObject(self):
-        self.assertRaises(github.UnknownObjectException, lambda: self.g.get_user().get_repo("Xxx"))
+        self.assertRaises(
+            github.UnknownObjectException, lambda: self.g.get_user().get_repo("Xxx")
+        )
 
     def testBadUserAgent(self):
         self.assertRaises(

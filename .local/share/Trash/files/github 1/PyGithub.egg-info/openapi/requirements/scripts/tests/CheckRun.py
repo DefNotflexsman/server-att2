@@ -46,31 +46,52 @@ class CheckRun(Framework.TestCase):
         self.assertEqual(self.check_run.app.slug, "github-actions")
         self.assertEqual(self.check_run.check_suite.id, 32504127411)
         self.assertEqual(
-            self.check_run.check_suite.url, "https://api.github.com/repos/PyGithub/PyGithub/check-suites/32504127411"
+            self.check_run.check_suite.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/check-suites/32504127411",
         )
         # check_suite is lazy, so accessing a property other than id or url fetches the suite object
-        self.assertEqual(self.check_run.check_suite.head_sha, "10a7135a04f71e6101f8b013aded8a662d08fd1f")
+        self.assertEqual(
+            self.check_run.check_suite.head_sha,
+            "10a7135a04f71e6101f8b013aded8a662d08fd1f",
+        )
         self.assertEqual(self.check_run.check_suite_id, 32504127411)
-        self.assertEqual(self.check_run.completed_at, datetime(2024, 12, 28, 16, 53, 10, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.check_run.completed_at,
+            datetime(2024, 12, 28, 16, 53, 10, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.check_run.conclusion, "success")
         self.assertIsNone(self.check_run.deployment)
         self.assertEqual(
-            self.check_run.details_url, "https://github.com/PyGithub/PyGithub/actions/runs/12528252236/job/34942661139"
+            self.check_run.details_url,
+            "https://github.com/PyGithub/PyGithub/actions/runs/12528252236/job/34942661139",
         )
-        self.assertEqual(self.check_run.external_id, "8ece7711-e8e8-5d87-8f8a-6791d424ecd6")
-        self.assertEqual(self.check_run.head_sha, "10a7135a04f71e6101f8b013aded8a662d08fd1f")
         self.assertEqual(
-            self.check_run.html_url, "https://github.com/PyGithub/PyGithub/actions/runs/12528252236/job/34942661139"
+            self.check_run.external_id, "8ece7711-e8e8-5d87-8f8a-6791d424ecd6"
+        )
+        self.assertEqual(
+            self.check_run.head_sha, "10a7135a04f71e6101f8b013aded8a662d08fd1f"
+        )
+        self.assertEqual(
+            self.check_run.html_url,
+            "https://github.com/PyGithub/PyGithub/actions/runs/12528252236/job/34942661139",
         )
         self.assertEqual(self.check_run.id, 34942661139)
         self.assertEqual(self.check_run.name, "test (Python 3.8 on Ubuntu)")
         self.assertEqual(self.check_run.node_id, "CR_kwDOADYVqs8AAAAIIr6yEw")
         self.assertEqual(self.check_run.output.annotations_count, 1)
         self.assertEqual(len(self.check_run.pull_requests), 0)
-        self.assertEqual(self.check_run.started_at, datetime(2024, 12, 28, 16, 51, 59, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.check_run.started_at,
+            datetime(2024, 12, 28, 16, 51, 59, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.check_run.status, "completed")
-        self.assertEqual(self.check_run.url, "https://api.github.com/repos/PyGithub/PyGithub/check-runs/34942661139")
-        self.assertEqual(repr(self.check_run), 'CheckRun(id=34942661139, conclusion="success")')
+        self.assertEqual(
+            self.check_run.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/check-runs/34942661139",
+        )
+        self.assertEqual(
+            repr(self.check_run), 'CheckRun(id=34942661139, conclusion="success")'
+        )
 
     def testLazyAttributes(self):
         run = self.g.withLazy(True).get_repo("lazy/repo").get_check_run(42)
@@ -91,7 +112,9 @@ class CheckRun(Framework.TestCase):
             check_run_output.annotations_url,
             "https://api.github.com/repos/PyGithub/PyGithub/check-runs/1039891917/annotations",
         )
-        self.assertEqual(repr(check_run_output), 'CheckRunOutput(title="test (Python 3.6)")')
+        self.assertEqual(
+            repr(check_run_output), 'CheckRunOutput(title="test (Python 3.6)")'
+        )
 
     def testGetCheckRunsForRef(self):
         check_runs = self.commit.get_check_runs()
@@ -349,4 +372,6 @@ class CheckRun(Framework.TestCase):
         self.assertEqual(check_run.status, "completed")
         annotation_list = check_run.get_annotations()
         self.assertEqual(annotation_list.totalCount, 2)
-        self.assertListEqual([annotation.start_line for annotation in annotation_list], [2, 4])
+        self.assertListEqual(
+            [annotation.start_line for annotation in annotation_list], [2, 4]
+        )

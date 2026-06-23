@@ -58,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class PullRequestReview(NonCompletableGithubObject):
-    """
-    This class represents PullRequestReviews.
+    """This class represents PullRequestReviews.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/pulls#reviews
@@ -67,7 +66,6 @@ class PullRequestReview(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/pull-request-review
-
     """
 
     def _initAttributes(self) -> None:
@@ -151,7 +149,9 @@ class PullRequestReview(NonCompletableGithubObject):
         """
         :calls: `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id} <https://developer.github.com/v3/pulls/reviews/>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.pull_request_url}/reviews/{self.id}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.pull_request_url}/reviews/{self.id}"
+        )
 
     def edit(self, body: str) -> None:
         """
@@ -171,7 +171,9 @@ class PullRequestReview(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -187,10 +189,14 @@ class PullRequestReview(NonCompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "pull_request_url" in attributes:  # pragma no branch
-            self._pull_request_url = self._makeStringAttribute(attributes["pull_request_url"])
+            self._pull_request_url = self._makeStringAttribute(
+                attributes["pull_request_url"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "submitted_at" in attributes:  # pragma no branch
             self._submitted_at = self._makeDatetimeAttribute(attributes["submitted_at"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

@@ -41,9 +41,7 @@ if TYPE_CHECKING:
 
 
 class SimpleCredit(TypedDict):
-    """
-    A simple credit for a security advisory.
-    """
+    """A simple credit for a security advisory."""
 
     login: str | NamedUser
     type: str
@@ -53,8 +51,7 @@ Credit = Union[SimpleCredit, "AdvisoryCredit"]
 
 
 class AdvisoryCredit(NonCompletableGithubObject):
-    """
-    This class represents a credit that is assigned to a SecurityAdvisory.
+    """This class represents a credit that is assigned to a SecurityAdvisory.
 
     The reference can be found here
     https://docs.github.com/en/rest/security-advisories/repository-advisories
@@ -62,7 +59,6 @@ class AdvisoryCredit(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/repository-advisory/properties/credits/items
-
     """
 
     def _initAttributes(self) -> None:
@@ -97,7 +93,9 @@ class AdvisoryCredit(NonCompletableGithubObject):
         if isinstance(credit, dict):
             assert "login" in credit, credit
             assert "type" in credit, credit
-            assert isinstance(credit["login"], (str, github.NamedUser.NamedUser)), credit["login"]
+            assert isinstance(
+                credit["login"], (str, github.NamedUser.NamedUser)
+            ), credit["login"]
             assert isinstance(credit["type"], str), credit["type"]
         else:
             assert isinstance(credit.login, str), credit.login
@@ -109,7 +107,9 @@ class AdvisoryCredit(NonCompletableGithubObject):
         if isinstance(credit, dict):
             assert "login" in credit, credit
             assert "type" in credit, credit
-            assert isinstance(credit["login"], (str, github.NamedUser.NamedUser)), credit["login"]
+            assert isinstance(
+                credit["login"], (str, github.NamedUser.NamedUser)
+            ), credit["login"]
             login = credit["login"]
             if isinstance(login, github.NamedUser.NamedUser):
                 login = login.login

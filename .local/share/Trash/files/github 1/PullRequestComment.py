@@ -65,8 +65,7 @@ if TYPE_CHECKING:
 
 
 class PullRequestComment(CompletableGithubObject):
-    """
-    This class represents PullRequestComments.
+    """This class represents PullRequestComments.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/pulls#review-comments
@@ -75,7 +74,6 @@ class PullRequestComment(CompletableGithubObject):
 
     - /components/schemas/pull-request-review-comment
     - /components/schemas/review-comment
-
     """
 
     def _initAttributes(self) -> None:
@@ -274,7 +272,9 @@ class PullRequestComment(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -330,7 +330,9 @@ class PullRequestComment(CompletableGithubObject):
         if "_links" in attributes:  # pragma no branch
             self.__links = self._makeDictAttribute(attributes["_links"])
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -358,21 +360,31 @@ class PullRequestComment(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "original_commit_id" in attributes:  # pragma no branch
-            self._original_commit_id = self._makeStringAttribute(attributes["original_commit_id"])
+            self._original_commit_id = self._makeStringAttribute(
+                attributes["original_commit_id"]
+            )
         if "original_line" in attributes:  # pragma no branch
             self._original_line = self._makeIntAttribute(attributes["original_line"])
         if "original_position" in attributes:  # pragma no branch
-            self._original_position = self._makeIntAttribute(attributes["original_position"])
+            self._original_position = self._makeIntAttribute(
+                attributes["original_position"]
+            )
         if "original_start_line" in attributes:  # pragma no branch
-            self._original_start_line = self._makeIntAttribute(attributes["original_start_line"])
+            self._original_start_line = self._makeIntAttribute(
+                attributes["original_start_line"]
+            )
         if "path" in attributes:  # pragma no branch
             self._path = self._makeStringAttribute(attributes["path"])
         if "position" in attributes:  # pragma no branch
             self._position = self._makeIntAttribute(attributes["position"])
         if "pull_request_review_id" in attributes:  # pragma no branch
-            self._pull_request_review_id = self._makeIntAttribute(attributes["pull_request_review_id"])
+            self._pull_request_review_id = self._makeIntAttribute(
+                attributes["pull_request_review_id"]
+            )
         if "pull_request_url" in attributes:  # pragma no branch
-            self._pull_request_url = self._makeStringAttribute(attributes["pull_request_url"])
+            self._pull_request_url = self._makeStringAttribute(
+                attributes["pull_request_url"]
+            )
         if "reactions" in attributes:  # pragma no branch
             self._reactions = self._makeDictAttribute(attributes["reactions"])
         if "side" in attributes:  # pragma no branch
@@ -388,4 +400,6 @@ class PullRequestComment(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

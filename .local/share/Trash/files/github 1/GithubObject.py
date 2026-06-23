@@ -82,11 +82,9 @@ class Attribute(Protocol[T_co]):
 
 
 def _datetime_from_http_date(value: str) -> datetime:
-    """
-    Convert an HTTP date to a datetime object.
+    """Convert an HTTP date to a datetime object.
 
     Raises ValueError for invalid dates.
-
     """
 
     dt = email.utils.parsedate_to_datetime(value)
@@ -97,11 +95,9 @@ def _datetime_from_http_date(value: str) -> datetime:
 
 
 def _datetime_from_github_isoformat(value: str) -> datetime:
-    """
-    Convert an GitHub API timestamps to a datetime object.
+    """Convert an GitHub API timestamps to a datetime object.
 
     Raises ValueError for invalid timestamps.
-
     """
 
     # Github always returns YYYY-MM-DDTHH:MM:SSZ, so we can use the stdlib parser
@@ -122,7 +118,11 @@ class _NotSetType(Attribute[Any]):
 
     @staticmethod
     def remove_unset_items(data: dict[str, Any]) -> dict[str, Any]:
-        return {key: value for key, value in data.items() if not isinstance(value, _NotSetType)}
+        return {
+            key: value
+            for key, value in data.items()
+            if not isinstance(value, _NotSetType)
+        }
 
 
 NotSet = _NotSetType()
@@ -163,16 +163,19 @@ def as_rest_api_attributes(graphql_attributes: None) -> None:
     ...
 
 
-def as_rest_api_attributes(graphql_attributes: dict[str, Any] | None) -> dict[str, Any] | None:
-    """
-    Converts attributes from GraphQL schema to REST API schema.
+def as_rest_api_attributes(
+    graphql_attributes: dict[str, Any] | None
+) -> dict[str, Any] | None:
+    """Converts attributes from GraphQL schema to REST API schema.
 
-    The GraphQL API uses lower camel case (e.g. createdAt), whereas REST API uses snake case (created_at). Initializing
-    REST API GithubObjects from GraphQL API attributes requires transformation provided by this method.
+    The GraphQL API uses lower camel case (e.g. createdAt), whereas REST
+    API uses snake case (created_at). Initializing REST API
+    GithubObjects from GraphQL API attributes requires transformation
+    provided by this method.
 
-    Further renames GraphQL attributes to REST API attributes where the case conversion is not sufficient. For example,
-    GraphQL attribute 'id' is equivalent to REST API attribute 'node_id'.
-
+    Further renames GraphQL attributes to REST API attributes where the
+    case conversion is not sufficient. For example, GraphQL attribute
+    'id' is equivalent to REST API attribute 'node_id'.
     """
     if graphql_attributes is None:
         return None
@@ -202,8 +205,13 @@ def as_rest_api_attributes(graphql_attributes: dict[str, Any] | None) -> dict[st
     }
 
 
-def as_rest_api_attributes_list(graphql_attributes: list[dict[str, Any] | None]) -> list[dict[str, Any] | None]:
-    return [as_rest_api_attributes(v) if isinstance(v, dict) else v for v in graphql_attributes]
+def as_rest_api_attributes_list(
+    graphql_attributes: list[dict[str, Any] | None]
+) -> list[dict[str, Any] | None]:
+    return [
+        as_rest_api_attributes(v) if isinstance(v, dict) else v
+        for v in graphql_attributes
+    ]
 
 
 class _ValuedAttribute(Attribute[T]):
@@ -216,7 +224,9 @@ class _ValuedAttribute(Attribute[T]):
 
 
 class _BadAttribute(Attribute[T]):
-    def __init__(self, value: Any, expectedType: Any, exception: Exception | None = None):
+    def __init__(
+        self, value: Any, expectedType: Any, exception: Exception | None = None
+    ):
         self.__value = value
         self.__expectedType = expectedType
         self.__exception = exception
@@ -229,9 +239,7 @@ class _BadAttribute(Attribute[T]):
 # v3: add * to edit function of all GithubObject implementations,
 #     this allows to rename attributes and maintain the order of attributes
 class GithubObject(ABC):
-    """
-    Base class for all classes representing objects returned by the API.
-    """
+    """Base class for all classes representing objects returned by the API."""
 
     """
     A global debug flag to enable header validation by requester for all objects
@@ -266,7 +274,9 @@ class GithubObject(ABC):
         if self.CHECK_AFTER_INIT_FLAG:  # pragma no branch (Flag always set in tests)
             requester.check_me(self)
 
-    def _storeAndUseAttributes(self, headers: dict[str, str | int], attributes: Any) -> None:
+    def _storeAndUseAttributes(
+        self, headers: dict[str, str | int], attributes: Any
+    ) -> None:
         # Make sure headers are assigned before calling _useAttributes
         # (Some derived classes will use headers in _useAttributes)
         self._api_version = headers.get(Consts.headerApiVersionSelected)
@@ -276,11 +286,10 @@ class GithubObject(ABC):
 
     @property
     def requester(self) -> Requester:
-        """
-        Return my Requester object.
+        """Return my Requester object.
 
-        For example, to make requests to API endpoints not yet supported by PyGitHub.
-
+        For example, to make requests to API endpoints not yet supported
+        by PyGitHub.
         """
         return self._requester
 
@@ -300,13 +309,13 @@ class GithubObject(ABC):
 
     @property
     def api_version(self) -> str | None:
-        """
-        The Github API version of this PyGithub object as returned by the Github API.
+        """The Github API version of this PyGithub object as returned by the
+        Github API.
 
-        This does not reflect the API version configured via Github(api_version=…) or GithubIntegration(api_version=…).
+        This does not reflect the API version configured via
+        Github(api_version=…) or GithubIntegration(api_version=…).
 
         :type: str
-
         """
         return self._api_version  # type: ignore
 
@@ -323,13 +332,17 @@ class GithubObject(ABC):
 
     @staticmethod
     def __makeSimpleListAttribute(value: list, type: type[T]) -> Attribute[T]:
-        if isinstance(value, list) and all(isinstance(element, type) for element in value):
+        if isinstance(value, list) and all(
+            isinstance(element, type) for element in value
+        ):
             return _ValuedAttribute(value)  # type: ignore
         else:
             return _BadAttribute(value, [type])  # type: ignore
 
     @staticmethod
-    def __makeTransformedAttribute(value: T, type: type[T], transform: Callable[[T], K]) -> Attribute[K]:
+    def __makeTransformedAttribute(
+        value: T, type: type[T], transform: Callable[[T], K]
+    ) -> Attribute[K]:
         if value is None:
             return _ValuedAttribute(None)  # type: ignore
         elif isinstance(value, type):
@@ -388,7 +401,11 @@ class GithubObject(ABC):
         )
 
     def _makeUnionClassAttributeFromTypeName(
-        self, type_name: str | None, fallback_type: str | None, value: Any, *class_and_names: tuple[type[T_gh], str]
+        self,
+        type_name: str | None,
+        fallback_type: str | None,
+        value: Any,
+        *class_and_names: tuple[type[T_gh], str],
     ) -> Attribute[T_gh]:
         class_and_name_index = {name: clazz for clazz, name in class_and_names}
         if fallback_type is not None:
@@ -446,11 +463,16 @@ class GithubObject(ABC):
             default_type = default_and_fallback_type
             fallback_type = default_and_fallback_type
         return self._makeUnionClassAttributeFromTypeName(
-            value.get(type_key, default_type), fallback_type, value.get(value_key), *class_and_names
+            value.get(type_key, default_type),
+            fallback_type,
+            value.get(value_key),
+            *class_and_names,
         )
 
     @staticmethod
-    def _makeListOfStringsAttribute(value: list[list[str]] | list[str] | list[str | int]) -> Attribute:
+    def _makeListOfStringsAttribute(
+        value: list[list[str]] | list[str] | list[str | int],
+    ) -> Attribute:
         return GithubObject.__makeSimpleListAttribute(value, str)
 
     @staticmethod
@@ -458,7 +480,9 @@ class GithubObject(ABC):
         return GithubObject.__makeSimpleListAttribute(value, int)
 
     @staticmethod
-    def _makeListOfDictsAttribute(value: list[dict[str, str | list[dict[str, str | list[int]]]]]) -> Attribute:
+    def _makeListOfDictsAttribute(
+        value: list[dict[str, str | list[dict[str, str | list[int]]]]]
+    ) -> Attribute:
         return GithubObject.__makeSimpleListAttribute(value, dict)
 
     @staticmethod
@@ -467,9 +491,15 @@ class GithubObject(ABC):
     ) -> Attribute:
         return GithubObject.__makeSimpleListAttribute(value, list)
 
-    def _makeListOfClassesAttribute(self, klass: type[T_gh], value: Any) -> Attribute[list[T_gh]]:
-        if isinstance(value, list) and all(isinstance(element, dict) for element in value):
-            return _ValuedAttribute([klass(self._requester, self._headers, element) for element in value])
+    def _makeListOfClassesAttribute(
+        self, klass: type[T_gh], value: Any
+    ) -> Attribute[list[T_gh]]:
+        if isinstance(value, list) and all(
+            isinstance(element, dict) for element in value
+        ):
+            return _ValuedAttribute(
+                [klass(self._requester, self._headers, element) for element in value]
+            )
         else:
             return _BadAttribute(value, [dict])
 
@@ -490,7 +520,9 @@ class GithubObject(ABC):
         assert fallback_type in class_and_name_index
         fallback_class = class_and_name_index.get(fallback_type)
         assert fallback_class is not None
-        if isinstance(value, list) and all(isinstance(element, dict) for element in value):
+        if isinstance(value, list) and all(
+            isinstance(element, dict) for element in value
+        ):
             return _ValuedAttribute(
                 [
                     klass(self._requester, self._headers, element)
@@ -511,10 +543,14 @@ class GithubObject(ABC):
         ],
     ) -> Attribute[dict[str, T_gh]]:
         if isinstance(value, dict) and all(
-            isinstance(key, str) and isinstance(element, dict) for key, element in value.items()
+            isinstance(key, str) and isinstance(element, dict)
+            for key, element in value.items()
         ):
             return _ValuedAttribute(
-                {key: klass(self._requester, self._headers, element) for key, element in value.items()}
+                {
+                    key: klass(self._requester, self._headers, element)
+                    for key, element in value.items()
+                }
             )
         else:
             return _BadAttribute(value, {str: dict})
@@ -541,9 +577,7 @@ class GithubObject(ABC):
         return self._makeHttpDatetimeAttribute(self.last_modified).value  # type: ignore
 
     def get__repr__(self, params: dict[str, Any]) -> str:
-        """
-        Converts the object to a nicely printable string.
-        """
+        """Converts the object to a nicely printable string."""
 
         def format_params(params: dict[str, Any]) -> typing.Generator[str, None, None]:
             items = list(params.items())
@@ -593,9 +627,9 @@ class CompletableGithubObject(GithubObject, ABC):
         url: str | None = None,
         accept: str | None = None,
     ):
-        """
-        A CompletableGithubObject can be partially initialised (completed=False). Accessing attributes that are not
-        initialized will then trigger a request to complete all attributes.
+        """A CompletableGithubObject can be partially initialised
+        (completed=False). Accessing attributes that are not initialized will
+        then trigger a request to complete all attributes.
 
         A partially initialized CompletableGithubObject (completed=False) can be completed
         via ``complete()``. This requires the url to be given via parameter ``url`` or ``attributes``.
@@ -611,7 +645,6 @@ class CompletableGithubObject(GithubObject, ABC):
         :param completed: do not update non-initialized attributes when True
         :param url: url of this instance, overrides attributes['url']
         :param accept: use this accept header when completing this instance
-
         """
         response_given = headers is not None
 
@@ -686,9 +719,14 @@ class CompletableGithubObject(GithubObject, ABC):
 
     def _complete(self, parameters: dict[str, Any] | None = None) -> None:
         if self._url.value is None:
-            raise IncompletableObject(400, message="Cannot complete object as it contains no URL")
+            raise IncompletableObject(
+                400, message="Cannot complete object as it contains no URL"
+            )
         headers, data = self._requester.requestJsonAndCheck(
-            "GET", self._url.value, parameters=parameters, headers=self.__completeHeaders
+            "GET",
+            self._url.value,
+            parameters=parameters,
+            headers=self.__completeHeaders,
         )
         self._storeAndUseAttributes(headers, data)
         self._set_complete()
@@ -697,12 +735,12 @@ class CompletableGithubObject(GithubObject, ABC):
         self.__completed = True
 
     def update(
-        self, additional_headers: dict[str, Any] | None = None, parameters: dict[str, Any] | None = None
+        self,
+        additional_headers: dict[str, Any] | None = None,
+        parameters: dict[str, Any] | None = None,
     ) -> bool:
-        """
-        Check and update the object with conditional request :rtype: Boolean value indicating whether the object is
-        changed.
-        """
+        """Check and update the object with conditional request :rtype: Boolean
+        value indicating whether the object is changed."""
         conditionalRequestHeader = dict()
         if self.etag is not None:
             conditionalRequestHeader[Consts.REQ_IF_NONE_MATCH] = self.etag
@@ -712,7 +750,10 @@ class CompletableGithubObject(GithubObject, ABC):
             conditionalRequestHeader.update(additional_headers)
 
         status, responseHeaders, output = self._requester.requestJson(
-            "GET", self._url.value, parameters=parameters, headers=conditionalRequestHeader
+            "GET",
+            self._url.value,
+            parameters=parameters,
+            headers=conditionalRequestHeader,
         )
         if status == 304:
             return False
@@ -728,12 +769,11 @@ class CompletableGithubObject(GithubObject, ABC):
 
 
 class CompletableGithubObjectWithPaginatedProperty(CompletableGithubObject):
-    """
-    A CompletableGithubObject that has a property that is subject to pagination.
+    """A CompletableGithubObject that has a property that is subject to
+    pagination.
 
     An instance created from a Requester with a non-default value for ``per_page`` must have the
     ``per_page`` value in the URL in order for the paginated property to use the ``per_page`` value.
-
     """
 
     def __init__(
@@ -762,13 +802,17 @@ class CompletableGithubObjectWithPaginatedProperty(CompletableGithubObject):
                 # we use the default (no) per_page (not Consts.DEFAULT_PER_PAGE, the URL might have a different default)
                 pass
 
-        super().__init__(requester, headers, attributes, completed, url=url, accept=accept)
+        super().__init__(
+            requester, headers, attributes, completed, url=url, accept=accept
+        )
 
     @property
     def _pagination_parameters(self) -> dict[str, Any]:
         return self.__pagination_parameters
 
-    def _pagination_parameters_with(self, page: int, per_page: int | None) -> dict[str, Any]:
+    def _pagination_parameters_with(
+        self, page: int, per_page: int | None
+    ) -> dict[str, Any]:
         assert page > 0, page
         assert per_page is None or isinstance(per_page, int) and per_page > 0, per_page
         parameters = self._pagination_parameters.copy()
@@ -784,7 +828,9 @@ class CompletableGithubObjectWithPaginatedProperty(CompletableGithubObject):
         super()._complete(parameters=parameters)
 
     def update(
-        self, additional_headers: dict[str, Any] | None = None, parameters: dict[str, Any] | None = None
+        self,
+        additional_headers: dict[str, Any] | None = None,
+        parameters: dict[str, Any] | None = None,
     ) -> bool:
         # inject pagination parameters into the complete request
         parameters = {**parameters} if parameters else {}
@@ -798,9 +844,15 @@ RetType = TypeVar("RetType")
 
 # decorator to annotate methods with OpenAPI mapping information
 def method_parameter(
-    *, name: str, required: bool = False, merge: list[str] | None = None, docstring_prepend: str | None = None
+    *,
+    name: str,
+    required: bool = False,
+    merge: list[str] | None = None,
+    docstring_prepend: str | None = None,
 ) -> Callable[[Callable[Param, RetType]], Callable[Param, RetType]]:
-    def method_parameter_decorator(fn: Callable[Param, RetType]) -> Callable[Param, RetType]:
+    def method_parameter_decorator(
+        fn: Callable[Param, RetType]
+    ) -> Callable[Param, RetType]:
         return fn
 
     return method_parameter_decorator
@@ -810,7 +862,9 @@ def method_parameter(
 def method_returns(
     *, schema_property: str | None = None
 ) -> Callable[[Callable[Param, RetType]], Callable[Param, RetType]]:
-    def method_returns_decorator(fn: Callable[Param, RetType]) -> Callable[Param, RetType]:
+    def method_returns_decorator(
+        fn: Callable[Param, RetType]
+    ) -> Callable[Param, RetType]:
         return fn
 
     return method_returns_decorator
@@ -825,7 +879,9 @@ def openapi_parameter(
     input: bool | None = None,
     docstring_prepend: str | None = None,
 ) -> Callable[[Callable[Param, RetType]], Callable[Param, RetType]]:
-    def openapi_parameter_decorator(fn: Callable[Param, RetType]) -> Callable[Param, RetType]:
+    def openapi_parameter_decorator(
+        fn: Callable[Param, RetType]
+    ) -> Callable[Param, RetType]:
         return fn
 
     return openapi_parameter_decorator

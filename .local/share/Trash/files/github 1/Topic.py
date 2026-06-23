@@ -165,11 +165,15 @@ class Topic(NonCompletableGithubObject):
         if "released" in attributes:  # pragma no branch
             self._released = self._makeStringAttribute(attributes["released"])
         if "repository_count" in attributes:  # pragma no branch
-            self._repository_count = self._makeIntAttribute(attributes["repository_count"])
+            self._repository_count = self._makeIntAttribute(
+                attributes["repository_count"]
+            )
         if "score" in attributes:  # pragma no branch
             self._score = self._makeFloatAttribute(attributes["score"])
         if "short_description" in attributes:  # pragma no branch
-            self._short_description = self._makeStringAttribute(attributes["short_description"])
+            self._short_description = self._makeStringAttribute(
+                attributes["short_description"]
+            )
         if "text_matches" in attributes:  # pragma no branch
             self._text_matches = self._makeDictAttribute(attributes["text_matches"])
         if "updated_at" in attributes:  # pragma no branch

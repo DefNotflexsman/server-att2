@@ -48,27 +48,40 @@ class GithubObject(unittest.TestCase):
         _ = gho.as_rest_api_attributes
         self.assertIsNone(_(None))
         self.assertDictEqual(_({}), {})
-        self.assertDictEqual(_({"id": "NID", "databaseId": "DBID"}), {"node_id": "NID", "id": "DBID"})
+        self.assertDictEqual(
+            _({"id": "NID", "databaseId": "DBID"}), {"node_id": "NID", "id": "DBID"}
+        )
         self.assertDictEqual(_({"someId": "someId"}), {"some_id": "someId"})
-        self.assertDictEqual(_({"someObj": {"someId": "someId"}}), {"some_obj": {"some_id": "someId"}})
+        self.assertDictEqual(
+            _({"someObj": {"someId": "someId"}}), {"some_obj": {"some_id": "someId"}}
+        )
         self.assertDictEqual(_({"bodyHTML": "<html/>"}), {"body_html": "<html/>"})
 
     def testApiType(self):
         self.assertEqual(github.Repository.Repository.is_rest(), True)
         self.assertEqual(github.Repository.Repository.is_graphql(), False)
 
-        self.assertEqual(github.RepositoryDiscussion.RepositoryDiscussion.is_rest(), False)
-        self.assertEqual(github.RepositoryDiscussion.RepositoryDiscussion.is_graphql(), True)
+        self.assertEqual(
+            github.RepositoryDiscussion.RepositoryDiscussion.is_rest(), False
+        )
+        self.assertEqual(
+            github.RepositoryDiscussion.RepositoryDiscussion.is_graphql(), True
+        )
 
     def testMakeUnionClassAttributeFromTypeName(self):
         req = mock.Mock(is_not_lazy=False)
         obj = TestingClass(req, {}, {})
 
         data = {"login": "login"}
-        class_and_names = [(ghusr.NamedUser, "User"), (ghorg.Organization, "Organization")]
+        class_and_names = [
+            (ghusr.NamedUser, "User"),
+            (ghorg.Organization, "Organization"),
+        ]
 
         def make(type_name: str | None, fallback_type: str | None = "User"):
-            return obj._makeUnionClassAttributeFromTypeName(type_name, fallback_type, data, *class_and_names)
+            return obj._makeUnionClassAttributeFromTypeName(
+                type_name, fallback_type, data, *class_and_names
+            )
 
         none = make(None)
         usr = make("User")
@@ -95,10 +108,15 @@ class GithubObject(unittest.TestCase):
         req = mock.Mock(is_not_lazy=False)
         obj = TestingClass(req, {}, {})
 
-        class_and_names = [(ghusr.NamedUser, "User"), (ghorg.Organization, "Organization")]
+        class_and_names = [
+            (ghusr.NamedUser, "User"),
+            (ghorg.Organization, "Organization"),
+        ]
 
         def make(data: dict[str, Any]):
-            return obj._makeUnionClassAttributeFromTypeKey("type", "User", data, *class_and_names)
+            return obj._makeUnionClassAttributeFromTypeKey(
+                "type", "User", data, *class_and_names
+            )
 
         default = make({"login": "login"})
         usr = make({"login": "login", "type": "User"})
@@ -124,10 +142,15 @@ class GithubObject(unittest.TestCase):
         req = mock.Mock(is_not_lazy=False)
         obj = TestingClass(req, {}, {})
 
-        class_and_names = [(ghusr.NamedUser, "User"), (ghorg.Organization, "Organization")]
+        class_and_names = [
+            (ghusr.NamedUser, "User"),
+            (ghorg.Organization, "Organization"),
+        ]
 
         def make(data: dict[str, Any]):
-            return obj._makeUnionClassAttributeFromTypeKeyAndValueKey("type", "data", "User", data, *class_and_names)
+            return obj._makeUnionClassAttributeFromTypeKeyAndValueKey(
+                "type", "data", "User", data, *class_and_names
+            )
 
         default = make({"data": {"login": "login"}})
         usr = make({"data": {"login": "login"}, "type": "User"})
@@ -230,7 +253,9 @@ class GithubObject(unittest.TestCase):
 
         actual = gho.GithubObject._makeTimestampAttribute(1611405296)
         self.assertEqual(gho._ValuedAttribute, type(actual))
-        self.assertEqual(datetime(2021, 1, 23, 12, 34, 56, tzinfo=timezone.utc), actual.value)
+        self.assertEqual(
+            datetime(2021, 1, 23, 12, 34, 56, tzinfo=timezone.utc), actual.value
+        )
 
     def testMakeTimetsampAttributeBadValues(self):
         for value in ["1611405296", 1234.567]:
@@ -268,7 +293,9 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     requests,
                     lambda r: r.url,
                     ([] if lazy else ["/repos/PyGithub/PyGithub"])
-                    + ["/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1"],
+                    + [
+                        "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1"
+                    ],
                 )
 
     def testRepoCommitFiles(self):
@@ -307,7 +334,10 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 with self.captureRequests() as requests:
                     self.g.per_page = 2
                     repo = self.g.get_repo("PyGithub/PyGithub", lazy=lazy)
-                    commit = repo.get_commit("3253acaabd86de12b73d0a24c98eb9c13d1987b5", commit_files_per_page=3)
+                    commit = repo.get_commit(
+                        "3253acaabd86de12b73d0a24c98eb9c13d1987b5",
+                        commit_files_per_page=3,
+                    )
                     files = list(commit.files)
 
                 self.assertEqual(len(files), 4)
@@ -409,7 +439,10 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 with self.captureRequests() as requests:
                     self.g.per_page = 2
                     repo = self.g.get_repo("PyGithub/PyGithub", lazy=lazy)
-                    commit = repo.get_commit("3253acaabd86de12b73d0a24c98eb9c13d1987b5", commit_files_per_page=1)
+                    commit = repo.get_commit(
+                        "3253acaabd86de12b73d0a24c98eb9c13d1987b5",
+                        commit_files_per_page=1,
+                    )
                     files = list(commit.get_files(commit_files_per_page=3))
 
                 self.assertEqual(len(files), 4)
@@ -454,7 +487,11 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     files,
                     lambda f: f.filename,
-                    ["github/Auth.py", "github/Requester.py", "tests/Authentication.py"],
+                    [
+                        "github/Auth.py",
+                        "github/Requester.py",
+                        "tests/Authentication.py",
+                    ],
                 )
 
                 self.assertListKeyEqual(
@@ -478,13 +515,16 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     # tests paginated property of Comparison.commits and Commit.files
                     repo = self.g.get_repo("PyGithub/PyGithub", lazy=lazy)
                     comparison = repo.compare(
-                        "6cfe46b712e2bf65560bd8189c4654cd6c56eeca", "cef98416f45a9cdaf84d7f53cea13ac074a2c05d"
+                        "6cfe46b712e2bf65560bd8189c4654cd6c56eeca",
+                        "cef98416f45a9cdaf84d7f53cea13ac074a2c05d",
                     )
                     # PaginatedList commits should use default per_page
                     commits = list(comparison.commits)
                     self.assertEqual(len(commits), 7)
                     commit = commits[4]
-                    self.assertEqual(commit.sha, "cbfe8d0f623ca29d984ec09d2b566e9ab10ae024")
+                    self.assertEqual(
+                        commit.sha, "cbfe8d0f623ca29d984ec09d2b566e9ab10ae024"
+                    )
                     # PaginatedList files should use default per_page
                     files = list(commit.files)
 
@@ -518,7 +558,9 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     commits = list(comparison.commits)
                     self.assertEqual(len(commits), 4)
                     commit = commits[3]
-                    self.assertEqual(commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86")
+                    self.assertEqual(
+                        commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86"
+                    )
                     # PaginatedList files should respect configured per_page
                     files = list(commit.files)
 
@@ -555,7 +597,9 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     commits = list(comparison.commits)
                     self.assertEqual(len(commits), 4)
                     commit = commits[3]
-                    self.assertEqual(commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86")
+                    self.assertEqual(
+                        commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86"
+                    )
                     # PaginatedList files should respect configured per_page
                     files = list(commit.files)
 
@@ -591,7 +635,9 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     commits = list(reversed(comparison.commits))
                     self.assertEqual(len(commits), 4)
                     commit = commits[0]
-                    self.assertEqual(commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86")
+                    self.assertEqual(
+                        commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86"
+                    )
                     # PaginatedList files should respect configured per_page
                     files = list(reversed(commit.files))
 
@@ -630,7 +676,9 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                     commits = list(reversed(comparison.commits))
                     self.assertEqual(len(commits), 4)
                     commit = commits[0]
-                    self.assertEqual(commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86")
+                    self.assertEqual(
+                        commit.sha, "4bf07a2f5123f78fc6759bc2ade0c74154c1ba86"
+                    )
                     # PaginatedList files should respect configured per_page
                     files = list(reversed(commit.files))
 
@@ -678,7 +726,14 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     requests,
                     lambda r: r.url,
-                    ([] if lazy else ["/repos/PyGithub/PyGithub", "/repos/PyGithub/PyGithub/pulls/3370"])
+                    (
+                        []
+                        if lazy
+                        else [
+                            "/repos/PyGithub/PyGithub",
+                            "/repos/PyGithub/PyGithub/pulls/3370",
+                        ]
+                    )
                     + [
                         "/repos/PyGithub/PyGithub/pulls/3370/commits",
                         "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1",
@@ -714,7 +769,14 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     requests,
                     lambda r: r.url,
-                    ([] if lazy else ["/repos/PyGithub/PyGithub", "/repos/PyGithub/PyGithub/pulls/3370"])
+                    (
+                        []
+                        if lazy
+                        else [
+                            "/repos/PyGithub/PyGithub",
+                            "/repos/PyGithub/PyGithub/pulls/3370",
+                        ]
+                    )
                     + [
                         "/repos/PyGithub/PyGithub/pulls/3370/commits?per_page=2",
                         "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1&per_page=2",
@@ -750,7 +812,14 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     requests,
                     lambda r: r.url,
-                    ([] if lazy else ["/repos/PyGithub/PyGithub", "/repos/PyGithub/PyGithub/pulls/3370"])
+                    (
+                        []
+                        if lazy
+                        else [
+                            "/repos/PyGithub/PyGithub",
+                            "/repos/PyGithub/PyGithub/pulls/3370",
+                        ]
+                    )
                     + [
                         "/repos/PyGithub/PyGithub/pulls/3370/commits",
                         "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1&per_page=100",
@@ -786,7 +855,14 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     requests,
                     lambda r: r.url,
-                    ([] if lazy else ["/repos/PyGithub/PyGithub", "/repos/PyGithub/PyGithub/pulls/3370"])
+                    (
+                        []
+                        if lazy
+                        else [
+                            "/repos/PyGithub/PyGithub",
+                            "/repos/PyGithub/PyGithub/pulls/3370",
+                        ]
+                    )
                     + [
                         "/repos/PyGithub/PyGithub/pulls/3370/commits?per_page=2",
                         "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1&per_page=2",
@@ -823,7 +899,14 @@ class CompletableGithubObjectWithPaginatedProperty(Framework.TestCase):
                 self.assertListKeyEqual(
                     requests,
                     lambda r: r.url,
-                    ([] if lazy else ["/repos/PyGithub/PyGithub", "/repos/PyGithub/PyGithub/pulls/3370"])
+                    (
+                        []
+                        if lazy
+                        else [
+                            "/repos/PyGithub/PyGithub",
+                            "/repos/PyGithub/PyGithub/pulls/3370",
+                        ]
+                    )
                     + [
                         "/repos/PyGithub/PyGithub/pulls/3370/commits?per_page=2",
                         "/repos/PyGithub/PyGithub/commits/3253acaabd86de12b73d0a24c98eb9c13d1987b5?page=1&per_page=100",

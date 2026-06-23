@@ -46,8 +46,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class IssueType(NonCompletableGithubObject):
-    """
-    This class represents IssueType.
+    """This class represents IssueType.
 
     The reference can be found here
     https://docs.github.com/en/rest/issues/issues
@@ -55,7 +54,6 @@ class IssueType(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/issue-type
-
     """
 
     def _initAttributes(self) -> None:

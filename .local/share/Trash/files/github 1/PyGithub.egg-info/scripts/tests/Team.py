@@ -68,17 +68,22 @@ class Team(Framework.TestCase):
         self.team = self.org.get_team(12345678)
 
     def testAttributes(self):
-        self.assertEqual(self.team.created_at, datetime(2024, 6, 18, 10, 27, 23, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.team.created_at, datetime(2024, 6, 18, 10, 27, 23, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.team.description, "a team")
         self.assertIsNone(self.team.enterprise_id)
         self.assertIsNone(self.team.group_id)
         self.assertIsNone(self.team.group_name)
-        self.assertEqual(self.team.html_url, "https://github.com/orgs/BeaverSoftware/teams/team-slug")
+        self.assertEqual(
+            self.team.html_url, "https://github.com/orgs/BeaverSoftware/teams/team-slug"
+        )
         self.assertEqual(self.team.id, 12345678)
         self.assertIsNone(self.team.ldap_dn)
         self.assertEqual(self.team.members_count, 1)
         self.assertEqual(
-            self.team.members_url, "https://api.github.com/organizations/1234567/team/12345678/members{/member}"
+            self.team.members_url,
+            "https://api.github.com/organizations/1234567/team/12345678/members{/member}",
         )
         self.assertEqual(self.team.name, "Team")
         self.assertEqual(self.team.node_id, "AbCdEfG")
@@ -91,17 +96,26 @@ class Team(Framework.TestCase):
         self.assertIsNone(self.team.permissions)
         self.assertEqual(self.team.privacy, "closed")
         self.assertEqual(self.team.repos_count, 0)
-        self.assertEqual(self.team.repositories_url, "https://api.github.com/organizations/1234567/team/12345678/repos")
+        self.assertEqual(
+            self.team.repositories_url,
+            "https://api.github.com/organizations/1234567/team/12345678/repos",
+        )
         self.assertEqual(self.team.slug, "team-slug")
         self.assertIsNone(self.team.sync_to_organizations)
         self.assertIsNone(self.team.type)
-        self.assertEqual(self.team.updated_at, datetime(2024, 6, 18, 10, 27, 23, tzinfo=timezone.utc))
-        self.assertEqual(self.team.url, "https://api.github.com/organizations/1234567/team/12345678")
+        self.assertEqual(
+            self.team.updated_at, datetime(2024, 6, 18, 10, 27, 23, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            self.team.url, "https://api.github.com/organizations/1234567/team/12345678"
+        )
         self.assertEqual(self.team.organization, self.org)
         self.assertEqual(self.team.privacy, "closed")
         self.assertEqual(self.team.parent, None)
         self.assertEqual(repr(self.team), 'Team(name="Team", id=12345678)')
-        self.assertEqual(self.team.html_url, "https://github.com/orgs/BeaverSoftware/teams/team-slug")
+        self.assertEqual(
+            self.team.html_url, "https://github.com/orgs/BeaverSoftware/teams/team-slug"
+        )
 
     def testLazyAttributes(self):
         team = self.g.withLazy(True).get_organization("org").get_team(42)
@@ -121,9 +135,12 @@ class Team(Framework.TestCase):
         self.assertEqual(d.body_version, "bedf0740b01d2d758cff9873c2387817")
         self.assertEqual(d.comments_count, 0)
         self.assertEqual(
-            d.comments_url, "https://api.github.com/organizations/1234567/team/12345678/discussions/1/comments"
+            d.comments_url,
+            "https://api.github.com/organizations/1234567/team/12345678/discussions/1/comments",
         )
-        self.assertEqual(d.created_at, datetime(2019, 10, 8, 21, 3, 36, tzinfo=timezone.utc))
+        self.assertEqual(
+            d.created_at, datetime(2019, 10, 8, 21, 3, 36, tzinfo=timezone.utc)
+        )
         self.assertEqual(
             d.html_url,
             "https://github.com/orgs/BeaverSoftware/teams/Team/discussions/1",
@@ -133,10 +150,17 @@ class Team(Framework.TestCase):
         self.assertEqual(d.number, 1)
         self.assertEqual(d.pinned, True)
         self.assertEqual(d.private, False)
-        self.assertEqual(d.team_url, "https://api.github.com/organizations/1234567/team/12345678")
+        self.assertEqual(
+            d.team_url, "https://api.github.com/organizations/1234567/team/12345678"
+        )
         self.assertEqual(d.title, "TITLE")
-        self.assertEqual(d.updated_at, datetime(2019, 10, 8, 21, 3, 36, tzinfo=timezone.utc))
-        self.assertEqual(d.url, "https://api.github.com/organizations/1234567/team/12345678/discussions/1")
+        self.assertEqual(
+            d.updated_at, datetime(2019, 10, 8, 21, 3, 36, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            d.url,
+            "https://api.github.com/organizations/1234567/team/12345678/discussions/1",
+        )
         self.assertEqual(repr(d), 'TeamDiscussion(title="TITLE", number=1)')
 
     def testMembers(self):
@@ -144,7 +168,9 @@ class Team(Framework.TestCase):
         self.assertListKeyEqual(self.team.get_members(), None, [])
         self.assertFalse(self.team.has_in_members(user))
         self.team.add_membership(user)
-        self.assertListKeyEqual(self.team.get_members(), lambda u: u.login, ["jacquev6"])
+        self.assertListKeyEqual(
+            self.team.get_members(), lambda u: u.login, ["jacquev6"]
+        )
         self.assertTrue(self.team.has_in_members(user))
         self.team.remove_membership(user)
         self.assertListKeyEqual(self.team.get_members(), None, [])
@@ -158,7 +184,9 @@ class Team(Framework.TestCase):
         self.assertEqual(list(self.team.get_members()), [])
         self.assertFalse(self.team.has_in_members(user))
         self.team.add_membership(user)
-        self.assertListKeyEqual(self.team.get_members(), lambda u: u.login, ["jacquev6"])
+        self.assertListKeyEqual(
+            self.team.get_members(), lambda u: u.login, ["jacquev6"]
+        )
         self.assertTrue(self.team.has_in_members(user))
         membership_data = self.team.get_team_membership(user)
         self.assertEqual(membership_data.user.login, "jacquev6")
@@ -181,7 +209,9 @@ class Team(Framework.TestCase):
         self.assertFalse(self.team.has_in_repos(repo))
         self.assertIsNone(self.team.get_repo_permission(repo))
         self.team.add_to_repos(repo)
-        self.assertListKeyEqual(self.team.get_repos(), lambda r: r.name, ["FatherBeaver"])
+        self.assertListKeyEqual(
+            self.team.get_repos(), lambda r: r.name, ["FatherBeaver"]
+        )
         self.assertTrue(self.team.has_in_repos(repo))
         permissions = self.team.get_repo_permission(repo)
         self.assertTrue(permissions.pull)
@@ -219,7 +249,9 @@ class Team(Framework.TestCase):
 
     def testGetTeams(self):
         nested_teams = self.team.get_teams()
-        self.assertListKeyEqual(nested_teams, lambda t: t.name, ["DummyTeam1", "DummyTeam2", "DummyTeam3"])
+        self.assertListKeyEqual(
+            nested_teams, lambda t: t.name, ["DummyTeam1", "DummyTeam2", "DummyTeam3"]
+        )
         parent = nested_teams[0].parent
         self.assertEqual(self.team.name, parent.name)
         self.assertEqual(self.team.id, parent.id)

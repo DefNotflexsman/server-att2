@@ -47,7 +47,9 @@ class PublicKey(Framework.TestCase):
         self.public_key = self.g.get_user().get_repo("PyGithub").get_public_key()
         self.assertIsNone(self.public_key.created_at)
         self.assertIsNone(self.public_key.id)
-        self.assertEqual(self.public_key.key, "u5e1Z25+z8pmgVVt5Pd8k0z/sKpVL1MXYtRAecE4vm8=")
+        self.assertEqual(
+            self.public_key.key, "u5e1Z25+z8pmgVVt5Pd8k0z/sKpVL1MXYtRAecE4vm8="
+        )
         self.assertEqual(self.public_key.key_id, "568250167242549743")
         self.assertEqual(
             repr(self.public_key),
@@ -55,12 +57,15 @@ class PublicKey(Framework.TestCase):
         )
         self.assertIsNone(self.public_key.title)
         self.assertEqual(
-            self.public_key.url, "https://api.github.com/repos/jacquev6/PyGithub/actions/secrets/public-key"
+            self.public_key.url,
+            "https://api.github.com/repos/jacquev6/PyGithub/actions/secrets/public-key",
         )
 
     def testAttributes_with_int_key_id(self):
         self.public_key = self.g.get_user().get_repo("PyGithub").get_public_key()
-        self.assertEqual(self.public_key.key, "u5e1Z25+z8pmgVVt5Pd8k0z/sKpVL1MXYtRAecE4vm8=")
+        self.assertEqual(
+            self.public_key.key, "u5e1Z25+z8pmgVVt5Pd8k0z/sKpVL1MXYtRAecE4vm8="
+        )
         self.assertEqual(self.public_key.key_id, 568250167242549743)
         self.assertEqual(
             repr(self.public_key),

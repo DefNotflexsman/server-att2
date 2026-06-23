@@ -27,7 +27,7 @@
 
 <div class="container">
     <h2>⚡️ Secure WebSocket (WSS) Client</h2>
-    
+
     <!-- Connection Row -->
     <div class="input-group">
         <input type="text" id="wssUrl" value="wss://rubynetwork.com" placeholder="wss://address:port">
@@ -72,10 +72,10 @@
         if (!url) return alert("Please enter a valid target URL");
 
         writeLog(`Attempting handshake with: ${url}`, "info");
-        
+
         try {
             ws = new WebSocket(url);
-            
+
             ws.onopen = () => {
                 writeLog("SUCCESS: Connection established and stream active!", "success");
                 connectBtn.innerText = "Disconnect";
@@ -113,7 +113,7 @@
         if (!ws || ws.readyState !== WebSocket.OPEN) return;
         const msg = messageInput.value;
         if (!msg) return;
-        
+
         ws.send(msg);
         writeLog(`SENT: ${msg}`, "outgoing");
         messageInput.value = '';

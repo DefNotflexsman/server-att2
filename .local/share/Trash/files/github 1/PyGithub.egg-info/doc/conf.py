@@ -59,7 +59,12 @@ setupVersion = version("pygithub")
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.mathjax", "sphinx_copybutton"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx_copybutton",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -75,7 +80,10 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyGithub"
-copyright = "%d, Vincent Jacques, Liuyang Wan, Steve Kowalik, Enrico Minack" % datetime.date.today().year
+copyright = (
+    "%d, Vincent Jacques, Liuyang Wan, Steve Kowalik, Enrico Minack"
+    % datetime.date.today().year
+)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -282,8 +290,16 @@ autoclass_content = "both"
 
 githubObjectTypes = {
     variation
-    for object_type in ["GithubObject", "CompletableGithubObject", "NonCompletableGithubObject"]
-    for variation in [object_type, "GithubObject." + object_type, "github.GithubObject." + object_type]
+    for object_type in [
+        "GithubObject",
+        "CompletableGithubObject",
+        "NonCompletableGithubObject",
+    ]
+    for variation in [
+        object_type,
+        "GithubObject." + object_type,
+        "github.GithubObject." + object_type,
+    ]
 }
 githubObjectClasses: dict[str, str] = {}
 
@@ -291,7 +307,9 @@ githubObjectClasses: dict[str, str] = {}
 def collect_classes(types: set[str]) -> Iterable[tuple[str, str]]:
     def get_base_classes(class_definition: str) -> Iterable[str]:
         if "(" in class_definition and ")" in class_definition:
-            for base in class_definition[class_definition.index("(") + 1 : class_definition.index(")")].split(","):
+            for base in class_definition[
+                class_definition.index("(") + 1 : class_definition.index(")")
+            ].split(","):
                 yield base.strip()
         else:
             return []
@@ -300,7 +318,9 @@ def collect_classes(types: set[str]) -> Iterable[tuple[str, str]]:
         module = f"github.{filename[10:-3]}"
         with open(filename) as r:
             for line in r.readlines():
-                if line.startswith("class ") and any([base in types for base in get_base_classes(line)]):
+                if line.startswith("class ") and any(
+                    [base in types for base in get_base_classes(line)]
+                ):
                     class_name = re.match(r"class (\w+)[:(]", line).group(1)
                     if class_name not in types:
                         yield class_name, f"{module}"
@@ -315,7 +335,11 @@ while classes:
         {
             variation
             for object_type in [cls for cls, _ in classes]
-            for variation in [object_type, "GithubObject." + object_type, "github.GithubObject." + object_type]
+            for variation in [
+                object_type,
+                "GithubObject." + object_type,
+                "github.GithubObject." + object_type,
+            ]
         }
     )
     classes = list(collect_classes(set(githubObjectTypes)))
@@ -376,7 +400,15 @@ for githubObjectClass, module in githubObjectClasses.items():
                         methods[url] = dict()
                     if verb not in methods[url]:
                         methods[url][verb] = set()
-                    methods[url][verb].add(":meth:`" + module + "." + githubObjectClass + "." + method + "`")
+                    methods[url][verb].add(
+                        ":meth:`"
+                        + module
+                        + "."
+                        + githubObjectClass
+                        + "."
+                        + method
+                        + "`"
+                    )
 
 methods["/markdown/raw"] = dict()
 methods["/markdown/raw"]["POST"] = ["Not implemented, see ``/markdown``"]
@@ -392,5 +424,7 @@ with open("apis.rst", "w") as apis:
         apis.write("\n")
         for verb in ["GET", "PATCH", "POST", "PUT", "DELETE"]:
             if verb in verbs:
-                apis.write("  * " + verb + ": " + " or ".join(sorted(verbs[verb])) + "\n")
+                apis.write(
+                    "  * " + verb + ": " + " or ".join(sorted(verbs[verb])) + "\n"
+                )
         apis.write("\n")

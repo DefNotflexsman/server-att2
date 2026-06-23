@@ -45,19 +45,23 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 import github.Reaction
-from github.GithubObject import Attribute, GraphQlObject, NonCompletableGithubObject, NotSet, as_rest_api_attributes
+from github.GithubObject import (
+    Attribute,
+    GraphQlObject,
+    NonCompletableGithubObject,
+    NotSet,
+    as_rest_api_attributes,
+)
 
 if TYPE_CHECKING:
     from github.Repository import Repository
 
 
 class RepositoryDiscussionCategory(GraphQlObject, NonCompletableGithubObject):
-    """
-    This class represents GraphQL DiscussionCategory.
+    """This class represents GraphQL DiscussionCategory.
 
     The reference can be found here
     https://docs.github.com/en/graphql/reference/objects#discussioncategory
-
     """
 
     def _initAttributes(self) -> None:
@@ -134,7 +138,8 @@ class RepositoryDiscussionCategory(GraphQlObject, NonCompletableGithubObject):
         if "repository" in attributes:  # pragma no branch
             # repository is a REST API object
             self._repository = self._makeClassAttribute(
-                github.Repository.Repository, as_rest_api_attributes(attributes["repository"])
+                github.Repository.Repository,
+                as_rest_api_attributes(attributes["repository"]),
             )
         if "slug" in attributes:  # pragma no branch
             self._slug = self._makeStringAttribute(attributes["slug"])

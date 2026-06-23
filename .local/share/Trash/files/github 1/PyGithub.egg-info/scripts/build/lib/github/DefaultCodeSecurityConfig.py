@@ -51,8 +51,7 @@ if TYPE_CHECKING:
 
 
 class DefaultCodeSecurityConfig(NonCompletableGithubObject):
-    """
-    This class represents a Default Configurations for Code Security.
+    """This class represents a Default Configurations for Code Security.
 
     The reference can be found here
     https://docs.github.com/en/rest/code-security/configurations.
@@ -60,7 +59,6 @@ class DefaultCodeSecurityConfig(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-security-default-configurations
-
     """
 
     def _initAttributes(self) -> None:
@@ -85,7 +83,10 @@ class DefaultCodeSecurityConfig(NonCompletableGithubObject):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "configuration" in attributes:  # pragma no branch
             self._configuration = self._makeClassAttribute(
-                github.CodeSecurityConfig.CodeSecurityConfig, attributes["configuration"]
+                github.CodeSecurityConfig.CodeSecurityConfig,
+                attributes["configuration"],
             )
         if "default_for_new_repos" in attributes:  # pragma no branch
-            self._default_for_new_repos = self._makeStringAttribute(attributes["default_for_new_repos"])
+            self._default_for_new_repos = self._makeStringAttribute(
+                attributes["default_for_new_repos"]
+            )

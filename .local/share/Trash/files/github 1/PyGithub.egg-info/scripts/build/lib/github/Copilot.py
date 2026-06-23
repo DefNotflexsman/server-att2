@@ -42,7 +42,13 @@ class Copilot(NonCompletableGithubObject):
         self._org_name: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"org_name": self._org_name.value if self._org_name is not NotSet else NotSet})
+        return self.get__repr__(
+            {
+                "org_name": self._org_name.value
+                if self._org_name is not NotSet
+                else NotSet
+            }
+        )
 
     @property
     def org_name(self) -> str:

@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class WorkflowStep(CompletableGithubObject):
-    """
-    This class represents steps in a Workflow Job.
+    """This class represents steps in a Workflow Job.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/actions#workflow-jobs
@@ -57,7 +56,6 @@ class WorkflowStep(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/job/properties/steps/items
-
     """
 
     def _initAttributes(self) -> None:
@@ -69,7 +67,9 @@ class WorkflowStep(CompletableGithubObject):
         self._status: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "name": self._name.value})
+        return self.get__repr__(
+            {"number": self._number.value, "name": self._name.value}
+        )
 
     @property
     def completed_at(self) -> datetime:

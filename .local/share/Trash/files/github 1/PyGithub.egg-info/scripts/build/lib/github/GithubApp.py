@@ -61,8 +61,7 @@ if TYPE_CHECKING:
 
 
 class GithubApp(CompletableGithubObject):
-    """
-    This class represents GitHub apps.
+    """This class represents GitHub apps.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/apps
@@ -71,7 +70,6 @@ class GithubApp(CompletableGithubObject):
 
     - /components/schemas/integration
     - /components/schemas/nullable-integration
-
     """
 
     def _initAttributes(self) -> None:
@@ -204,7 +202,9 @@ class GithubApp(CompletableGithubObject):
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "installations_count" in attributes:  # pragma no branch
-            self._installations_count = self._makeIntAttribute(attributes["installations_count"])
+            self._installations_count = self._makeIntAttribute(
+                attributes["installations_count"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "node_id" in attributes:  # pragma no branch
@@ -232,4 +232,6 @@ class GithubApp(CompletableGithubObject):
             if "slug" not in attributes:
                 self._url = self._makeStringAttribute(attributes["url"])
         if "webhook_secret" in attributes:  # pragma no branch
-            self._webhook_secret = self._makeStringAttribute(attributes["webhook_secret"])
+            self._webhook_secret = self._makeStringAttribute(
+                attributes["webhook_secret"]
+            )

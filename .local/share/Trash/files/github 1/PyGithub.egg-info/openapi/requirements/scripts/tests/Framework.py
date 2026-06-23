@@ -72,12 +72,11 @@ from dataclasses import dataclass
 from io import BytesIO
 from typing import Any, Callable
 
+import github
 import responses
+from github import Consts
 from requests.structures import CaseInsensitiveDict
 from urllib3.util import Url
-
-import github
-from github import Consts
 
 APP_PRIVATE_KEY = """
 -----BEGIN RSA PRIVATE KEY-----
@@ -111,7 +110,12 @@ class FakeHttpResponse:
         return self.__output
 
     def iter_content(self, chunk_size=1):
-        return iter([self.__output[i : i + chunk_size] for i in range(0, len(self.__output), chunk_size)])
+        return iter(
+            [
+                self.__output[i : i + chunk_size]
+                for i in range(0, len(self.__output), chunk_size)
+            ]
+        )
 
     def raise_for_status(self):
         pass
@@ -143,7 +147,9 @@ class Request:
     request_headers: dict[str, Any]
     input: Any
 
-    def with_response(self, status: int, response_headers: dict[str, Any], output: bytes) -> RequestResponse:
+    def with_response(
+        self, status: int, response_headers: dict[str, Any], output: bytes
+    ) -> RequestResponse:
         return RequestResponse(
             self.protocol,
             self.verb,
@@ -225,7 +231,15 @@ class RecordingConnection(Connection):
         # Since it's dict[str, str], a simple copy is enough.
         anonymous_headers = headers.copy()
         fixAuthorizationHeader(anonymous_headers)
-        self.__request = Request(self.__protocol, verb, self.__host, self.__port, url, anonymous_headers, input)
+        self.__request = Request(
+            self.__protocol,
+            verb,
+            self.__host,
+            self.__port,
+            url,
+            anonymous_headers,
+            input,
+        )
         self.__writeLine(self.__protocol)
         self.__writeLine(verb)
         self.__writeLine(self.__host)
@@ -309,7 +323,9 @@ class ReplayingConnection(Connection):
         responses.add_callback(
             method=verb,
             url=full_url.url,
-            callback=lambda request: self.__request_callback(verb, full_url.url, response_headers),
+            callback=lambda request: self.__request_callback(
+                verb, full_url.url, response_headers
+            ),
         )
 
         self.__stream = stream
@@ -320,19 +336,31 @@ class ReplayingConnection(Connection):
 
     def __readNextRequest(self, verb, url, input, headers) -> Request:
         fixAuthorizationHeader(headers)
-        request = Request(self.__protocol, verb, self.__host, self.__port, url, headers, input)
-        assert request.protocol == self.__file.readline(), self.__replayDataMismatchLine()
+        request = Request(
+            self.__protocol, verb, self.__host, self.__port, url, headers, input
+        )
+        assert (
+            request.protocol == self.__file.readline()
+        ), self.__replayDataMismatchLine()
         assert request.verb == self.__file.readline(), self.__replayDataMismatchLine()
         assert request.host == self.__file.readline(), self.__replayDataMismatchLine()
-        assert str(request.port) == self.__file.readline(), self.__replayDataMismatchLine()
-        assert self.__splitUrl(request.url) == self.__splitUrl(self.__file.readline()), self.__replayDataMismatchLine()
-        assert request.request_headers == eval(self.__file.readline()), self.__replayDataMismatchLine()
+        assert (
+            str(request.port) == self.__file.readline()
+        ), self.__replayDataMismatchLine()
+        assert self.__splitUrl(request.url) == self.__splitUrl(
+            self.__file.readline()
+        ), self.__replayDataMismatchLine()
+        assert request.request_headers == eval(
+            self.__file.readline()
+        ), self.__replayDataMismatchLine()
         expectedInput = self.__file.readline()
         if isinstance(input, str):
             trInput = input.replace("\n", "").replace("\r", "")
             if input.startswith("{"):
                 assert expectedInput.startswith("{"), self.__replayDataMismatchLine()
-                assert json.loads(trInput) == json.loads(expectedInput), self.__replayDataMismatchLine()
+                assert json.loads(trInput) == json.loads(
+                    expectedInput
+                ), self.__replayDataMismatchLine()
             else:
                 assert trInput == expectedInput, self.__replayDataMismatchLine()
         else:
@@ -350,7 +378,9 @@ class ReplayingConnection(Connection):
         return (base, sorted(qs.split("&")))
 
     def __request_callback(self, request, uri, response_headers):
-        request = self.__readNextRequest(self.__cnx.verb, self.__cnx.url, self.__cnx.input, self.__cnx.headers)
+        request = self.__readNextRequest(
+            self.__cnx.verb, self.__cnx.url, self.__cnx.input, self.__cnx.headers
+        )
 
         status = int(self.__file.readline())
         self.response_headers = CaseInsensitiveDict(eval(self.__file.readline()))
@@ -465,11 +495,19 @@ class BasicTestCase(unittest.TestCase):
             import GithubCredentials  # type: ignore
 
             self.oauth_token = (
-                github.Auth.Token(GithubCredentials.oauth_token) if GithubCredentials.oauth_token else None
+                github.Auth.Token(GithubCredentials.oauth_token)
+                if GithubCredentials.oauth_token
+                else None
             )
-            self.jwt = github.Auth.AppAuthToken(GithubCredentials.jwt) if GithubCredentials.jwt else None
+            self.jwt = (
+                github.Auth.AppAuthToken(GithubCredentials.jwt)
+                if GithubCredentials.jwt
+                else None
+            )
             self.app_auth = (
-                github.Auth.AppAuth(GithubCredentials.app_id, GithubCredentials.app_private_key)
+                github.Auth.AppAuth(
+                    GithubCredentials.app_id, GithubCredentials.app_private_key
+                )
                 if GithubCredentials.app_id and GithubCredentials.app_private_key
                 else None
             )
@@ -524,8 +562,14 @@ class BasicTestCase(unittest.TestCase):
         self.assertWarnings(warning, expected)
 
     def assertWarnings(self, warning, *expecteds):
-        actual = [(type(message), type(message.message), message.message.args) for message in warning.warnings]
-        expected = [(warnings.WarningMessage, DeprecationWarning, (expected,)) for expected in expecteds]
+        actual = [
+            (type(message), type(message.message), message.message.args)
+            for message in warning.warnings
+        ]
+        expected = [
+            (warnings.WarningMessage, DeprecationWarning, (expected,))
+            for expected in expecteds
+        ]
         self.assertSequenceEqual(actual, expected)
 
     @contextlib.contextmanager
@@ -559,7 +603,11 @@ class BasicTestCase(unittest.TestCase):
             fileName = self.__customFilename
         else:
             for _, _, functionName, _ in traceback.extract_stack():
-                if functionName.startswith("test") or functionName == "setUp" or functionName == "tearDown":
+                if (
+                    functionName.startswith("test")
+                    or functionName == "setUp"
+                    or functionName == "tearDown"
+                ):
                     # because in class Hook(Framework.TestCase), method testTest calls Hook.test
                     if functionName != "test":
                         fileName = f"{self.__class__.__name__}.{functionName}.txt"

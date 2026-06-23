@@ -1,5 +1,5 @@
 // Configuration: Change this to the Minecraft server IP you want to track
-const SERVER_IP = 'proctorsadministration.com'; 
+const SERVER_IP = 'proctorsadministration.com';
 const API_URL = `https://mcsrvstat.us{SERVER_IP}`;
 
 /**
@@ -13,7 +13,7 @@ async function fetchServerStatus() {
     try {
         // Perform an asynchronous HTTP GET request to the API
         const response = await fetch(API_URL);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -24,12 +24,12 @@ async function fetchServerStatus() {
         if (data.online === true) {
             statusText.innerText = "Online";
             statusText.style.color = "#2ecc71"; // Green color
-            
+
             // Extract player metrics safely using optional chaining
             const currentPlayers = data.players?.online || 0;
             const maxPlayers = data.players?.max || 0;
             playerText.innerText = `${currentPlayers} / ${maxPlayers}`;
-            
+
             // Display game version
             versionText.innerText = data.version || "Unknown Version";
         } else {

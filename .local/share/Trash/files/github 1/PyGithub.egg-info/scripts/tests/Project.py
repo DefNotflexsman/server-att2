@@ -45,21 +45,33 @@ class Project(Framework.TestCase):
 
     # See https://developer.github.com/v3/projects/#get-a-project
     def testAttributes(self):
-        self.assertEqual(self.proj.body, "To be used for testing project access API for PyGithub.")
-        self.assertEqual(self.proj.columns_url, "https://api.github.com/projects/1682941/columns")
-        self.assertEqual(self.proj.created_at, datetime(2018, 8, 1, 4, 6, 57, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.proj.body, "To be used for testing project access API for PyGithub."
+        )
+        self.assertEqual(
+            self.proj.columns_url, "https://api.github.com/projects/1682941/columns"
+        )
+        self.assertEqual(
+            self.proj.created_at, datetime(2018, 8, 1, 4, 6, 57, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.proj.creator.login, "bbi-yggy")
-        self.assertEqual(self.proj.html_url, "https://github.com/bbi-yggy/PyGithub/projects/1")
+        self.assertEqual(
+            self.proj.html_url, "https://github.com/bbi-yggy/PyGithub/projects/1"
+        )
         self.assertEqual(self.proj.id, 1682941)
         self.assertEqual(self.proj.name, "TestProject")
         self.assertEqual(repr(self.proj), 'Project(name="TestProject")')
         self.assertEqual(self.proj.node_id, "MDc6UHJvamVjdDE2ODI5NDE=")
         self.assertEqual(self.proj.number, 1)
         self.assertIsNone(self.proj.organization_permission)
-        self.assertEqual(self.proj.owner_url, "https://api.github.com/repos/bbi-yggy/PyGithub")
+        self.assertEqual(
+            self.proj.owner_url, "https://api.github.com/repos/bbi-yggy/PyGithub"
+        )
         self.assertIsNone(self.proj.private)
         self.assertEqual(self.proj.state, "open")
-        self.assertEqual(self.proj.updated_at, datetime(2018, 8, 3, 0, 31, 17, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.proj.updated_at, datetime(2018, 8, 3, 0, 31, 17, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.proj.url, "https://api.github.com/projects/1682941")
 
     def testLazyAttributes(self):

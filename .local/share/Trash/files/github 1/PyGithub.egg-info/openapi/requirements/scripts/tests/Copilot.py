@@ -50,15 +50,24 @@ class Copilot(Framework.TestCase):
         seats = list(self.copilot.get_seats())
         self.assertEqual(len(seats), 1)
         seat = seats[0]
-        self.assertEqual(seat.created_at, datetime(2010, 7, 9, 6, 10, 6, tzinfo=timezone.utc))
-        self.assertEqual(seat.updated_at, datetime(2012, 5, 26, 11, 25, 48, tzinfo=timezone.utc))
+        self.assertEqual(
+            seat.created_at, datetime(2010, 7, 9, 6, 10, 6, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            seat.updated_at, datetime(2012, 5, 26, 11, 25, 48, tzinfo=timezone.utc)
+        )
         self.assertEqual(seat.pending_cancellation_date, None)
-        self.assertEqual(seat.last_activity_at, datetime(2012, 5, 26, 14, 59, 39, tzinfo=timezone.utc))
+        self.assertEqual(
+            seat.last_activity_at,
+            datetime(2012, 5, 26, 14, 59, 39, tzinfo=timezone.utc),
+        )
         self.assertEqual(seat.last_activity_editor, "vscode/1.0.0")
         self.assertEqual(seat.organization.login, self.org_name)
         self.assertEqual(seat.plan_type, "business")
         self.assertEqual(seat.assignee.login, "pashafateev")
-        self.assertEqual(repr(seat), 'CopilotSeat(assignee=NamedUser(login="pashafateev"))')
+        self.assertEqual(
+            repr(seat), 'CopilotSeat(assignee=NamedUser(login="pashafateev"))'
+        )
 
     def testGetSeats(self):
         seats = self.copilot.get_seats()

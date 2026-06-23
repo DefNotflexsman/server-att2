@@ -52,12 +52,10 @@ if TYPE_CHECKING:
 
 
 class RepositoryDiscussion(GraphQlObject, DiscussionBase):
-    """
-    This class represents GraphQL Discussion.
+    """This class represents GraphQL Discussion.
 
     The reference can be found here
     https://docs.github.com/en/graphql/reference/objects#discussion
-
     """
 
     def _initAttributes(self) -> None:
@@ -105,7 +103,9 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
     def repository(self) -> Repository:
         return self._repository.value
 
-    def get_comments(self, comment_graphql_schema: str) -> PaginatedList[RepositoryDiscussionComment]:
+    def get_comments(
+        self, comment_graphql_schema: str
+    ) -> PaginatedList[RepositoryDiscussionComment]:
         if self._comments_page is not None:
             return PaginatedList(
                 github.RepositoryDiscussionComment.RepositoryDiscussionComment,
@@ -115,7 +115,9 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
             )
 
         if is_undefined(self._id):
-            raise RuntimeError("Retrieving discussion comments requires the discussion field 'id'")
+            raise RuntimeError(
+                "Retrieving discussion comments requires the discussion field 'id'"
+            )
         if not comment_graphql_schema.startswith("\n"):
             comment_graphql_schema = f" {comment_graphql_schema} "
 
@@ -152,19 +154,34 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
     def get_labels(self) -> PaginatedList[Label]:
         if self._labels_page is None:
             raise RuntimeError("Fetching labels not implemented")
-        return PaginatedList(github.Label.Label, self._requester, firstData=self._labels_page, firstHeaders={})
+        return PaginatedList(
+            github.Label.Label,
+            self._requester,
+            firstData=self._labels_page,
+            firstHeaders={},
+        )
 
     def get_reactions(self) -> PaginatedList[Reaction]:
         if self._reactions_page is None:
             raise RuntimeError("Fetching reactions not implemented")
-        return PaginatedList(github.Reaction.Reaction, self._requester, firstData=self._reactions_page, firstHeaders={})
+        return PaginatedList(
+            github.Reaction.Reaction,
+            self._requester,
+            firstData=self._reactions_page,
+            firstHeaders={},
+        )
 
     def add_comment(
-        self, body: str, reply_to: RepositoryDiscussionComment | str | None = None, output_schema: str = "id"
+        self,
+        body: str,
+        reply_to: RepositoryDiscussionComment | str | None = None,
+        output_schema: str = "id",
     ) -> RepositoryDiscussionComment:
         reply_to_id = (
             reply_to.id
-            if isinstance(reply_to, github.RepositoryDiscussionComment.RepositoryDiscussionComment)
+            if isinstance(
+                reply_to, github.RepositoryDiscussionComment.RepositoryDiscussionComment
+            )
             else reply_to
         )
         if not output_schema.startswith("\n"):
@@ -184,13 +201,15 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
         super()._useAttributes(as_rest_api_attributes(attributes))
         if "answer" in attributes:  # pragma no branch
             self._answer = self._makeClassAttribute(
-                github.RepositoryDiscussionComment.RepositoryDiscussionComment, attributes["answer"]
+                github.RepositoryDiscussionComment.RepositoryDiscussionComment,
+                attributes["answer"],
             )
         if "bodyText" in attributes:  # pragma no branch
             self._body_text = self._makeStringAttribute(attributes["bodyText"])
         if "category" in attributes:  # pragma no branch
             self._category = self._makeClassAttribute(
-                github.RepositoryDiscussionCategory.RepositoryDiscussionCategory, attributes["category"]
+                github.RepositoryDiscussionCategory.RepositoryDiscussionCategory,
+                attributes["category"],
             )
         if "comments" in attributes:  # pragma no branch
             # comments are GraphQL API objects
@@ -198,7 +217,9 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
         if "databaseId" in attributes:  # pragma no branch
             self._database_id = self._makeIntAttribute(attributes["databaseId"])
         if "editor" in attributes:  # pragma no branch
-            self._editor = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["editor"])
+            self._editor = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["editor"]
+            )
         if "id" in attributes:  # pragma no branch
             self._id = self._makeStringAttribute(attributes["id"])
         if "labels" in attributes:  # pragma no branch
@@ -209,5 +230,6 @@ class RepositoryDiscussion(GraphQlObject, DiscussionBase):
             self._reactions_page = as_rest_api_attributes_list(attributes["reactions"]["nodes"])  # type: ignore
         if "repository" in attributes:  # pragma no branch
             self._repository = self._makeClassAttribute(
-                github.Repository.Repository, as_rest_api_attributes(attributes["repository"])
+                github.Repository.Repository,
+                as_rest_api_attributes(attributes["repository"]),
             )

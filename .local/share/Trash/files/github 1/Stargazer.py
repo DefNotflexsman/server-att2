@@ -54,12 +54,10 @@ if TYPE_CHECKING:
 
 
 class Stargazer(NonCompletableGithubObject):
-    """
-    This class represents Stargazers.
+    """This class represents Stargazers.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/activity#starring
-
     """
 
     def _initAttributes(self) -> None:
@@ -84,4 +82,6 @@ class Stargazer(NonCompletableGithubObject):
         if "starred_at" in attributes:
             self._starred_at = self._makeDatetimeAttribute(attributes["starred_at"])
         if "user" in attributes:
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

@@ -57,13 +57,11 @@ if TYPE_CHECKING:
 
 
 class GistHistoryState(CompletableGithubObject):
-    """
-    This class represents GistHistoryStates.
+    """This class represents GistHistoryStates.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/gist-history
-
     """
 
     def _initAttributes(self) -> None:
@@ -196,7 +194,9 @@ class GistHistoryState(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "change_status" in attributes:  # pragma no branch
-            self._change_status = self._makeClassAttribute(github.CommitStats.CommitStats, attributes["change_status"])
+            self._change_status = self._makeClassAttribute(
+                github.CommitStats.CommitStats, attributes["change_status"]
+            )
         if "comments" in attributes:  # pragma no branch
             self._comments = self._makeIntAttribute(attributes["comments"])
         if "comments_url" in attributes:  # pragma no branch
@@ -210,9 +210,13 @@ class GistHistoryState(CompletableGithubObject):
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "files" in attributes:  # pragma no branch
-            self._files = self._makeDictOfStringsToClassesAttribute(github.GistFile.GistFile, attributes["files"])
+            self._files = self._makeDictOfStringsToClassesAttribute(
+                github.GistFile.GistFile, attributes["files"]
+            )
         if "forks" in attributes:  # pragma no branch
-            self._forks = self._makeListOfClassesAttribute(github.Gist.Gist, attributes["forks"])
+            self._forks = self._makeListOfClassesAttribute(
+                github.Gist.Gist, attributes["forks"]
+            )
         if "forks_url" in attributes:  # pragma no branch
             self._forks_url = self._makeStringAttribute(attributes["forks_url"])
         if "git_pull_url" in attributes:  # pragma no branch
@@ -220,13 +224,17 @@ class GistHistoryState(CompletableGithubObject):
         if "git_push_url" in attributes:  # pragma no branch
             self._git_push_url = self._makeStringAttribute(attributes["git_push_url"])
         if "history" in attributes:  # pragma no branch
-            self._history = self._makeListOfClassesAttribute(GistHistoryState, attributes["history"])
+            self._history = self._makeListOfClassesAttribute(
+                GistHistoryState, attributes["history"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
             self._id = self._makeStringAttribute(attributes["id"])
         if "owner" in attributes:  # pragma no branch
-            self._owner = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["owner"])
+            self._owner = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["owner"]
+            )
         if "public" in attributes:  # pragma no branch
             self._public = self._makeBoolAttribute(attributes["public"])
         if "updated_at" in attributes:  # pragma no branch
@@ -234,6 +242,8 @@ class GistHistoryState(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )
         if "version" in attributes:  # pragma no branch
             self._version = self._makeStringAttribute(attributes["version"])

@@ -58,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class GitReleaseAsset(CompletableGithubObject):
-    """
-    This class represents GitReleaseAssets.
+    """This class represents GitReleaseAssets.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#releases
@@ -67,7 +66,6 @@ class GitReleaseAsset(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/release-asset
-
     """
 
     def _initAttributes(self) -> None:
@@ -160,14 +158,14 @@ class GitReleaseAsset(CompletableGithubObject):
         return self._url.value
 
     def delete_asset(self) -> bool:
-        """
-        Delete asset from the release.
-        """
+        """Delete asset from the release."""
         headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
         return True
 
     @overload
-    def download_asset(self, path: None = None, chunk_size: int | None = 1) -> tuple[int, dict[str, Any], Iterator]:
+    def download_asset(
+        self, path: None = None, chunk_size: int | None = 1
+    ) -> tuple[int, dict[str, Any], Iterator]:
         ...
 
     @overload
@@ -177,27 +175,27 @@ class GitReleaseAsset(CompletableGithubObject):
     def download_asset(
         self, path: None | str = None, chunk_size: int | None = 1
     ) -> tuple[int, dict[str, Any], Iterator] | None:
-        """
-        Download asset to the path or return an iterator for the stream.
-        """
+        """Download asset to the path or return an iterator for the stream."""
         if path is None:
             return self._requester.getStream(self.url, chunk_size=chunk_size)
         self._requester.getFile(self.url, path=path, chunk_size=chunk_size)
         return None
 
     def update_asset(self, name: str, label: str = "") -> GitReleaseAsset:
-        """
-        Update asset metadata.
-        """
+        """Update asset metadata."""
         assert isinstance(name, str), name
         assert isinstance(label, str), label
         post_parameters = {"name": name, "label": label}
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         return GitReleaseAsset(self._requester, headers, data, completed=True)
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "browser_download_url" in attributes:  # pragma no branch
-            self._browser_download_url = self._makeStringAttribute(attributes["browser_download_url"])
+            self._browser_download_url = self._makeStringAttribute(
+                attributes["browser_download_url"]
+            )
         if "content_type" in attributes:  # pragma no branch
             self._content_type = self._makeStringAttribute(attributes["content_type"])
         if "created_at" in attributes:  # pragma no branch
@@ -225,6 +223,8 @@ class GitReleaseAsset(CompletableGithubObject):
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "uploader" in attributes:  # pragma no branch
-            self._uploader = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["uploader"])
+            self._uploader = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["uploader"]
+            )
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])

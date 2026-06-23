@@ -47,8 +47,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class NotificationSubject(NonCompletableGithubObject):
-    """
-    This class represents Subjects of Notifications.
+    """This class represents Subjects of Notifications.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/activity#list-notifications-for-the-authenticated-user
@@ -56,7 +55,6 @@ class NotificationSubject(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/thread/properties/subject
-
     """
 
     def _initAttributes(self) -> None:
@@ -86,7 +84,9 @@ class NotificationSubject(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "latest_comment_url" in attributes:  # pragma no branch
-            self._latest_comment_url = self._makeStringAttribute(attributes["latest_comment_url"])
+            self._latest_comment_url = self._makeStringAttribute(
+                attributes["latest_comment_url"]
+            )
         if "title" in attributes:  # pragma no branch
             self._title = self._makeStringAttribute(attributes["title"])
         if "type" in attributes:  # pragma no branch

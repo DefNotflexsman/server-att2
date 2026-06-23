@@ -31,8 +31,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class SubIssueSummary(NonCompletableGithubObject):
-    """
-    This class represents SubIssueSummary.
+    """This class represents SubIssueSummary.
 
     The reference can be found here
     https://docs.github.com/en/rest/issues/issues
@@ -40,7 +39,6 @@ class SubIssueSummary(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/sub-issues-summary
-
     """
 
     def _initAttributes(self) -> None:
@@ -64,6 +62,8 @@ class SubIssueSummary(NonCompletableGithubObject):
         if "completed" in attributes:  # pragma no branch
             self._completed = self._makeIntAttribute(attributes["completed"])
         if "percent_completed" in attributes:  # pragma no branch
-            self._percent_completed = self._makeIntAttribute(attributes["percent_completed"])
+            self._percent_completed = self._makeIntAttribute(
+                attributes["percent_completed"]
+            )
         if "total" in attributes:  # pragma no branch
             self._total = self._makeIntAttribute(attributes["total"])

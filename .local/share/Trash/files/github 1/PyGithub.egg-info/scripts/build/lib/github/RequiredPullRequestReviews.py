@@ -52,7 +52,12 @@ from typing_extensions import deprecated
 import github.GithubApp
 import github.NamedUser
 import github.Team
-from github.GithubObject import Attribute, CompletableGithubObject, NonCompletableGithubObject, NotSet
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NonCompletableGithubObject,
+    NotSet,
+)
 
 if TYPE_CHECKING:
     from github.GithubApp import GithubApp
@@ -61,8 +66,7 @@ if TYPE_CHECKING:
 
 
 class BypassPullRequestAllowances(NonCompletableGithubObject):
-    """
-    This class represents BypassPullRequestAllowances.
+    """This class represents BypassPullRequestAllowances.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-pull-request-review-protection
@@ -71,7 +75,6 @@ class BypassPullRequestAllowances(NonCompletableGithubObject):
 
     - /components/schemas/protected-branch-pull-request-review/properties/bypass_pull_request_allowances
     - /components/schemas/protected-branch/properties/required_pull_request_reviews/properties/bypass_pull_request_allowances
-
     """
 
     def _initAttributes(self) -> None:
@@ -80,7 +83,13 @@ class BypassPullRequestAllowances(NonCompletableGithubObject):
         self._users: Attribute[list[NamedUser]] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"apps": self._apps.value, "teams": self._teams.value, "users": self._users.value})
+        return self.get__repr__(
+            {
+                "apps": self._apps.value,
+                "teams": self._teams.value,
+                "users": self._users.value,
+            }
+        )
 
     @property
     def apps(self) -> list[GithubApp]:
@@ -96,16 +105,21 @@ class BypassPullRequestAllowances(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "apps" in attributes:  # pragma no branch
-            self._apps = self._makeListOfClassesAttribute(github.GithubApp.GithubApp, attributes["apps"])
+            self._apps = self._makeListOfClassesAttribute(
+                github.GithubApp.GithubApp, attributes["apps"]
+            )
         if "teams" in attributes:  # pragma no branch
-            self._teams = self._makeListOfClassesAttribute(github.Team.Team, attributes["teams"])
+            self._teams = self._makeListOfClassesAttribute(
+                github.Team.Team, attributes["teams"]
+            )
         if "users" in attributes:  # pragma no branch
-            self._users = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["users"])
+            self._users = self._makeListOfClassesAttribute(
+                github.NamedUser.NamedUser, attributes["users"]
+            )
 
 
 class DismissalRestrictions(NonCompletableGithubObject):
-    """
-    This class represents DismissalRestrictions.
+    """This class represents DismissalRestrictions.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-pull-request-review-protection
@@ -114,7 +128,6 @@ class DismissalRestrictions(NonCompletableGithubObject):
 
     - /components/schemas/protected-branch-pull-request-review/properties/dismissal_restrictions
     - /components/schemas/protected-branch/properties/required_pull_request_reviews/properties/dismissal_restrictions
-
     """
 
     def _initAttributes(self) -> None:
@@ -126,7 +139,13 @@ class DismissalRestrictions(NonCompletableGithubObject):
         self._users_url: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"apps": self._apps.value, "teams": self._teams.value, "users": self._users.value})
+        return self.get__repr__(
+            {
+                "apps": self._apps.value,
+                "teams": self._teams.value,
+                "users": self._users.value,
+            }
+        )
 
     @property
     def apps(self) -> list[GithubApp]:
@@ -154,22 +173,27 @@ class DismissalRestrictions(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "apps" in attributes:  # pragma no branch
-            self._apps = self._makeListOfClassesAttribute(github.GithubApp.GithubApp, attributes["apps"])
+            self._apps = self._makeListOfClassesAttribute(
+                github.GithubApp.GithubApp, attributes["apps"]
+            )
         if "teams" in attributes:  # pragma no branch
-            self._teams = self._makeListOfClassesAttribute(github.Team.Team, attributes["teams"])
+            self._teams = self._makeListOfClassesAttribute(
+                github.Team.Team, attributes["teams"]
+            )
         if "teams_url" in attributes:  # pragma no branch
             self._teams_url = self._makeStringAttribute(attributes["teams_url"])
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "users" in attributes:  # pragma no branch
-            self._users = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["users"])
+            self._users = self._makeListOfClassesAttribute(
+                github.NamedUser.NamedUser, attributes["users"]
+            )
         if "users_url" in attributes:  # pragma no branch
             self._users_url = self._makeStringAttribute(attributes["users_url"])
 
 
 class RequiredPullRequestReviews(CompletableGithubObject):
-    """
-    This class represents Required Pull Request Reviews.
+    """This class represents Required Pull Request Reviews.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-pull-request-review-protection
@@ -178,11 +202,12 @@ class RequiredPullRequestReviews(CompletableGithubObject):
 
     - /components/schemas/protected-branch-pull-request-review
     - /components/schemas/protected-branch/properties/required_pull_request_reviews
-
     """
 
     def _initAttributes(self) -> None:
-        self._bypass_pull_request_allowances: Attribute[BypassPullRequestAllowances] = NotSet
+        self._bypass_pull_request_allowances: Attribute[
+            BypassPullRequestAllowances
+        ] = NotSet
         self._dismiss_stale_reviews: Attribute[bool] = NotSet
         self._dismissal_restrictions: Attribute[DismissalRestrictions] = NotSet
         self._require_code_owner_reviews: Attribute[bool] = NotSet
@@ -218,12 +243,20 @@ class RequiredPullRequestReviews(CompletableGithubObject):
     @property
     @deprecated("Use dismissal_restrictions.teams")
     def dismissal_teams(self) -> list[Team] | None:
-        return self.dismissal_restrictions.teams if self.dismissal_restrictions is not None else None
+        return (
+            self.dismissal_restrictions.teams
+            if self.dismissal_restrictions is not None
+            else None
+        )
 
     @property
     @deprecated("Use dismissal_restrictions.users")
     def dismissal_users(self) -> list[NamedUser] | None:
-        return self.dismissal_restrictions.users if self.dismissal_restrictions is not None else None
+        return (
+            self.dismissal_restrictions.users
+            if self.dismissal_restrictions is not None
+            else None
+        )
 
     @property
     def require_code_owner_reviews(self) -> bool:
@@ -248,18 +281,25 @@ class RequiredPullRequestReviews(CompletableGithubObject):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "bypass_pull_request_allowances" in attributes:  # pragma no branch
             self._bypass_pull_request_allowances = self._makeClassAttribute(
-                BypassPullRequestAllowances, attributes["bypass_pull_request_allowances"]
+                BypassPullRequestAllowances,
+                attributes["bypass_pull_request_allowances"],
             )
         if "dismiss_stale_reviews" in attributes:  # pragma no branch
-            self._dismiss_stale_reviews = self._makeBoolAttribute(attributes["dismiss_stale_reviews"])
+            self._dismiss_stale_reviews = self._makeBoolAttribute(
+                attributes["dismiss_stale_reviews"]
+            )
         if "dismissal_restrictions" in attributes:  # pragma no branch
             self._dismissal_restrictions = self._makeClassAttribute(
                 DismissalRestrictions, attributes["dismissal_restrictions"]
             )
         if "require_code_owner_reviews" in attributes:  # pragma no branch
-            self._require_code_owner_reviews = self._makeBoolAttribute(attributes["require_code_owner_reviews"])
+            self._require_code_owner_reviews = self._makeBoolAttribute(
+                attributes["require_code_owner_reviews"]
+            )
         if "require_last_push_approval" in attributes:  # pragma no branch
-            self._require_last_push_approval = self._makeBoolAttribute(attributes["require_last_push_approval"])
+            self._require_last_push_approval = self._makeBoolAttribute(
+                attributes["require_last_push_approval"]
+            )
         if "required_approving_review_count" in attributes:  # pragma no branch
             self._required_approving_review_count = self._makeIntAttribute(
                 attributes["required_approving_review_count"]

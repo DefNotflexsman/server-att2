@@ -55,9 +55,7 @@ from github.Requester import Requester
 
 
 class GithubIntegration:
-    """
-    Main class to obtain tokens for a GitHub integration.
-    """
+    """Main class to obtain tokens for a GitHub integration."""
 
     # keep non-deprecated arguments in-sync with Requester
     # v3: remove integration_id, private_key, jwt_expiry, jwt_issued_at and jwt_algorithm
@@ -81,7 +79,8 @@ class GithubIntegration:
         verify: bool | str = True,
         retry: int | Retry | None = None,
         pool_size: int | None = None,
-        seconds_between_requests: float | None = Consts.DEFAULT_SECONDS_BETWEEN_REQUESTS,
+        seconds_between_requests: float
+        | None = Consts.DEFAULT_SECONDS_BETWEEN_REQUESTS,
         seconds_between_writes: float | None = Consts.DEFAULT_SECONDS_BETWEEN_WRITES,
         jwt_expiry: int = Consts.DEFAULT_JWT_EXPIRY,
         jwt_issued_at: int = Consts.DEFAULT_JWT_ISSUED_AT,
@@ -116,13 +115,19 @@ class GithubIntegration:
         if integration_id is not None:
             assert isinstance(integration_id, (int, str)), integration_id
         if private_key is not None:
-            assert isinstance(private_key, str), "supplied private key should be a string"
+            assert isinstance(
+                private_key, str
+            ), "supplied private key should be a string"
         assert isinstance(base_url, str), base_url
         assert isinstance(timeout, int), timeout
         assert user_agent is None or isinstance(user_agent, str), user_agent
         assert isinstance(per_page, int), per_page
         assert isinstance(verify, (bool, str)), verify
-        assert retry is None or isinstance(retry, int) or isinstance(retry, urllib3.util.Retry), retry
+        assert (
+            retry is None
+            or isinstance(retry, int)
+            or isinstance(retry, urllib3.util.Retry)
+        ), retry
         assert pool_size is None or isinstance(pool_size, int), pool_size
         assert seconds_between_requests is None or seconds_between_requests >= 0
         assert seconds_between_writes is None or seconds_between_writes >= 0
@@ -185,13 +190,13 @@ class GithubIntegration:
         )
 
     def withLazy(self, lazy: bool) -> GithubIntegration:
-        """
-        Create a GithubIntegration instance with identical configuration but the given lazy setting.
+        """Create a GithubIntegration instance with identical configuration but
+        the given lazy setting.
 
-        :param lazy: completable objects created from this instance are lazy, as well as completable objects created
-            from those, and so on
+        :param lazy: completable objects created from this instance are
+            lazy, as well as completable objects created from those, and
+            so on
         :return: new Github instance
-
         """
         kwargs = self.__requester.kwargs
         kwargs.update(lazy=lazy)
@@ -218,32 +223,31 @@ class GithubIntegration:
         self, installation_id: int, token_permissions: dict[str, str] | None = None
     ) -> github.Github:
         # The installation has to authenticate as an installation, not an app
-        auth = self.auth.get_installation_auth(installation_id, token_permissions, self.__requester)
+        auth = self.auth.get_installation_auth(
+            installation_id, token_permissions, self.__requester
+        )
         return github.Github(**self.__requester.withAuth(auth).kwargs)
 
     @property
     def requester(self) -> Requester:
-        """
-        Return my Requester object.
+        """Return my Requester object.
 
-        For example, to make requests to API endpoints not yet supported by PyGitHub.
-
+        For example, to make requests to API endpoints not yet supported
+        by PyGitHub.
         """
         return self.__requester
 
     def _get_headers(self) -> dict[str, str]:
-        """
-        Get headers for the requests.
-        """
+        """Get headers for the requests."""
         return {
             "Accept": Consts.mediaTypeIntegrationPreview,
         }
 
     def _get_installed_app(self, url: str) -> Installation:
-        """
-        Get installation for the given URL.
-        """
-        headers, response = self.__requester.requestJsonAndCheck("GET", url, headers=self._get_headers())
+        """Get installation for the given URL."""
+        headers, response = self.__requester.requestJsonAndCheck(
+            "GET", url, headers=self._get_headers()
+        )
 
         return Installation(
             requester=self.__requester,
@@ -271,7 +275,9 @@ class GithubIntegration:
             permissions = {}
 
         if not isinstance(permissions, dict):
-            raise GithubException(status=400, data={"message": "Invalid permissions"}, headers=None)
+            raise GithubException(
+                status=400, data={"message": "Invalid permissions"}, headers=None
+            )
 
         body = {"permissions": permissions}
         headers, response = self.__requester.requestJsonAndCheck(
@@ -289,12 +295,10 @@ class GithubIntegration:
 
     @deprecated("Use get_repo_installation")
     def get_installation(self, owner: str, repo: str) -> Installation:
-        """
-        Deprecated by get_repo_installation.
+        """Deprecated by get_repo_installation.
 
         :calls: `GET /repos/{owner}/{repo}/installation <https://docs.github.com/en/rest/reference/apps#get-a-repository-
         installation-for-the-authenticated-app>`
-
         """
         owner = urllib.parse.quote(owner)
         repo = urllib.parse.quote(repo)
@@ -346,5 +350,9 @@ class GithubIntegration:
         :calls: `GET /app <https://docs.github.com/en/rest/reference/apps#get-the-authenticated-app>`_
         """
 
-        headers, data = self.__requester.requestJsonAndCheck("GET", "/app", headers=self._get_headers())
-        return GithubApp(requester=self.__requester, headers=headers, attributes=data, completed=True)
+        headers, data = self.__requester.requestJsonAndCheck(
+            "GET", "/app", headers=self._get_headers()
+        )
+        return GithubApp(
+            requester=self.__requester, headers=headers, attributes=data, completed=True
+        )

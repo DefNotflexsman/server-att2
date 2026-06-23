@@ -57,8 +57,7 @@ if TYPE_CHECKING:
 
 
 class Invitation(CompletableGithubObject):
-    """
-    This class represents repository invitations.
+    """This class represents repository invitations.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#invitations
@@ -66,7 +65,6 @@ class Invitation(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/repository-invitation
-
     """
 
     def _initAttributes(self) -> None:
@@ -165,6 +163,8 @@ class Invitation(CompletableGithubObject):
         if "permissions" in attributes:  # pragma no branch
             self._permissions = self._makeStringAttribute(attributes["permissions"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])

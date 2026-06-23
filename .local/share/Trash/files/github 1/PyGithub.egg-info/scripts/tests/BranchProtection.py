@@ -43,7 +43,11 @@ from . import Framework
 class BranchProtection(Framework.TestCase):
     def setUp(self):
         super().setUp()
-        self.branch_protection = self.g.get_repo("curvewise-forks/PyGithub").get_branch("master").get_protection()
+        self.branch_protection = (
+            self.g.get_repo("curvewise-forks/PyGithub")
+            .get_branch("master")
+            .get_protection()
+        )
 
     def testAttributes(self):
         self.assertEqual(self.branch_protection.allow_deletions, False)
@@ -63,7 +67,9 @@ class BranchProtection(Framework.TestCase):
         )
         self.assertEqual(self.branch_protection.required_signatures, False)
         self.assertTrue(self.branch_protection.required_status_checks.strict)
-        self.assertEqual(self.branch_protection.required_status_checks.contexts, ["build (3.10)"])
+        self.assertEqual(
+            self.branch_protection.required_status_checks.contexts, ["build (3.10)"]
+        )
         self.assertTrue(self.branch_protection.required_linear_history)
         self.assertIsNone(self.branch_protection.restrictions)
         self.assertEqual(

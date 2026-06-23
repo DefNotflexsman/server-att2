@@ -48,20 +48,34 @@ from . import Framework
 class IssueComment(Framework.TestCase):
     def setUp(self):
         super().setUp()
-        self.comment = self.g.get_repo("PyGithub/PyGithub").get_issue(28).get_comment(20227753)
+        self.comment = (
+            self.g.get_repo("PyGithub/PyGithub").get_issue(28).get_comment(20227753)
+        )
 
     def testAttributes(self):
         self.assertEqual(self.comment.author_association, "CONTRIBUTOR")
         self.assertEqual(self.comment.body, "Comment created by PyGithub\n")
         self.assertIsNone(self.comment.body_html)
         self.assertIsNone(self.comment.body_text)
-        self.assertEqual(self.comment.created_at, datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc))
-        self.assertEqual(self.comment.html_url, "https://github.com/PyGithub/PyGithub/issues/28#issuecomment-20227753")
+        self.assertEqual(
+            self.comment.created_at,
+            datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.comment.html_url,
+            "https://github.com/PyGithub/PyGithub/issues/28#issuecomment-20227753",
+        )
         self.assertEqual(self.comment.id, 20227753)
-        self.assertEqual(self.comment.issue_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/28")
+        self.assertEqual(
+            self.comment.issue_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/28",
+        )
         self.assertEqual(self.comment.node_id, "MDEyOklzc3VlQ29tbWVudDIwMjI3NzUz")
         self.assertEqual(self.comment.body, "Comment created by PyGithub\n")
-        self.assertEqual(self.comment.created_at, datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.comment.created_at,
+            datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.comment.id, 20227753)
         self.assertIsNone(self.comment.performed_via_github_app)
         self.assertEqual(
@@ -79,11 +93,23 @@ class IssueComment(Framework.TestCase):
                 "eyes": 0,
             },
         )
-        self.assertEqual(self.comment.updated_at, datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc))
-        self.assertEqual(self.comment.url, "https://api.github.com/repos/PyGithub/PyGithub/issues/comments/20227753")
+        self.assertEqual(
+            self.comment.updated_at,
+            datetime(2013, 6, 29, 10, 31, 38, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.comment.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/comments/20227753",
+        )
         self.assertEqual(self.comment.user.login, "stuglaser")
-        self.assertEqual(self.comment.html_url, "https://github.com/PyGithub/PyGithub/issues/28#issuecomment-20227753")
-        self.assertEqual(repr(self.comment), 'IssueComment(user=NamedUser(login="stuglaser"), id=20227753)')
+        self.assertEqual(
+            self.comment.html_url,
+            "https://github.com/PyGithub/PyGithub/issues/28#issuecomment-20227753",
+        )
+        self.assertEqual(
+            repr(self.comment),
+            'IssueComment(user=NamedUser(login="stuglaser"), id=20227753)',
+        )
         self.assertEqual(
             self.comment.reactions,
             {
@@ -101,7 +127,9 @@ class IssueComment(Framework.TestCase):
         )
 
     def testLazyAttributes(self):
-        comment = self.g.withLazy(True).get_repo("lazy/repo").get_issue(42).get_comment(24)
+        comment = (
+            self.g.withLazy(True).get_repo("lazy/repo").get_issue(42).get_comment(24)
+        )
         self.assertEqual(str(comment), "IssueComment(user=None, id=24)")
         self.assertEqual(comment.id, 24)
         self.assertEqual(comment.url, "/repos/lazy/repo/issues/comments/24")

@@ -36,8 +36,7 @@ if TYPE_CHECKING:
 
 
 class SelfHostedActionsRunnerJitConfig(NonCompletableGithubObject):
-    """
-    This class represents Self-hosted GitHub Actions Runners JitConfig.
+    """This class represents Self-hosted GitHub Actions Runners JitConfig.
 
     The reference can be found at
     https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-configuration-for-a-just-in-time-runner-for-a-repository
@@ -45,7 +44,6 @@ class SelfHostedActionsRunnerJitConfig(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/responses/actions_runner_jitconfig/content/"application/json"/schema
-
     """
 
     def _initAttributes(self) -> None:
@@ -65,8 +63,11 @@ class SelfHostedActionsRunnerJitConfig(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "encoded_jit_config" in attributes:  # pragma no branch
-            self._encoded_jit_config = self._makeStringAttribute(attributes["encoded_jit_config"])
+            self._encoded_jit_config = self._makeStringAttribute(
+                attributes["encoded_jit_config"]
+            )
         if "runner" in attributes:  # pragma no branch
             self._runner = self._makeClassAttribute(
-                github.SelfHostedActionsRunner.SelfHostedActionsRunner, attributes["runner"]
+                github.SelfHostedActionsRunner.SelfHostedActionsRunner,
+                attributes["runner"],
             )

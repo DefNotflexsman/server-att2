@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class GitCommitVerification(NonCompletableGithubObject):
-    """
-    This class represents commit verifications.
+    """This class represents commit verifications.
 
     The reference can be found here
     https://docs.github.com/en/rest/commits/commits
@@ -59,7 +58,6 @@ class GitCommitVerification(NonCompletableGithubObject):
     - /components/schemas/file-commit/properties/commit/properties/verification
     - /components/schemas/git-commit/properties/verification
     - /components/schemas/verification
-
     """
 
     def _initAttributes(self) -> None:

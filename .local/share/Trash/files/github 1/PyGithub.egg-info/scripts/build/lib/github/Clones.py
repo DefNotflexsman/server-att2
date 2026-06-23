@@ -50,8 +50,8 @@ if TYPE_CHECKING:
 
 
 class Clones(NonCompletableGithubObject):
-    """
-    This class represents the total number of clones and breakdown per day or week for a GitHub repository.
+    """This class represents the total number of clones and breakdown per day
+    or week for a GitHub repository.
 
     The reference can be found here
     https://docs.github.com/en/rest/metrics/traffic#get-repository-clones
@@ -59,7 +59,6 @@ class Clones(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/clone-traffic
-
     """
 
     def _initAttributes(self) -> None:
@@ -89,7 +88,9 @@ class Clones(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "clones" in attributes:  # pragma no branch
-            self._clones = self._makeListOfClassesAttribute(github.Traffic.Traffic, attributes["clones"])
+            self._clones = self._makeListOfClassesAttribute(
+                github.Traffic.Traffic, attributes["clones"]
+            )
         if "count" in attributes:  # pragma no branch
             self._count = self._makeIntAttribute(attributes["count"])
         if "uniques" in attributes:  # pragma no branch

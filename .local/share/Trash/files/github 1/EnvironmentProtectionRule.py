@@ -49,16 +49,16 @@ import github.EnvironmentProtectionRuleReviewer
 from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 if TYPE_CHECKING:
-    from github.EnvironmentProtectionRuleReviewer import EnvironmentProtectionRuleReviewer
+    from github.EnvironmentProtectionRuleReviewer import (
+        EnvironmentProtectionRuleReviewer,
+    )
 
 
 class EnvironmentProtectionRule(NonCompletableGithubObject):
-    """
-    This class represents a protection rule for an environment.
+    """This class represents a protection rule for an environment.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/deployments#environments
-
     """
 
     def _initAttributes(self) -> None:
@@ -104,7 +104,9 @@ class EnvironmentProtectionRule(NonCompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "prevent_self_review" in attributes:
-            self._prevent_self_review = self._makeBoolAttribute(attributes["prevent_self_review"])
+            self._prevent_self_review = self._makeBoolAttribute(
+                attributes["prevent_self_review"]
+            )
         if "reviewers" in attributes:  # pragma no branch
             self._reviewers = self._makeListOfClassesAttribute(
                 github.EnvironmentProtectionRuleReviewer.EnvironmentProtectionRuleReviewer,

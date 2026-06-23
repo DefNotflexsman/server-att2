@@ -44,15 +44,21 @@ from . import Framework
 class GitReleaseAsset(Framework.TestCase):
     def setUp(self):
         super().setUp()
-        self.release = self.g.get_repo("EnricoMi/PyGithub", lazy=True).get_release(197548596)
+        self.release = self.g.get_repo("EnricoMi/PyGithub", lazy=True).get_release(
+            197548596
+        )
         self.asset = self.release.assets[0]
 
     def testAttributes(self):
         self.assertEqual(
-            self.asset.browser_download_url, "https://github.com/EnricoMi/PyGithub/releases/download/v1.55/asset1.md"
+            self.asset.browser_download_url,
+            "https://github.com/EnricoMi/PyGithub/releases/download/v1.55/asset1.md",
         )
         self.assertEqual(self.asset.content_type, "text/markdown")
-        self.assertEqual(self.asset.created_at, datetime(2025, 1, 30, 11, 11, 32, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.asset.created_at,
+            datetime(2025, 1, 30, 11, 11, 32, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.asset.digest, "sha256:abc123")
         self.assertEqual(self.asset.download_count, 0)
         self.assertEqual(self.asset.id, 224868540)
@@ -61,13 +67,20 @@ class GitReleaseAsset(Framework.TestCase):
         self.assertEqual(self.asset.node_id, "RA_kwDOGpsAJ84NZzi8")
         self.assertEqual(self.asset.size, 2524)
         self.assertEqual(self.asset.state, "uploaded")
-        self.assertEqual(self.asset.updated_at, datetime(2025, 1, 30, 11, 12, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.asset.updated_at, datetime(2025, 1, 30, 11, 12, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.asset.uploader.login, "EnricoMi")
-        self.assertEqual(self.asset.url, "https://api.github.com/repos/EnricoMi/PyGithub/releases/assets/224868540")
+        self.assertEqual(
+            self.asset.url,
+            "https://api.github.com/repos/EnricoMi/PyGithub/releases/assets/224868540",
+        )
 
     def testLazyAttributes(self):
         asset = self.g.withLazy(True).get_repo("lazy/repo").get_release_asset(42)
-        self.assertEqual(str(asset), 'GitReleaseAsset(url="/repos/lazy/repo/releases/assets/42")')
+        self.assertEqual(
+            str(asset), 'GitReleaseAsset(url="/repos/lazy/repo/releases/assets/42")'
+        )
         self.assertEqual(asset.id, 42)
         self.assertEqual(asset.url, "/repos/lazy/repo/releases/assets/42")
 
@@ -83,7 +96,9 @@ class GitReleaseAsset(Framework.TestCase):
             b"[![PyPI](https://img.shields.io/pypi/v/PyGithub.svg)](https://pypi.python.org/pypi/PyGithub)\n"
             b"![CI](https://github.com/PyGithub/PyGithub/workflows/CI/badge.svg)\n",
         )
-        self.assertEqual(content[-50:], b"send an email to someone in the MAINTAINERS file.\n")
+        self.assertEqual(
+            content[-50:], b"send an email to someone in the MAINTAINERS file.\n"
+        )
 
         source_asset = self.release.assets[1]
         with NamedTemporaryFile(mode="rb") as file:
@@ -102,7 +117,9 @@ class GitReleaseAsset(Framework.TestCase):
             b"[![PyPI](https://img.shields.io/pypi/v/PyGithub.svg)](https://pypi.python.org/pypi/PyGithub)\n"
             b"![CI](https://github.com/PyGithub/PyGithub/workflows/CI/badge.svg)\n",
         )
-        self.assertEqual(content[-50:], b"send an email to someone in the MAINTAINERS file.\n")
+        self.assertEqual(
+            content[-50:], b"send an email to someone in the MAINTAINERS file.\n"
+        )
 
         source_asset = self.release.assets[1]
         (_, _, chunks) = source_asset.download_asset()

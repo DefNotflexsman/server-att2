@@ -45,15 +45,20 @@ from typing import TYPE_CHECKING, Any
 
 import github.GithubObject
 import github.GitObject
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_optional
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_optional,
+)
 
 if TYPE_CHECKING:
     from github.GitObject import GitObject
 
 
 class GitRef(CompletableGithubObject):
-    """
-    This class represents GitRefs.
+    """This class represents GitRefs.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/git#references
@@ -61,7 +66,6 @@ class GitRef(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/git-ref
-
     """
 
     def _initAttributes(self) -> None:
@@ -106,7 +110,9 @@ class GitRef(CompletableGithubObject):
         assert isinstance(sha, str), sha
         assert is_optional(force, bool), force
         post_parameters = NotSet.remove_unset_items({"sha": sha, "force": force})
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -114,7 +120,9 @@ class GitRef(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "object" in attributes:  # pragma no branch
-            self._object = self._makeClassAttribute(github.GitObject.GitObject, attributes["object"])
+            self._object = self._makeClassAttribute(
+                github.GitObject.GitObject, attributes["object"]
+            )
         if "ref" in attributes:  # pragma no branch
             self._ref = self._makeStringAttribute(attributes["ref"])
         if "url" in attributes:  # pragma no branch

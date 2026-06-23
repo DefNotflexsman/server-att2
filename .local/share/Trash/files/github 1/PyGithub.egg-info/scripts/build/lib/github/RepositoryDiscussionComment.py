@@ -44,12 +44,10 @@ if TYPE_CHECKING:
 
 
 class RepositoryDiscussionComment(GraphQlObject, DiscussionCommentBase):
-    """
-    This class represents GraphQL DiscussionComment.
+    """This class represents GraphQL DiscussionComment.
 
     The reference can be found here
     https://docs.github.com/en/graphql/reference/objects#discussioncomment
-
     """
 
     def _initAttributes(self) -> None:
@@ -91,13 +89,21 @@ class RepositoryDiscussionComment(GraphQlObject, DiscussionCommentBase):
     def get_reactions(self) -> PaginatedList[Reaction]:
         if self._reactions_page is None:
             raise RuntimeError("Fetching reactions not implemented")
-        return PaginatedList(github.Reaction.Reaction, self._requester, firstData=self._reactions_page, firstHeaders={})
+        return PaginatedList(
+            github.Reaction.Reaction,
+            self._requester,
+            firstData=self._reactions_page,
+            firstHeaders={},
+        )
 
     def get_replies(self) -> PaginatedList[RepositoryDiscussionComment]:
         if self._replies_page is None:
             raise RuntimeError("Fetching replies not implemented")
         return PaginatedList(
-            RepositoryDiscussionComment, self._requester, firstData=self._replies_page, firstHeaders={}
+            RepositoryDiscussionComment,
+            self._requester,
+            firstData=self._replies_page,
+            firstHeaders={},
         )
 
     def edit(self, body: str, output_schema: str = "id") -> RepositoryDiscussionComment:
@@ -132,7 +138,8 @@ class RepositoryDiscussionComment(GraphQlObject, DiscussionCommentBase):
         if "discussion" in attributes:  # pragma no branch
             # RepositoryDiscussion is a GraphQL API object
             self._discussion = self._makeClassAttribute(
-                github.RepositoryDiscussion.RepositoryDiscussion, attributes["discussion"]
+                github.RepositoryDiscussion.RepositoryDiscussion,
+                attributes["discussion"],
             )
         if "editor" in attributes:  # pragma no branch
             # NamedUser is a REST API object

@@ -39,10 +39,14 @@ class IssueType(Framework.TestCase):
 
     def testAttributes(self):
         self.assertEqual(self.type.color, "red")
-        self.assertEqual(self.type.created_at, datetime(2024, 1, 25, 12, 55, 41, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.type.created_at, datetime(2024, 1, 25, 12, 55, 41, tzinfo=timezone.utc)
+        )
         self.assertEqual(self.type.description, "An unexpected problem or behavior")
         self.assertEqual(self.type.id, 1386163)
         self.assertEqual(self.type.is_enabled, True)
         self.assertEqual(self.type.name, "Bug")
         self.assertEqual(self.type.node_id, "IT_kwDOAKxBpM4AFSaz")
-        self.assertEqual(self.type.updated_at, datetime(2024, 7, 26, 10, 24, 51, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.type.updated_at, datetime(2024, 7, 26, 10, 24, 51, tzinfo=timezone.utc)
+        )

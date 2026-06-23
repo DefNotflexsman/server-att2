@@ -29,8 +29,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class SelfHostedActionsRunnerApplication(NonCompletableGithubObject):
-    """
-    This class represents Self-hosted GitHub Actions Runners Applications.
+    """This class represents Self-hosted GitHub Actions Runners Applications.
 
     The reference can be found at
     https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#self-hosted-runners
@@ -38,7 +37,6 @@ class SelfHostedActionsRunnerApplication(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/runner-application
-
     """
 
     def _initAttributes(self) -> None:
@@ -86,6 +84,10 @@ class SelfHostedActionsRunnerApplication(NonCompletableGithubObject):
         if "os" in attributes:
             self._os = self._makeStringAttribute(attributes["os"])
         if "sha256_checksum" in attributes:  # pragma no branch
-            self._sha256_checksum = self._makeStringAttribute(attributes["sha256_checksum"])
+            self._sha256_checksum = self._makeStringAttribute(
+                attributes["sha256_checksum"]
+            )
         if "temp_download_token" in attributes:  # pragma no branch
-            self._temp_download_token = self._makeStringAttribute(attributes["temp_download_token"])
+            self._temp_download_token = self._makeStringAttribute(
+                attributes["temp_download_token"]
+            )

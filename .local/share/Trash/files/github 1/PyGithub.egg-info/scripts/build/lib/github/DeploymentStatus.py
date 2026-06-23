@@ -58,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class DeploymentStatus(CompletableGithubObject):
-    """
-    This class represents Deployment Statuses.
+    """This class represents Deployment Statuses.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#deployments
@@ -67,7 +66,6 @@ class DeploymentStatus(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/deployment-status
-
     """
 
     def _initAttributes(self) -> None:
@@ -169,15 +167,21 @@ class DeploymentStatus(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "creator" in attributes:  # pragma no branch
-            self._creator = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["creator"])
+            self._creator = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["creator"]
+            )
         if "deployment_url" in attributes:  # pragma no branch
-            self._deployment_url = self._makeStringAttribute(attributes["deployment_url"])
+            self._deployment_url = self._makeStringAttribute(
+                attributes["deployment_url"]
+            )
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "environment" in attributes:  # pragma no branch
             self._environment = self._makeStringAttribute(attributes["environment"])
         if "environment_url" in attributes:  # pragma no branch
-            self._environment_url = self._makeStringAttribute(attributes["environment_url"])
+            self._environment_url = self._makeStringAttribute(
+                attributes["environment_url"]
+            )
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "log_url" in attributes:  # pragma no branch
@@ -189,7 +193,9 @@ class DeploymentStatus(CompletableGithubObject):
                 github.GithubApp.GithubApp, attributes["performed_via_github_app"]
             )
         if "repository_url" in attributes:  # pragma no branch
-            self._repository_url = self._makeStringAttribute(attributes["repository_url"])
+            self._repository_url = self._makeStringAttribute(
+                attributes["repository_url"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "target_url" in attributes:  # pragma no branch

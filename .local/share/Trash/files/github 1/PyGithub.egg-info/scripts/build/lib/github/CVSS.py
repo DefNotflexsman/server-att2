@@ -48,12 +48,10 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CVSS(NonCompletableGithubObject):
-    """
-    This class represents a CVSS.
+    """This class represents a CVSS.
 
     The reference can be found here
     <https://docs.github.com/en/rest/security-advisories/global-advisories>
-
     """
 
     def _initAttributes(self) -> None:
@@ -74,9 +72,15 @@ class CVSS(NonCompletableGithubObject):
         return self._version.value
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
-        if "score" in attributes and attributes["score"] is not None:  # pragma no branch
+        if (
+            "score" in attributes and attributes["score"] is not None
+        ):  # pragma no branch
             # ensure string so we don't have all the float extra nonsense
             self._score = self._makeDecimalAttribute(Decimal(str(attributes["score"])))
-        if "vector_string" in attributes and attributes["vector_string"] is not None:  # pragma no branch
+        if (
+            "vector_string" in attributes and attributes["vector_string"] is not None
+        ):  # pragma no branch
             self._vector_string = self._makeStringAttribute(attributes["vector_string"])
-            self._version = self._makeDecimalAttribute(Decimal(self.vector_string.split(":")[1].split("/")[0]))
+            self._version = self._makeDecimalAttribute(
+                Decimal(self.vector_string.split(":")[1].split("/")[0])
+            )

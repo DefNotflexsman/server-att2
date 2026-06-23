@@ -35,8 +35,7 @@ if TYPE_CHECKING:
 
 
 class DependabotAlertDependency(NonCompletableGithubObject):
-    """
-    This class represents a DependabotAlertDependency.
+    """This class represents a DependabotAlertDependency.
 
     The reference can be found here
     https://docs.github.com/en/rest/dependabot/alerts
@@ -44,7 +43,6 @@ class DependabotAlertDependency(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/dependabot-alert/properties/dependency
-
     """
 
     def _initAttributes(self) -> None:

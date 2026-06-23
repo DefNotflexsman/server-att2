@@ -55,13 +55,11 @@ if TYPE_CHECKING:
 
 
 class InstallationAuthorization(NonCompletableGithubObject):
-    """
-    This class represents InstallationAuthorizations.
+    """This class represents InstallationAuthorizations.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/installation-token
-
     """
 
     def _initAttributes(self) -> None:
@@ -118,9 +116,13 @@ class InstallationAuthorization(NonCompletableGithubObject):
         if "expires_at" in attributes:  # pragma no branch
             self._expires_at = self._makeDatetimeAttribute(attributes["expires_at"])
         if "has_multiple_single_files" in attributes:  # pragma no branch
-            self._has_multiple_single_files = self._makeBoolAttribute(attributes["has_multiple_single_files"])
+            self._has_multiple_single_files = self._makeBoolAttribute(
+                attributes["has_multiple_single_files"]
+            )
         if "on_behalf_of" in attributes:  # pragma no branch
-            self._on_behalf_of = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["on_behalf_of"])
+            self._on_behalf_of = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["on_behalf_of"]
+            )
         if "permissions" in attributes:  # pragma no branch
             self._permissions = self._makeDictAttribute(attributes["permissions"])
         if "repositories" in attributes:  # pragma no branch
@@ -128,10 +130,14 @@ class InstallationAuthorization(NonCompletableGithubObject):
                 github.Repository.Repository, attributes["repositories"]
             )
         if "repository_selection" in attributes:  # pragma no branch
-            self._repository_selection = self._makeStringAttribute(attributes["repository_selection"])
+            self._repository_selection = self._makeStringAttribute(
+                attributes["repository_selection"]
+            )
         if "single_file" in attributes:  # pragma no branch
             self._single_file = self._makeStringAttribute(attributes["single_file"])
         if "single_file_paths" in attributes:  # pragma no branch
-            self._single_file_paths = self._makeListOfStringsAttribute(attributes["single_file_paths"])
+            self._single_file_paths = self._makeListOfStringsAttribute(
+                attributes["single_file_paths"]
+            )
         if "token" in attributes:  # pragma no branch
             self._token = self._makeStringAttribute(attributes["token"])

@@ -52,8 +52,7 @@ if TYPE_CHECKING:
 
 
 class AdvisoryCreditDetailed(NonCompletableGithubObject):
-    """
-    This class represents a credit that is assigned to a SecurityAdvisory.
+    """This class represents a credit that is assigned to a SecurityAdvisory.
 
     The reference can be found here
     https://docs.github.com/en/rest/security-advisories/repository-advisories
@@ -62,7 +61,6 @@ class AdvisoryCreditDetailed(NonCompletableGithubObject):
 
     - /components/schemas/global-advisory/properties/credits/items
     - /components/schemas/repository-advisory-credit
-
     """
 
     def _initAttributes(self) -> None:
@@ -105,4 +103,6 @@ class AdvisoryCreditDetailed(NonCompletableGithubObject):
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

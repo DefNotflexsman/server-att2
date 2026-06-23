@@ -47,13 +47,11 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class File(NonCompletableGithubObject):
-    """
-    This class represents Files.
+    """This class represents Files.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/diff-entry
-
     """
 
     def _initAttributes(self) -> None:
@@ -70,7 +68,9 @@ class File(NonCompletableGithubObject):
         self._status: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"sha": self._sha.value, "filename": self._filename.value})
+        return self.get__repr__(
+            {"sha": self._sha.value, "filename": self._filename.value}
+        )
 
     @property
     def additions(self) -> int:
@@ -132,7 +132,9 @@ class File(NonCompletableGithubObject):
         if "patch" in attributes:  # pragma no branch
             self._patch = self._makeStringAttribute(attributes["patch"])
         if "previous_filename" in attributes:  # pragma no branch
-            self._previous_filename = self._makeStringAttribute(attributes["previous_filename"])
+            self._previous_filename = self._makeStringAttribute(
+                attributes["previous_filename"]
+            )
         if "raw_url" in attributes:  # pragma no branch
             self._raw_url = self._makeStringAttribute(attributes["raw_url"])
         if "sha" in attributes:  # pragma no branch

@@ -36,8 +36,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CheckRunAnnotation(NonCompletableGithubObject):
-    """
-    This class represents check run annotations.
+    """This class represents check run annotations.
 
     The reference can be found here: https://docs.github.com/en/rest/reference/checks#list-check-run-annotations
 
@@ -52,7 +51,6 @@ class CheckRunAnnotation(NonCompletableGithubObject):
         only GitHub Apps can use the Checks API". Because of this you may see
         empty ``.title`` attribute. See
         https://github.com/PyGithub/PyGithub/issues/3227
-
     """
 
     def _initAttributes(self) -> None:
@@ -112,7 +110,9 @@ class CheckRunAnnotation(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "annotation_level" in attributes:  # pragma no branch
-            self._annotation_level = self._makeStringAttribute(attributes["annotation_level"])
+            self._annotation_level = self._makeStringAttribute(
+                attributes["annotation_level"]
+            )
         if "blob_href" in attributes:  # pragma no branch
             self._blob_href = self._makeStringAttribute(attributes["blob_href"])
         if "end_column" in attributes:  # pragma no branch

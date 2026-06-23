@@ -49,7 +49,10 @@ class SortMethodsTransformer(cst.CSTTransformer):
 
     def leave_ClassDef(self, original_node: cst.ClassDef, updated_node: cst.ClassDef):
         try:
-            if self.class_name is not None and self.current_class_name != self.class_name:
+            if (
+                self.class_name is not None
+                and self.current_class_name != self.class_name
+            ):
                 return updated_node
             if not any(
                 base.value.value.endswith("GithubObject")
@@ -65,13 +68,23 @@ class SortMethodsTransformer(cst.CSTTransformer):
 
             statements = list(updated_node.body.body)
             if sum(1 for s in statements if isinstance(s, cst.FunctionDef)) == 0:
-                raise ValueError(f"There are no functions in class {self.current_class_name}")
-            first = next(idx for idx, s in enumerate(statements) if isinstance(s, cst.FunctionDef))
+                raise ValueError(
+                    f"There are no functions in class {self.current_class_name}"
+                )
+            first = next(
+                idx
+                for idx, s in enumerate(statements)
+                if isinstance(s, cst.FunctionDef)
+            )
             last = len(statements) - next(
-                idx for idx, s in enumerate(reversed(statements)) if isinstance(s, cst.FunctionDef)
+                idx
+                for idx, s in enumerate(reversed(statements))
+                if isinstance(s, cst.FunctionDef)
             )
             if any(not isinstance(s, cst.FunctionDef) for s in statements[first:last]):
-                raise ValueError(f"There is no consecutive block of functions in class {self.current_class_name}")
+                raise ValueError(
+                    f"There is no consecutive block of functions in class {self.current_class_name}"
+                )
 
             # noinspection PyTypeChecker
             function_defs: list[cst.FunctionDef] = statements[first:last]
@@ -86,19 +99,31 @@ class SortMethodsTransformer(cst.CSTTransformer):
             dunders = list(
                 s
                 for s in function_defs
-                if s.name.value.startswith("__") and s.name.value.endswith("__") and s.name.value != "__init__"
+                if s.name.value.startswith("__")
+                and s.name.value.endswith("__")
+                and s.name.value != "__init__"
             )
-            properties = list(s for s in function_defs if self.contains_decorator(s.decorators, "property"))
+            properties = list(
+                s
+                for s in function_defs
+                if self.contains_decorator(s.decorators, "property")
+            )
 
             use_attrs = self.find_func(function_defs, "_useAttributes")
             use_attrs = [use_attrs] if use_attrs is not None else []
 
-            funcs = list(s for s in function_defs if s not in init + init_attrs + use_attrs + dunders + properties)
+            funcs = list(
+                s
+                for s in function_defs
+                if s not in init + init_attrs + use_attrs + dunders + properties
+            )
             epilog = statements[last:]
 
             sorted_dunders = self.sort_func_defs(dunders)
             sorted_properties = self.sort_func_defs(properties)
-            maybe_sorted_funcs = self.sort_func_defs(funcs) if self.sort_funcs else funcs
+            maybe_sorted_funcs = (
+                self.sort_func_defs(funcs) if self.sort_funcs else funcs
+            )
             sorted_functions = (
                 prolog
                 + init
@@ -109,28 +134,40 @@ class SortMethodsTransformer(cst.CSTTransformer):
                 + use_attrs
                 + epilog
             )
-            return updated_node.with_changes(body=updated_node.body.with_changes(body=sorted_functions))
+            return updated_node.with_changes(
+                body=updated_node.body.with_changes(body=sorted_functions)
+            )
 
         finally:
             self.visit_class_name.pop()
 
-    def find_func(self, funcs: Sequence[cst.FunctionDef], func_name: str) -> cst.FunctionDef | None:
+    def find_func(
+        self, funcs: Sequence[cst.FunctionDef], func_name: str
+    ) -> cst.FunctionDef | None:
         funcs = list(s for s in funcs if s.name.value == func_name)
         if len(funcs) == 0:
             return None
         if len(funcs) > 1:
-            raise ValueError(f"Multiple functions {func_name} exist in class {self.current_class_name}")
+            raise ValueError(
+                f"Multiple functions {func_name} exist in class {self.current_class_name}"
+            )
         return funcs[0]
 
     @staticmethod
     def contains_decorator(seq: Sequence[cst.Decorator], decorator_name: str):
-        return any(d.decorator.value == decorator_name for d in seq if isinstance(d.decorator, cst.Name))
+        return any(
+            d.decorator.value == decorator_name
+            for d in seq
+            if isinstance(d.decorator, cst.Name)
+        )
 
     @staticmethod
     def sort_func_defs(funcs: list[cst.FunctionDef]) -> list[cst.FunctionDef]:
         return sorted(funcs, key=lambda d: d.name.value)
 
-    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef):
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ):
         if self.class_name is not None and self.current_class_name != self.class_name:
             return updated_node
         if updated_node.name.value == "_initAttributes":
@@ -138,7 +175,8 @@ class SortMethodsTransformer(cst.CSTTransformer):
                 [
                     idx
                     for idx, stmt in enumerate(updated_node.body.body)
-                    if isinstance(stmt, cst.SimpleStatementLine) and isinstance(stmt.body[0], cst.AnnAssign)
+                    if isinstance(stmt, cst.SimpleStatementLine)
+                    and isinstance(stmt.body[0], cst.AnnAssign)
                 ]
             )
             if attrs:
@@ -152,11 +190,19 @@ class SortMethodsTransformer(cst.CSTTransformer):
                 )
                 updated_node = updated_node.with_changes(
                     body=updated_node.body.with_changes(
-                        body=tuple(stmts[:start_attr]) + tuple(attrs) + tuple(stmts[end_attr:])
+                        body=tuple(stmts[:start_attr])
+                        + tuple(attrs)
+                        + tuple(stmts[end_attr:])
                     )
                 )
         if updated_node.name.value == "_useAttributes":
-            ifs = list([idx for idx, stmt in enumerate(updated_node.body.body) if isinstance(stmt, cst.If)])
+            ifs = list(
+                [
+                    idx
+                    for idx, stmt in enumerate(updated_node.body.body)
+                    if isinstance(stmt, cst.If)
+                ]
+            )
             if ifs:
                 start_if, end_if = ifs[0], ifs[-1] + 1
                 stmts = updated_node.body.body
@@ -168,13 +214,20 @@ class SortMethodsTransformer(cst.CSTTransformer):
                 )
                 updated_node = updated_node.with_changes(
                     body=updated_node.body.with_changes(
-                        body=tuple(stmts[:start_if]) + tuple(ifs) + tuple(stmts[end_if:])
+                        body=tuple(stmts[:start_if])
+                        + tuple(ifs)
+                        + tuple(stmts[end_if:])
                     )
                 )
         return updated_node
 
 
-def sort_class(class_name: str, filename: str, dry_run: bool, locks: dict[str, multiprocessing.Lock]):
+def sort_class(
+    class_name: str,
+    filename: str,
+    dry_run: bool,
+    locks: dict[str, multiprocessing.Lock],
+):
     print(f"Sorting {class_name} ({filename})")
 
     file_lock = locks.get(filename) if not dry_run else None
@@ -191,7 +244,11 @@ def sort_class(class_name: str, filename: str, dry_run: bool, locks: dict[str, m
         tree_updated = tree.visit(transformer)
 
         if dry_run:
-            diff = "".join(difflib.unified_diff(code.splitlines(1), tree_updated.code.splitlines(1)))
+            diff = "".join(
+                difflib.unified_diff(
+                    code.splitlines(1), tree_updated.code.splitlines(1)
+                )
+            )
             if diff:
                 stdout_lock.acquire()
                 print(f"Diff of {class_name}:")
@@ -231,7 +288,9 @@ def main(index_filename: str, class_names: list[str], dry_run: bool):
             cls = index.get("classes", {}).get(class_name)
             if not cls:
                 raise ValueError(f"Class {class_name} does not exist in index")
-            full_class_name = f'{cls.get("package")}.{cls.get("module")}.{cls.get("name")}'
+            full_class_name = (
+                f'{cls.get("package")}.{cls.get("module")}.{cls.get("name")}'
+            )
         package, module, class_name = full_class_name.split(".", maxsplit=2)
         filename = f"{package}/{module}.py"
         filenames[class_name] = filename
@@ -257,7 +316,10 @@ def parse_args():
         help="GithubObject class to sort, e.g. HookDelivery or github.HookDelivery.HookDeliverySummary",
     )
     args_parser.add_argument(
-        "--dry-run", default=False, action="store_true", help="show prospect changes and do not modify the file"
+        "--dry-run",
+        default=False,
+        action="store_true",
+        help="show prospect changes and do not modify the file",
     )
     if len(sys.argv) == 1:
         args_parser.print_help()

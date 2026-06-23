@@ -142,8 +142,7 @@ class ReviewComment(TypedDict):
 
 
 class PullRequest(CompletableGithubObject):
-    """
-    This class represents PullRequests.
+    """This class represents PullRequests.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/pulls
@@ -153,7 +152,6 @@ class PullRequest(CompletableGithubObject):
     - /components/schemas/pull-request
     - /components/schemas/pull-request-minimal
     - /components/schemas/pull-request-simple
-
     """
 
     def _initAttributes(self) -> None:
@@ -207,7 +205,9 @@ class PullRequest(CompletableGithubObject):
         self._user: Attribute[NamedUser] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value})
+        return self.get__repr__(
+            {"number": self._number.value, "title": self._title.value}
+        )
 
     @property
     def _links(self) -> dict[str, Any]:
@@ -455,7 +455,9 @@ class PullRequest(CompletableGithubObject):
         """
         return github.Issue.Issue(self._requester, url=self.issue_url)
 
-    def create_comment(self, body: str, commit: Commit, path: str, position: int) -> PullRequestComment:
+    def create_comment(
+        self, body: str, commit: Commit, path: str, position: int
+    ) -> PullRequestComment:
         """
         :calls: `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments <https://docs.github.com/en/rest/reference/pulls#review-comments>`_
         """
@@ -496,7 +498,9 @@ class PullRequest(CompletableGithubObject):
         ], subject_type
         assert isinstance(as_suggestion, bool), as_suggestion
 
-        commit_id = commit._identity if isinstance(commit, github.Commit.Commit) else commit
+        commit_id = (
+            commit._identity if isinstance(commit, github.Commit.Commit) else commit
+        )
 
         if as_suggestion:
             body = f"```suggestion\n{body}\n```"
@@ -514,10 +518,16 @@ class PullRequest(CompletableGithubObject):
             }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/comments", input=post_parameters)
-        return github.PullRequestComment.PullRequestComment(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/comments", input=post_parameters
+        )
+        return github.PullRequestComment.PullRequestComment(
+            self._requester, headers, data, completed=True
+        )
 
-    def create_review_comment_reply(self, comment_id: int, body: str) -> PullRequestComment:
+    def create_review_comment_reply(
+        self, comment_id: int, body: str
+    ) -> PullRequestComment:
         """
         :calls: `POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies <https://docs.github.com/en/rest/reference/pulls#review-comments>`_
         """
@@ -529,7 +539,9 @@ class PullRequest(CompletableGithubObject):
             f"{self.url}/comments/{comment_id}/replies",
             input=post_parameters,
         )
-        return github.PullRequestComment.PullRequestComment(self._requester, headers, data, completed=True)
+        return github.PullRequestComment.PullRequestComment(
+            self._requester, headers, data, completed=True
+        )
 
     def create_issue_comment(self, body: str) -> IssueComment:
         """
@@ -539,8 +551,12 @@ class PullRequest(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.issue_url}/comments", input=post_parameters)
-        return github.IssueComment.IssueComment(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.issue_url}/comments", input=post_parameters
+        )
+        return github.IssueComment.IssueComment(
+            self._requester, headers, data, completed=True
+        )
 
     def create_review(
         self,
@@ -564,8 +580,12 @@ class PullRequest(CompletableGithubObject):
                 "comments": comments if is_defined(comments) else [],
             }
         )
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/reviews", input=post_parameters)
-        return github.PullRequestReview.PullRequestReview(self._requester, headers, data)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/reviews", input=post_parameters
+        )
+        return github.PullRequestReview.PullRequestReview(
+            self._requester, headers, data
+        )
 
     def create_review_request(
         self,
@@ -575,15 +595,21 @@ class PullRequest(CompletableGithubObject):
         """
         :calls: `POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers <https://docs.github.com/en/rest/reference/pulls#review-requests>`_
         """
-        assert is_optional(reviewers, str) or is_optional_list(reviewers, str), reviewers
-        assert is_optional(team_reviewers, str) or is_optional_list(team_reviewers, str), team_reviewers
+        assert is_optional(reviewers, str) or is_optional_list(
+            reviewers, str
+        ), reviewers
+        assert is_optional(team_reviewers, str) or is_optional_list(
+            team_reviewers, str
+        ), team_reviewers
 
         if isinstance(reviewers, str):
             reviewers = [reviewers]
         if isinstance(team_reviewers, str):
             team_reviewers = [team_reviewers]
 
-        post_parameters = NotSet.remove_unset_items({"reviewers": reviewers, "team_reviewers": team_reviewers})
+        post_parameters = NotSet.remove_unset_items(
+            {"reviewers": reviewers, "team_reviewers": team_reviewers}
+        )
 
         headers, data = self._requester.requestJsonAndCheck(
             "POST", f"{self.url}/requested_reviewers", input=post_parameters
@@ -597,15 +623,21 @@ class PullRequest(CompletableGithubObject):
         """
         :calls: `DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers <https://docs.github.com/en/rest/reference/pulls#review-requests>`_
         """
-        assert is_optional(reviewers, str) or is_optional_list(reviewers, str), reviewers
-        assert is_optional(team_reviewers, str) or is_optional_list(team_reviewers, str), team_reviewers
+        assert is_optional(reviewers, str) or is_optional_list(
+            reviewers, str
+        ), reviewers
+        assert is_optional(team_reviewers, str) or is_optional_list(
+            team_reviewers, str
+        ), team_reviewers
 
         if isinstance(reviewers, str):
             reviewers = [reviewers]
         if isinstance(team_reviewers, str):
             team_reviewers = [team_reviewers]
 
-        post_parameters = NotSet.remove_unset_items({"reviewers": reviewers, "team_reviewers": team_reviewers})
+        post_parameters = NotSet.remove_unset_items(
+            {"reviewers": reviewers, "team_reviewers": team_reviewers}
+        )
 
         headers, data = self._requester.requestJsonAndCheck(
             "DELETE", f"{self.url}/requested_reviewers", input=post_parameters
@@ -628,10 +660,18 @@ class PullRequest(CompletableGithubObject):
         assert is_optional(base, str), base
         assert is_optional(maintainer_can_modify, bool), maintainer_can_modify
         post_parameters = NotSet.remove_unset_items(
-            {"title": title, "body": body, "state": state, "base": base, "maintainer_can_modify": maintainer_can_modify}
+            {
+                "title": title,
+                "body": body,
+                "state": state,
+                "base": base,
+                "maintainer_can_modify": maintainer_can_modify,
+            }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -683,7 +723,9 @@ class PullRequest(CompletableGithubObject):
         assert is_optional(direction, str), direction
         assert is_optional(since, datetime), since
 
-        url_parameters = NotSet.remove_unset_items({"sort": sort, "direction": direction})
+        url_parameters = NotSet.remove_unset_items(
+            {"sort": sort, "direction": direction}
+        )
         if is_defined(since):
             url_parameters["since"] = since.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -710,13 +752,17 @@ class PullRequest(CompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/pulls/{pull_number}/commits <https://docs.github.com/en/rest/reference/pulls>`_
         """
-        return PaginatedList(github.Commit.Commit, self._requester, f"{self.url}/commits", None)
+        return PaginatedList(
+            github.Commit.Commit, self._requester, f"{self.url}/commits", None
+        )
 
     def get_files(self) -> PaginatedList[File]:
         """
         :calls: `GET /repos/{owner}/{repo}/pulls/{pull_number}/files <https://docs.github.com/en/rest/reference/pulls>`_
         """
-        return PaginatedList(github.File.File, self._requester, f"{self.url}/files", None)
+        return PaginatedList(
+            github.File.File, self._requester, f"{self.url}/files", None
+        )
 
     def get_issue_comment(self, id: int) -> IssueComment:
         """
@@ -774,7 +820,9 @@ class PullRequest(CompletableGithubObject):
             "GET",
             f"{self.url}/reviews/{id}",
         )
-        return github.PullRequestReview.PullRequestReview(self._requester, headers, data)
+        return github.PullRequestReview.PullRequestReview(
+            self._requester, headers, data
+        )
 
     def get_reviews(self) -> PaginatedList[PullRequestReview]:
         """
@@ -788,7 +836,9 @@ class PullRequest(CompletableGithubObject):
             None,
         )
 
-    def get_review_requests(self) -> tuple[PaginatedList[NamedUser], PaginatedList[Team]]:
+    def get_review_requests(
+        self,
+    ) -> tuple[PaginatedList[NamedUser], PaginatedList[Team]]:
         """
         :calls: `GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers <https://docs.github.com/en/rest/reference/pulls#review-requests>`_
         :rtype: tuple of :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser` and of :class:`github.PaginatedList.PaginatedList` of :class:`github.Team.Team`
@@ -814,21 +864,32 @@ class PullRequest(CompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        return PaginatedList(github.Label.Label, self._requester, f"{self.issue_url}/labels", None)
+        return PaginatedList(
+            github.Label.Label, self._requester, f"{self.issue_url}/labels", None
+        )
 
     def add_to_labels(self, *labels: Label | str) -> None:
         """
         :calls: `POST /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        assert all(isinstance(element, (github.Label.Label, str)) for element in labels), labels
-        post_parameters = [label.name if isinstance(label, github.Label.Label) else label for label in labels]
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.issue_url}/labels", input=post_parameters)
+        assert all(
+            isinstance(element, (github.Label.Label, str)) for element in labels
+        ), labels
+        post_parameters = [
+            label.name if isinstance(label, github.Label.Label) else label
+            for label in labels
+        ]
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.issue_url}/labels", input=post_parameters
+        )
 
     def delete_labels(self) -> None:
         """
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.issue_url}/labels")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.issue_url}/labels"
+        )
 
     def remove_from_labels(self, label: Label | str) -> None:
         """
@@ -839,15 +900,24 @@ class PullRequest(CompletableGithubObject):
             label = label._identity
         else:
             label = urllib.parse.quote(label)
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.issue_url}/labels/{label}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.issue_url}/labels/{label}"
+        )
 
     def set_labels(self, *labels: Label | str) -> None:
         """
         :calls: `PUT /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        assert all(isinstance(element, (github.Label.Label, str)) for element in labels), labels
-        post_parameters = [label.name if isinstance(label, github.Label.Label) else label for label in labels]
-        headers, data = self._requester.requestJsonAndCheck("PUT", f"{self.issue_url}/labels", input=post_parameters)
+        assert all(
+            isinstance(element, (github.Label.Label, str)) for element in labels
+        ), labels
+        post_parameters = [
+            label.name if isinstance(label, github.Label.Label) else label
+            for label in labels
+        ]
+        headers, data = self._requester.requestJsonAndCheck(
+            "PUT", f"{self.issue_url}/labels", input=post_parameters
+        )
 
     def is_merged(self) -> bool:
         """
@@ -857,17 +927,19 @@ class PullRequest(CompletableGithubObject):
         return status == 204
 
     def restore_branch(self) -> GitRef:
-        """
-        Convenience function that calls :meth:`Repository.create_git_ref` :rtype: :class:`github.GitRef.GitRef`
-        """
-        return self.head.repo.create_git_ref(f"refs/heads/{self.head.ref}", sha=self.head.sha)
+        """Convenience function that calls :meth:`Repository.create_git_ref`
+        :rtype: :class:`github.GitRef.GitRef`"""
+        return self.head.repo.create_git_ref(
+            f"refs/heads/{self.head.ref}", sha=self.head.sha
+        )
 
     def delete_branch(self, force: bool = False) -> None:
-        """
-        Convenience function that calls :meth:`GitRef.delete` :rtype: bool.
-        """
+        """Convenience function that calls :meth:`GitRef.delete` :rtype:
+        bool."""
         if not force:
-            remaining_pulls = self.head.repo.get_pulls(head=f"{self.head.repo.owner.login}:{self.head.ref}")
+            remaining_pulls = self.head.repo.get_pulls(
+                head=f"{self.head.repo.owner.login}:{self.head.ref}"
+            )
             if remaining_pulls.totalCount > 0:
                 raise RuntimeError(
                     "This branch is referenced by open pull requests, set force=True to delete this branch."
@@ -892,7 +964,11 @@ class PullRequest(CompletableGithubObject):
         assert is_optional(commit_body, str), commit_body
         assert is_optional(commit_headline, str), commit_headline
         assert is_optional(expected_head_oid, str), expected_head_oid
-        assert isinstance(merge_method, str) and merge_method in ["MERGE", "REBASE", "SQUASH"], merge_method
+        assert isinstance(merge_method, str) and merge_method in [
+            "MERGE",
+            "REBASE",
+            "SQUASH",
+        ], merge_method
 
         # Define the variables
         variables = {
@@ -953,22 +1029,36 @@ class PullRequest(CompletableGithubObject):
         assert is_optional(merge_method, str), merge_method
         assert is_optional(sha, str), sha
         post_parameters = NotSet.remove_unset_items(
-            {"commit_message": commit_message, "commit_title": commit_title, "merge_method": merge_method, "sha": sha}
+            {
+                "commit_message": commit_message,
+                "commit_title": commit_title,
+                "merge_method": merge_method,
+                "sha": sha,
+            }
         )
-        headers, data = self._requester.requestJsonAndCheck("PUT", f"{self.url}/merge", input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PUT", f"{self.url}/merge", input=post_parameters
+        )
         if delete_branch:
             self.delete_branch()
 
-        return github.PullRequestMergeStatus.PullRequestMergeStatus(self._requester, headers, data)
+        return github.PullRequestMergeStatus.PullRequestMergeStatus(
+            self._requester, headers, data
+        )
 
     def add_to_assignees(self, *assignees: NamedUser | str) -> None:
         """
         :calls: `POST /repos/{owner}/{repo}/issues/{issue_number}/assignees <https://docs.github.com/en/rest/issues/assignees?apiVersion=2022-11-28#add-assignees-to-an-issue>`_
         """
-        assert all(isinstance(element, (github.NamedUser.NamedUser, str)) for element in assignees), assignees
+        assert all(
+            isinstance(element, (github.NamedUser.NamedUser, str))
+            for element in assignees
+        ), assignees
         post_parameters = {
             "assignees": [
-                assignee.login if isinstance(assignee, github.NamedUser.NamedUser) else assignee
+                assignee.login
+                if isinstance(assignee, github.NamedUser.NamedUser)
+                else assignee
                 for assignee in assignees
             ]
         }
@@ -982,10 +1072,15 @@ class PullRequest(CompletableGithubObject):
         """
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees <https://docs.github.com/en/rest/reference/issues#assignees>`_
         """
-        assert all(isinstance(element, (github.NamedUser.NamedUser, str)) for element in assignees), assignees
+        assert all(
+            isinstance(element, (github.NamedUser.NamedUser, str))
+            for element in assignees
+        ), assignees
         post_parameters = {
             "assignees": [
-                assignee.login if isinstance(assignee, github.NamedUser.NamedUser) else assignee
+                assignee.login
+                if isinstance(assignee, github.NamedUser.NamedUser)
+                else assignee
                 for assignee in assignees
             ]
         }
@@ -1000,7 +1095,9 @@ class PullRequest(CompletableGithubObject):
         :calls `PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch <https://docs.github.com/en/rest/reference/pulls>`_
         """
         assert is_optional(expected_head_sha, str), expected_head_sha
-        post_parameters = NotSet.remove_unset_items({"expected_head_sha": expected_head_sha})
+        post_parameters = NotSet.remove_unset_items(
+            {"expected_head_sha": expected_head_sha}
+        )
         status, headers, data = self._requester.requestJson(
             "PUT",
             f"{self.url}/update-branch",
@@ -1063,24 +1160,38 @@ class PullRequest(CompletableGithubObject):
         if "_links" in attributes:  # pragma no branch
             self.__links = self._makeDictAttribute(attributes["_links"])
         if "active_lock_reason" in attributes:  # pragma no branch
-            self._active_lock_reason = self._makeStringAttribute(attributes["active_lock_reason"])
+            self._active_lock_reason = self._makeStringAttribute(
+                attributes["active_lock_reason"]
+            )
         if "additions" in attributes:  # pragma no branch
             self._additions = self._makeIntAttribute(attributes["additions"])
         if "assignee" in attributes:  # pragma no branch
-            self._assignee = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["assignee"])
+            self._assignee = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["assignee"]
+            )
         if "assignees" in attributes:  # pragma no branch
-            self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["assignees"])
+            self._assignees = self._makeListOfClassesAttribute(
+                github.NamedUser.NamedUser, attributes["assignees"]
+            )
         elif "assignee" in attributes:
             if attributes["assignee"] is not None:
-                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [attributes["assignee"]])
+                self._assignees = self._makeListOfClassesAttribute(
+                    github.NamedUser.NamedUser, [attributes["assignee"]]
+                )
             else:
-                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [])
+                self._assignees = self._makeListOfClassesAttribute(
+                    github.NamedUser.NamedUser, []
+                )
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "auto_merge" in attributes:  # pragma no branch
             self._auto_merge = self._makeDictAttribute(attributes["auto_merge"])
         if "base" in attributes:  # pragma no branch
-            self._base = self._makeClassAttribute(github.PullRequestPart.PullRequestPart, attributes["base"])
+            self._base = self._makeClassAttribute(
+                github.PullRequestPart.PullRequestPart, attributes["base"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "changed_files" in attributes:  # pragma no branch
@@ -1104,7 +1215,9 @@ class PullRequest(CompletableGithubObject):
         if "draft" in attributes:  # pragma no branch
             self._draft = self._makeBoolAttribute(attributes["draft"])
         if "head" in attributes:  # pragma no branch
-            self._head = self._makeClassAttribute(github.PullRequestPart.PullRequestPart, attributes["head"])
+            self._head = self._makeClassAttribute(
+                github.PullRequestPart.PullRequestPart, attributes["head"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
@@ -1112,25 +1225,37 @@ class PullRequest(CompletableGithubObject):
         if "issue_url" in attributes:  # pragma no branch
             self._issue_url = self._makeStringAttribute(attributes["issue_url"])
         if "labels" in attributes:  # pragma no branch
-            self._labels = self._makeListOfClassesAttribute(github.Label.Label, attributes["labels"])
+            self._labels = self._makeListOfClassesAttribute(
+                github.Label.Label, attributes["labels"]
+            )
         if "locked" in attributes:  # pragma no branch
             self._locked = self._makeBoolAttribute(attributes["locked"])
         if "maintainer_can_modify" in attributes:  # pragma no branch
-            self._maintainer_can_modify = self._makeBoolAttribute(attributes["maintainer_can_modify"])
+            self._maintainer_can_modify = self._makeBoolAttribute(
+                attributes["maintainer_can_modify"]
+            )
         if "merge_commit_sha" in attributes:  # pragma no branch
-            self._merge_commit_sha = self._makeStringAttribute(attributes["merge_commit_sha"])
+            self._merge_commit_sha = self._makeStringAttribute(
+                attributes["merge_commit_sha"]
+            )
         if "mergeable" in attributes:  # pragma no branch
             self._mergeable = self._makeBoolAttribute(attributes["mergeable"])
         if "mergeable_state" in attributes:  # pragma no branch
-            self._mergeable_state = self._makeStringAttribute(attributes["mergeable_state"])
+            self._mergeable_state = self._makeStringAttribute(
+                attributes["mergeable_state"]
+            )
         if "merged" in attributes:  # pragma no branch
             self._merged = self._makeBoolAttribute(attributes["merged"])
         if "merged_at" in attributes:  # pragma no branch
             self._merged_at = self._makeDatetimeAttribute(attributes["merged_at"])
         if "merged_by" in attributes:  # pragma no branch
-            self._merged_by = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["merged_by"])
+            self._merged_by = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["merged_by"]
+            )
         if "milestone" in attributes:  # pragma no branch
-            self._milestone = self._makeClassAttribute(github.Milestone.Milestone, attributes["milestone"])
+            self._milestone = self._makeClassAttribute(
+                github.Milestone.Milestone, attributes["milestone"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "number" in attributes:  # pragma no branch
@@ -1148,13 +1273,21 @@ class PullRequest(CompletableGithubObject):
                 github.NamedUser.NamedUser, attributes["requested_reviewers"]
             )
         if "requested_teams" in attributes:
-            self._requested_teams = self._makeListOfClassesAttribute(github.Team.Team, attributes["requested_teams"])
+            self._requested_teams = self._makeListOfClassesAttribute(
+                github.Team.Team, attributes["requested_teams"]
+            )
         if "review_comment_url" in attributes:  # pragma no branch
-            self._review_comment_url = self._makeStringAttribute(attributes["review_comment_url"])
+            self._review_comment_url = self._makeStringAttribute(
+                attributes["review_comment_url"]
+            )
         if "review_comments" in attributes:  # pragma no branch
-            self._review_comments = self._makeIntAttribute(attributes["review_comments"])
+            self._review_comments = self._makeIntAttribute(
+                attributes["review_comments"]
+            )
         if "review_comments_url" in attributes:  # pragma no branch
-            self._review_comments_url = self._makeStringAttribute(attributes["review_comments_url"])
+            self._review_comments_url = self._makeStringAttribute(
+                attributes["review_comments_url"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "statuses_url" in attributes:  # pragma no branch
@@ -1166,4 +1299,6 @@ class PullRequest(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

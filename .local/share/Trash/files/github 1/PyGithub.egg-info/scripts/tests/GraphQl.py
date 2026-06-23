@@ -58,7 +58,9 @@ class GraphQl(Framework.TestCase):
         assert "/graphql" == get_graphql_prefix("")
         assert "/graphql" == get_graphql_prefix("/")
         assert "/api/graphql" == get_graphql_prefix("/api/v3")
-        assert "/path/to/github/api/graphql" == get_graphql_prefix("/path/to/github/api/v3")
+        assert "/path/to/github/api/graphql" == get_graphql_prefix(
+            "/path/to/github/api/v3"
+        )
         assert "/path/to/github/graphql" == get_graphql_prefix("/path/to/github")
 
     def testDefaultUrl(self):
@@ -82,7 +84,9 @@ class GraphQl(Framework.TestCase):
 
     def testNode(self):
         requester = self.g._Github__requester
-        headers, data = requester.graphql_node("D_kwDOADYVqs4ATJZD", "title", "Discussion")
+        headers, data = requester.graphql_node(
+            "D_kwDOADYVqs4ATJZD", "title", "Discussion"
+        )
         self.assertTrue(headers)
         self.assertEqual(
             data.get("data", {}).get("node", {}).get("title"),
@@ -107,26 +111,43 @@ class GraphQl(Framework.TestCase):
                 ],
             },
         )
-        self.assertEqual(e.exception.message, "Could not resolve to a node with the global id of 'D_abcdefgh'")
+        self.assertEqual(
+            e.exception.message,
+            "Could not resolve to a node with the global id of 'D_abcdefgh'",
+        )
 
         # wrong type should throw an exception
         with self.assertRaises(github.GithubException) as e:
             requester.graphql_node("D_kwDOADYVqs4ATJZD", "login", "User")
-        self.assertEqual(e.exception.message, "Retrieved User object is of different type: Discussion")
+        self.assertEqual(
+            e.exception.message,
+            "Retrieved User object is of different type: Discussion",
+        )
         self.assertEqual(e.exception.status, 400)
-        self.assertEqual(e.exception.data, {"data": {"node": {"__typename": "Discussion"}}})
+        self.assertEqual(
+            e.exception.data, {"data": {"node": {"__typename": "Discussion"}}}
+        )
 
     def testNodeClass(self):
         requester = self.g._Github__requester
         discussion = requester.graphql_node_class(
-            "D_kwDOADYVqs4ATJZD", "title", github.RepositoryDiscussion.RepositoryDiscussion, "Discussion"
+            "D_kwDOADYVqs4ATJZD",
+            "title",
+            github.RepositoryDiscussion.RepositoryDiscussion,
+            "Discussion",
         )
-        self.assertEqual(discussion.title, "Is there a way to search if a string present in default branch?")
+        self.assertEqual(
+            discussion.title,
+            "Is there a way to search if a string present in default branch?",
+        )
 
         # non-existing node should throw a NOT FOUND exception
         with self.assertRaises(github.UnknownObjectException) as e:
             requester.graphql_node_class(
-                "D_abcdefgh", "title", github.RepositoryDiscussion.RepositoryDiscussion, "Discussion"
+                "D_abcdefgh",
+                "title",
+                github.RepositoryDiscussion.RepositoryDiscussion,
+                "Discussion",
             )
         self.assertEqual(e.exception.status, 404)
         self.assertEqual(
@@ -143,16 +164,27 @@ class GraphQl(Framework.TestCase):
                 ],
             },
         )
-        self.assertEqual(e.exception.message, "Could not resolve to a node with the global id of 'D_abcdefgh'")
+        self.assertEqual(
+            e.exception.message,
+            "Could not resolve to a node with the global id of 'D_abcdefgh'",
+        )
 
         # wrong type should throw an exception
         with self.assertRaises(github.GithubException) as e:
             requester.graphql_node_class(
-                "D_kwDOADYVqs4ATJZD", "login", github.RepositoryDiscussion.RepositoryDiscussion, "User"
+                "D_kwDOADYVqs4ATJZD",
+                "login",
+                github.RepositoryDiscussion.RepositoryDiscussion,
+                "User",
             )
-        self.assertEqual(e.exception.message, "Retrieved User object is of different type: Discussion")
+        self.assertEqual(
+            e.exception.message,
+            "Retrieved User object is of different type: Discussion",
+        )
         self.assertEqual(e.exception.status, 400)
-        self.assertEqual(e.exception.data, {"data": {"node": {"__typename": "Discussion"}}})
+        self.assertEqual(
+            e.exception.data, {"data": {"node": {"__typename": "Discussion"}}}
+        )
 
     def testQuery(self):
         requester = self.g._Github__requester
@@ -163,7 +195,10 @@ class GraphQl(Framework.TestCase):
         variables = {"owner": "PyGithub", "name": "PyGithub"}
         header, data = requester.graphql_query(query, variables)
         self.assertTrue(header)
-        self.assertEqual(data, {"data": {"repository": {"url": "https://github.com/PyGithub/PyGithub"}}})
+        self.assertEqual(
+            data,
+            {"data": {"repository": {"url": "https://github.com/PyGithub/PyGithub"}}},
+        )
 
     def testQueryRestClass(self):
         requester = self.g._Github__requester
@@ -172,7 +207,9 @@ class GraphQl(Framework.TestCase):
               repository(owner: $owner, name: $name) { url }
             }"""
         variables = {"owner": "PyGithub", "name": "PyGithub"}
-        repo = requester.graphql_query_class(query, variables, ["repository"], github.Repository.Repository)
+        repo = requester.graphql_query_class(
+            query, variables, ["repository"], github.Repository.Repository
+        )
         self.assertIsInstance(repo, github.Repository.Repository)
         self.assertEqual(repo.html_url, "https://github.com/PyGithub/PyGithub")
 
@@ -184,17 +221,25 @@ class GraphQl(Framework.TestCase):
             }"""
         variables = {"id": "DC_kwDOADYVqs4AU3Mg"}
         comment = requester.graphql_query_class(
-            query, variables, ["node"], github.RepositoryDiscussionComment.RepositoryDiscussionComment
+            query,
+            variables,
+            ["node"],
+            github.RepositoryDiscussionComment.RepositoryDiscussionComment,
         )
-        self.assertIsInstance(comment, github.RepositoryDiscussionComment.RepositoryDiscussionComment)
+        self.assertIsInstance(
+            comment, github.RepositoryDiscussionComment.RepositoryDiscussionComment
+        )
         self.assertEqual(
-            comment.html_url, "https://github.com/PyGithub/PyGithub/discussions/2480#discussioncomment-5468960"
+            comment.html_url,
+            "https://github.com/PyGithub/PyGithub/discussions/2480#discussioncomment-5468960",
         )
 
     def testMutation(self):
         requester = self.g._Github__requester
         header, data = requester.graphql_named_mutation(
-            "followOrganization", {"organizationId": "O_kgDOAKxBpA"}, "organization { name }"
+            "followOrganization",
+            {"organizationId": "O_kgDOAKxBpA"},
+            "organization { name }",
         )
         self.assertTrue(header)
         self.assertEqual(data, {"organization": {"name": "PyGithub"}})
@@ -335,7 +380,8 @@ class GraphQl(Framework.TestCase):
         comment = comments[0]
         self.assertEqual(comment.node_id, "DC_kwDOADYVqs4AU3Mg")
         self.assertEqual(
-            comment.html_url, "https://github.com/PyGithub/PyGithub/discussions/2480#discussioncomment-5468960"
+            comment.html_url,
+            "https://github.com/PyGithub/PyGithub/discussions/2480#discussioncomment-5468960",
         )
         self.assertEqual(comment.author.login, "EnricoMi")
 

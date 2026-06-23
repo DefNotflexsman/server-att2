@@ -41,14 +41,12 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CommitStats(NonCompletableGithubObject):
-    """
-    This class represents CommitStats.
+    """This class represents CommitStats.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/commit/properties/stats
     - /components/schemas/gist-history/properties/change_status
-
     """
 
     def _initAttributes(self) -> None:

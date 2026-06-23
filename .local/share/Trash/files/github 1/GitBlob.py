@@ -45,8 +45,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class GitBlob(CompletableGithubObject):
-    """
-    This class represents GitBlobs.
+    """This class represents GitBlobs.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/git#blobs
@@ -55,7 +54,6 @@ class GitBlob(CompletableGithubObject):
 
     - /components/schemas/blob
     - /components/schemas/short-blob
-
     """
 
     def _initAttributes(self) -> None:
@@ -111,7 +109,9 @@ class GitBlob(CompletableGithubObject):
         if "encoding" in attributes:  # pragma no branch
             self._encoding = self._makeStringAttribute(attributes["encoding"])
         if "highlighted_content" in attributes:  # pragma no branch
-            self._highlighted_content = self._makeStringAttribute(attributes["highlighted_content"])
+            self._highlighted_content = self._makeStringAttribute(
+                attributes["highlighted_content"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "sha" in attributes:  # pragma no branch

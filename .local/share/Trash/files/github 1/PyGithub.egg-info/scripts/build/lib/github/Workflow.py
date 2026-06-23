@@ -67,8 +67,7 @@ if TYPE_CHECKING:
 
 
 class Workflow(CompletableGithubObject):
-    """
-    This class represents Workflows.
+    """This class represents Workflows.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/actions#workflows
@@ -76,7 +75,6 @@ class Workflow(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/workflow
-
     """
 
     def _initAttributes(self) -> None:
@@ -200,19 +198,37 @@ class Workflow(CompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs <https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow>`_
         """
-        assert actor is NotSet or isinstance(actor, github.NamedUser.NamedUser) or isinstance(actor, str), actor
-        assert branch is NotSet or isinstance(branch, github.Branch.Branch) or isinstance(branch, str), branch
+        assert (
+            actor is NotSet
+            or isinstance(actor, github.NamedUser.NamedUser)
+            or isinstance(actor, str)
+        ), actor
+        assert (
+            branch is NotSet
+            or isinstance(branch, github.Branch.Branch)
+            or isinstance(branch, str)
+        ), branch
         assert event is NotSet or isinstance(event, str), event
         assert status is NotSet or isinstance(status, str), status
         assert created is NotSet or isinstance(created, str), created
-        assert exclude_pull_requests is NotSet or isinstance(exclude_pull_requests, bool), exclude_pull_requests
-        assert check_suite_id is NotSet or isinstance(check_suite_id, int), check_suite_id
+        assert exclude_pull_requests is NotSet or isinstance(
+            exclude_pull_requests, bool
+        ), exclude_pull_requests
+        assert check_suite_id is NotSet or isinstance(
+            check_suite_id, int
+        ), check_suite_id
         assert head_sha is NotSet or isinstance(head_sha, str), head_sha
         url_parameters: dict[str, Any] = dict()
         if actor is not NotSet:
-            url_parameters["actor"] = actor._identity if isinstance(actor, github.NamedUser.NamedUser) else actor
+            url_parameters["actor"] = (
+                actor._identity
+                if isinstance(actor, github.NamedUser.NamedUser)
+                else actor
+            )
         if branch is not NotSet:
-            url_parameters["branch"] = branch.name if isinstance(branch, github.Branch.Branch) else branch
+            url_parameters["branch"] = (
+                branch.name if isinstance(branch, github.Branch.Branch) else branch
+            )
         if event is not NotSet:
             url_parameters["event"] = event
         if status is not NotSet:

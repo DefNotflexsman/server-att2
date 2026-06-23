@@ -47,15 +47,17 @@ from github.GithubObject import Attribute, NotSet, Opt
 if TYPE_CHECKING:
     from github.AdvisoryCredit import AdvisoryCredit, Credit
     from github.AdvisoryCreditDetailed import AdvisoryCreditDetailed
-    from github.AdvisoryVulnerability import AdvisoryVulnerability, AdvisoryVulnerabilityInput
+    from github.AdvisoryVulnerability import (
+        AdvisoryVulnerability,
+        AdvisoryVulnerabilityInput,
+    )
     from github.NamedUser import NamedUser
     from github.Repository import Repository
     from github.Team import Team
 
 
 class RepositoryAdvisory(AdvisoryBase):
-    """
-    This class represents a RepositoryAdvisory.
+    """This class represents a RepositoryAdvisory.
 
     The reference can be found here
     https://docs.github.com/en/rest/security-advisories/repository-advisories
@@ -63,7 +65,6 @@ class RepositoryAdvisory(AdvisoryBase):
     The OpenAPI schema can be found at
 
     - /components/schemas/repository-advisory
-
     """
 
     def _initAttributes(self) -> None:
@@ -164,17 +165,23 @@ class RepositoryAdvisory(AdvisoryBase):
             ]
         )
 
-    def add_vulnerabilities(self, vulnerabilities: Iterable[AdvisoryVulnerabilityInput]) -> None:
+    def add_vulnerabilities(
+        self, vulnerabilities: Iterable[AdvisoryVulnerabilityInput]
+    ) -> None:
         """
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
         """
         assert isinstance(vulnerabilities, Iterable), vulnerabilities
         for vulnerability in vulnerabilities:
-            github.AdvisoryVulnerability.AdvisoryVulnerability._validate_vulnerability(vulnerability)
+            github.AdvisoryVulnerability.AdvisoryVulnerability._validate_vulnerability(
+                vulnerability
+            )
 
         post_parameters = {
             "vulnerabilities": [
-                github.AdvisoryVulnerability.AdvisoryVulnerability._to_github_dict(vulnerability)
+                github.AdvisoryVulnerability.AdvisoryVulnerability._to_github_dict(
+                    vulnerability
+                )
                 for vulnerability in (self.vulnerabilities + list(vulnerabilities))
             ]
         }
@@ -190,12 +197,10 @@ class RepositoryAdvisory(AdvisoryBase):
         login_or_user: str | NamedUser,
         credit_type: str,
     ) -> None:
-        """
-        Offers credit to a user for a vulnerability in a repository.
+        """Offers credit to a user for a vulnerability in a repository.
 
         Unless you are giving credit to yourself, the user having credit offered will need to explicitly accept the credit.
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
-
         """
         self.offer_credits([{"login": login_or_user, "type": credit_type}])
 
@@ -203,13 +208,12 @@ class RepositoryAdvisory(AdvisoryBase):
         self,
         credited: Iterable[Credit],
     ) -> None:
-        """
-        Offers credit to a list of users for a vulnerability in a repository.
+        """Offers credit to a list of users for a vulnerability in a
+        repository.
 
         Unless you are giving credit to yourself, the user having credit offered will need to explicitly accept the credit.
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
         :param credited: iterable of dict with keys "login" and "type"
-
         """
         assert isinstance(credited, Iterable), credited
         for credit in credited:
@@ -232,12 +236,16 @@ class RepositoryAdvisory(AdvisoryBase):
         """
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`_
         """
-        assert isinstance(login_or_user, (str, github.NamedUser.NamedUser)), login_or_user
+        assert isinstance(
+            login_or_user, (str, github.NamedUser.NamedUser)
+        ), login_or_user
         if isinstance(login_or_user, github.NamedUser.NamedUser):
             login_or_user = login_or_user.login
         patch_parameters = {
             "credits": [
-                dict(login=credit.login, type=credit.type) for credit in self.credits if credit.login != login_or_user
+                dict(login=credit.login, type=credit.type)
+                for credit in self.credits
+                if credit.login != login_or_user
             ]
         }
         headers, data = self._requester.requestJsonAndCheck(
@@ -279,12 +287,17 @@ class RepositoryAdvisory(AdvisoryBase):
             severity_or_cvss_vector_string, str
         ), severity_or_cvss_vector_string
         assert cve_id is NotSet or isinstance(cve_id, str), cve_id
-        assert vulnerabilities is NotSet or isinstance(vulnerabilities, Iterable), vulnerabilities
+        assert vulnerabilities is NotSet or isinstance(
+            vulnerabilities, Iterable
+        ), vulnerabilities
         if isinstance(vulnerabilities, Iterable):
             for vulnerability in vulnerabilities:
-                github.AdvisoryVulnerability.AdvisoryVulnerability._validate_vulnerability(vulnerability)
+                github.AdvisoryVulnerability.AdvisoryVulnerability._validate_vulnerability(
+                    vulnerability
+                )
         assert cwe_ids is NotSet or (
-            isinstance(cwe_ids, Iterable) and all(isinstance(element, str) for element in cwe_ids)
+            isinstance(cwe_ids, Iterable)
+            and all(isinstance(element, str) for element in cwe_ids)
         ), cwe_ids
         if isinstance(credits, Iterable):
             for credit in credits:
@@ -304,14 +317,17 @@ class RepositoryAdvisory(AdvisoryBase):
             patch_parameters["cve_id"] = cve_id
         if isinstance(vulnerabilities, Iterable):
             patch_parameters["vulnerabilities"] = [
-                github.AdvisoryVulnerability.AdvisoryVulnerability._to_github_dict(vulnerability)
+                github.AdvisoryVulnerability.AdvisoryVulnerability._to_github_dict(
+                    vulnerability
+                )
                 for vulnerability in vulnerabilities
             ]
         if isinstance(cwe_ids, Iterable):
             patch_parameters["cwe_ids"] = list(cwe_ids)
         if isinstance(credits, Iterable):
             patch_parameters["credits"] = [
-                github.AdvisoryCredit.AdvisoryCredit._to_github_dict(credit) for credit in credits
+                github.AdvisoryCredit.AdvisoryCredit._to_github_dict(credit)
+                for credit in credits
             ]
         if state is not NotSet:
             patch_parameters["state"] = state
@@ -324,11 +340,10 @@ class RepositoryAdvisory(AdvisoryBase):
         return self
 
     def accept_report(self) -> None:
-        """
-        Accepts the advisory reported from an external reporter via private vulnerability reporting.
+        """Accepts the advisory reported from an external reporter via private
+        vulnerability reporting.
 
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
-
         """
         patch_parameters = {"state": "draft"}
         headers, data = self._requester.requestJsonAndCheck(
@@ -339,11 +354,9 @@ class RepositoryAdvisory(AdvisoryBase):
         self._useAttributes(data)
 
     def publish(self) -> None:
-        """
-        Publishes the advisory.
+        """Publishes the advisory.
 
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
-
         """
         patch_parameters = {"state": "published"}
         headers, data = self._requester.requestJsonAndCheck(
@@ -354,11 +367,9 @@ class RepositoryAdvisory(AdvisoryBase):
         self._useAttributes(data)
 
     def request_cve(self) -> None:
-        """
-        Requests a CVE for the advisory.
+        """Requests a CVE for the advisory.
 
         :calls: `POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve <https://docs.github.com/en/rest/security-advisories/repository-advisories#request-a-cve-for-a-repository-security-advisory>`_
-
         """
         self._requester.requestJsonAndCheck(
             "POST",
@@ -366,11 +377,9 @@ class RepositoryAdvisory(AdvisoryBase):
         )
 
     def close(self) -> None:
-        """
-        Closes the advisory.
+        """Closes the advisory.
 
         :calls: `PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id} <https://docs.github.com/en/rest/security-advisories/repository-advisories>`
-
         """
         patch_parameters = {"state": "closed"}
         headers, data = self._requester.requestJsonAndCheck(
@@ -382,9 +391,13 @@ class RepositoryAdvisory(AdvisoryBase):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author" in attributes:  # pragma no branch
-            self._author = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["author"]
+            )
         if "closed_at" in attributes:  # pragma no branch
-            assert attributes["closed_at"] is None or isinstance(attributes["closed_at"], str), attributes["closed_at"]
+            assert attributes["closed_at"] is None or isinstance(
+                attributes["closed_at"], str
+            ), attributes["closed_at"]
             self._closed_at = self._makeDatetimeAttribute(attributes["closed_at"])
         if "collaborating_teams" in attributes:  # pragma no branch
             self._collaborating_teams = self._makeListOfClassesAttribute(
@@ -395,9 +408,9 @@ class RepositoryAdvisory(AdvisoryBase):
                 github.NamedUser.NamedUser, attributes["collaborating_users"]
             )
         if "created_at" in attributes:  # pragma no branch
-            assert attributes["created_at"] is None or isinstance(attributes["created_at"], str), attributes[
-                "created_at"
-            ]
+            assert attributes["created_at"] is None or isinstance(
+                attributes["created_at"], str
+            ), attributes["created_at"]
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "credits" in attributes:  # pragma no branch
             self._credits = self._makeListOfClassesAttribute(
@@ -412,9 +425,13 @@ class RepositoryAdvisory(AdvisoryBase):
         if "cwe_ids" in attributes:  # pragma no branch
             self._cwe_ids = self._makeListOfStringsAttribute(attributes["cwe_ids"])
         if "private_fork" in attributes:  # pragma no branch
-            self._private_fork = self._makeClassAttribute(github.Repository.Repository, attributes["private_fork"])
+            self._private_fork = self._makeClassAttribute(
+                github.Repository.Repository, attributes["private_fork"]
+            )
         if "publisher" in attributes:  # pragma no branch
-            self._publisher = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["publisher"])
+            self._publisher = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["publisher"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "submission" in attributes:  # pragma no branch

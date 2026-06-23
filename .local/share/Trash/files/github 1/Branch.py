@@ -82,8 +82,7 @@ if TYPE_CHECKING:
 
 
 class Branch(NonCompletableGithubObject):
-    """
-    This class represents Branches.
+    """This class represents Branches.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#branches
@@ -93,7 +92,6 @@ class Branch(NonCompletableGithubObject):
     - /components/schemas/branch-short
     - /components/schemas/branch-with-protection
     - /components/schemas/short-branch
-
     """
 
     def _initAttributes(self) -> None:
@@ -157,7 +155,9 @@ class Branch(NonCompletableGithubObject):
             self.protection_url,
             headers={"Accept": Consts.mediaTypeRequireMultipleApprovingReviews},
         )
-        return github.BranchProtection.BranchProtection(self._requester, headers, data, completed=True)
+        return github.BranchProtection.BranchProtection(
+            self._requester, headers, data, completed=True
+        )
 
     def edit_protection(
         self,
@@ -201,20 +201,33 @@ class Branch(NonCompletableGithubObject):
         assert is_optional_list(dismissal_apps, str), dismissal_apps
         assert is_optional(dismiss_stale_reviews, bool), dismiss_stale_reviews
         assert is_optional(require_code_owner_reviews, bool), require_code_owner_reviews
-        assert is_optional(required_approving_review_count, int), required_approving_review_count
+        assert is_optional(
+            required_approving_review_count, int
+        ), required_approving_review_count
         assert is_optional(required_linear_history, bool), required_linear_history
         assert is_optional(allow_force_pushes, bool), allow_force_pushes
-        assert is_optional(required_conversation_resolution, bool), required_conversation_resolution
+        assert is_optional(
+            required_conversation_resolution, bool
+        ), required_conversation_resolution
         assert is_optional(lock_branch, bool), lock_branch
         assert is_optional(allow_fork_syncing, bool), allow_fork_syncing
-        assert is_optional_list(users_bypass_pull_request_allowances, str), users_bypass_pull_request_allowances
-        assert is_optional_list(teams_bypass_pull_request_allowances, str), teams_bypass_pull_request_allowances
-        assert is_optional_list(apps_bypass_pull_request_allowances, str), apps_bypass_pull_request_allowances
+        assert is_optional_list(
+            users_bypass_pull_request_allowances, str
+        ), users_bypass_pull_request_allowances
+        assert is_optional_list(
+            teams_bypass_pull_request_allowances, str
+        ), teams_bypass_pull_request_allowances
+        assert is_optional_list(
+            apps_bypass_pull_request_allowances, str
+        ), apps_bypass_pull_request_allowances
         assert is_optional(require_last_push_approval, bool), require_last_push_approval
         assert is_optional(allow_deletions, bool), allow_deletions
         assert is_optional_list(checks, (str, tuple)), checks
         if is_defined(checks):
-            assert all(not isinstance(check, tuple) or list(map(type, check)) == [str, int] for check in checks), checks
+            assert all(
+                not isinstance(check, tuple) or list(map(type, check)) == [str, int]
+                for check in checks
+            ), checks
 
         post_parameters: dict[str, Any] = {}
         if is_defined(strict) or is_defined(contexts) or is_defined(checks):
@@ -224,7 +237,9 @@ class Branch(NonCompletableGithubObject):
             checks_parameters = []
             if is_defined(checks):
                 checks_parameters = [
-                    {"context": check[0], "app_id": check[1]} if isinstance(check, tuple) else {"context": check}
+                    {"context": check[0], "app_id": check[1]}
+                    if isinstance(check, tuple)
+                    else {"context": check}
                     for check in checks
                 ]
             elif is_defined(contexts):
@@ -256,7 +271,9 @@ class Branch(NonCompletableGithubObject):
         ):
             post_parameters["required_pull_request_reviews"] = {}
             if is_defined(dismiss_stale_reviews):
-                post_parameters["required_pull_request_reviews"]["dismiss_stale_reviews"] = dismiss_stale_reviews
+                post_parameters["required_pull_request_reviews"][
+                    "dismiss_stale_reviews"
+                ] = dismiss_stale_reviews
             if is_defined(require_code_owner_reviews):
                 post_parameters["required_pull_request_reviews"][
                     "require_code_owner_reviews"
@@ -279,15 +296,23 @@ class Branch(NonCompletableGithubObject):
                 dismissal_restrictions["apps"] = dismissal_apps
 
             if dismissal_restrictions:
-                post_parameters["required_pull_request_reviews"]["dismissal_restrictions"] = dismissal_restrictions
+                post_parameters["required_pull_request_reviews"][
+                    "dismissal_restrictions"
+                ] = dismissal_restrictions
 
             bypass_pull_request_allowances = {}
             if is_defined(users_bypass_pull_request_allowances):
-                bypass_pull_request_allowances["users"] = users_bypass_pull_request_allowances
+                bypass_pull_request_allowances[
+                    "users"
+                ] = users_bypass_pull_request_allowances
             if is_defined(teams_bypass_pull_request_allowances):
-                bypass_pull_request_allowances["teams"] = teams_bypass_pull_request_allowances
+                bypass_pull_request_allowances[
+                    "teams"
+                ] = teams_bypass_pull_request_allowances
             if is_defined(apps_bypass_pull_request_allowances):
-                bypass_pull_request_allowances["apps"] = apps_bypass_pull_request_allowances
+                bypass_pull_request_allowances[
+                    "apps"
+                ] = apps_bypass_pull_request_allowances
 
             if bypass_pull_request_allowances:
                 post_parameters["required_pull_request_reviews"][
@@ -322,7 +347,9 @@ class Branch(NonCompletableGithubObject):
         else:
             post_parameters["allow_force_pushes"] = None
         if is_defined(required_conversation_resolution):
-            post_parameters["required_conversation_resolution"] = required_conversation_resolution
+            post_parameters[
+                "required_conversation_resolution"
+            ] = required_conversation_resolution
         else:
             post_parameters["required_conversation_resolution"] = None
         if is_defined(lock_branch):
@@ -349,7 +376,9 @@ class Branch(NonCompletableGithubObject):
             input=post_parameters,
         )
 
-        return github.BranchProtection.BranchProtection(self._requester, headers, data, completed=True)
+        return github.BranchProtection.BranchProtection(
+            self._requester, headers, data, completed=True
+        )
 
     def remove_protection(self) -> None:
         """
@@ -365,8 +394,12 @@ class Branch(NonCompletableGithubObject):
         :calls: `GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks <https://docs.github.com/en/rest/reference/repos#branches>`_
         :rtype: :class:`github.RequiredStatusChecks.RequiredStatusChecks`
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.protection_url}/required_status_checks")
-        return github.RequiredStatusChecks.RequiredStatusChecks(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.protection_url}/required_status_checks"
+        )
+        return github.RequiredStatusChecks.RequiredStatusChecks(
+            self._requester, headers, data, completed=True
+        )
 
     def edit_required_status_checks(
         self,
@@ -381,18 +414,25 @@ class Branch(NonCompletableGithubObject):
         assert is_optional_list(contexts, str), contexts
         assert is_optional_list(checks, (str, tuple)), checks
         if is_defined(checks):
-            assert all(not isinstance(check, tuple) or list(map(type, check)) == [str, int] for check in checks), checks
+            assert all(
+                not isinstance(check, tuple) or list(map(type, check)) == [str, int]
+                for check in checks
+            ), checks
 
         checks_parameters: Opt[list[dict[str, Any]]] = NotSet
         if is_defined(checks):
             checks_parameters = [
-                {"context": check[0], "app_id": check[1]} if isinstance(check, tuple) else {"context": check}
+                {"context": check[0], "app_id": check[1]}
+                if isinstance(check, tuple)
+                else {"context": check}
                 for check in checks
             ]
         elif is_defined(contexts):
             checks_parameters = [{"context": context} for context in contexts]
 
-        post_parameters: dict[str, Any] = NotSet.remove_unset_items({"strict": strict, "checks": checks_parameters})
+        post_parameters: dict[str, Any] = NotSet.remove_unset_items(
+            {"strict": strict, "checks": checks_parameters}
+        )
 
         headers, data = self._requester.requestJsonAndCheck(
             "PATCH",
@@ -400,7 +440,9 @@ class Branch(NonCompletableGithubObject):
             input=post_parameters,
         )
 
-        return github.RequiredStatusChecks.RequiredStatusChecks(self._requester, headers, data, completed=True)
+        return github.RequiredStatusChecks.RequiredStatusChecks(
+            self._requester, headers, data, completed=True
+        )
 
     def remove_required_status_checks(self) -> None:
         """
@@ -441,7 +483,9 @@ class Branch(NonCompletableGithubObject):
         assert is_optional_list(dismissal_teams, str), dismissal_teams
         assert is_optional(dismiss_stale_reviews, bool), dismiss_stale_reviews
         assert is_optional(require_code_owner_reviews, bool), require_code_owner_reviews
-        assert is_optional(required_approving_review_count, int), required_approving_review_count
+        assert is_optional(
+            required_approving_review_count, int
+        ), required_approving_review_count
         assert is_optional(require_last_push_approval, bool), require_last_push_approval
 
         post_parameters: dict[str, Any] = NotSet.remove_unset_items(
@@ -484,20 +528,26 @@ class Branch(NonCompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.protection_url}/enforce_admins")
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.protection_url}/enforce_admins"
+        )
         return data["enabled"]
 
     def set_admin_enforcement(self) -> None:
         """
         :calls: `POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.protection_url}/enforce_admins")
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.protection_url}/enforce_admins"
+        )
 
     def remove_admin_enforcement(self) -> None:
         """
         :calls: `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.protection_url}/enforce_admins")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.protection_url}/enforce_admins"
+        )
 
     def get_user_push_restrictions(self) -> PaginatedList[NamedUser]:
         """
@@ -591,7 +641,9 @@ class Branch(NonCompletableGithubObject):
         """
         :calls: `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.protection_url}/restrictions")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.protection_url}/restrictions"
+        )
 
     def get_required_signatures(self) -> bool:
         """
@@ -628,26 +680,34 @@ class Branch(NonCompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/branches/{branch}/protection/allow_deletions <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.protection_url}/allow_deletions")
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.protection_url}/allow_deletions"
+        )
         return data["enabled"]
 
     def set_allow_deletions(self) -> None:
         """
         :calls: `POST /repos/{owner}/{repo}/branches/{branch}/protection/allow_deletions <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.protection_url}/allow_deletions")
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.protection_url}/allow_deletions"
+        )
 
     def remove_allow_deletions(self) -> None:
         """
         :calls: `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/allow_deletions <https://docs.github.com/en/rest/reference/repos#branches>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.protection_url}/allow_deletions")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.protection_url}/allow_deletions"
+        )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "_links" in attributes:  # pragma no branch
             self.__links = self._makeDictAttribute(attributes["_links"])
         if "commit" in attributes:  # pragma no branch
-            self._commit = self._makeClassAttribute(github.Commit.Commit, attributes["commit"])
+            self._commit = self._makeClassAttribute(
+                github.Commit.Commit, attributes["commit"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "pattern" in attributes:  # pragma no branch
@@ -659,7 +719,9 @@ class Branch(NonCompletableGithubObject):
                 github.BranchProtection.BranchProtection, attributes["protection"]
             )
         if "protection_url" in attributes:  # pragma no branch
-            self._protection_url = self._makeStringAttribute(attributes["protection_url"])
+            self._protection_url = self._makeStringAttribute(
+                attributes["protection_url"]
+            )
         if "required_approving_review_count" in attributes:  # pragma no branch
             self._required_approving_review_count = self._makeIntAttribute(
                 attributes["required_approving_review_count"]

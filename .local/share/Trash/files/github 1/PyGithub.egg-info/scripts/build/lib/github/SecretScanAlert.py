@@ -35,8 +35,7 @@ if TYPE_CHECKING:
 
 
 class SecretScanAlert(NonCompletableGithubObject):
-    """
-    This class represents alerts from secret scanning.
+    """This class represents alerts from secret scanning.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/secret-scanning.
@@ -44,7 +43,6 @@ class SecretScanAlert(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/secret-scanning-alert
-
     """
 
     def _initAttributes(self) -> None:
@@ -59,8 +57,12 @@ class SecretScanAlert(NonCompletableGithubObject):
         self._publicly_leaked: Attribute[bool] = NotSet
         self._push_protection_bypass_request_comment: Attribute[str | None] = NotSet
         self._push_protection_bypass_request_html_url: Attribute[str | None] = NotSet
-        self._push_protection_bypass_request_reviewer: Attribute[NamedUser | None] = NotSet
-        self._push_protection_bypass_request_reviewer_comment: Attribute[str | None] = NotSet
+        self._push_protection_bypass_request_reviewer: Attribute[
+            NamedUser | None
+        ] = NotSet
+        self._push_protection_bypass_request_reviewer_comment: Attribute[
+            str | None
+        ] = NotSet
         self._push_protection_bypassed: Attribute[bool] = NotSet
         self._push_protection_bypassed_at: Attribute[datetime | None] = NotSet
         self._push_protection_bypassed_by: Attribute[NamedUser | None] = NotSet
@@ -192,14 +194,19 @@ class SecretScanAlert(NonCompletableGithubObject):
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "first_location_detected" in attributes:
             self._first_location_detected = self._makeClassAttribute(
-                github.SecretScanAlertInstance.SecretScanAlertInstance, attributes["first_location_detected"]
+                github.SecretScanAlertInstance.SecretScanAlertInstance,
+                attributes["first_location_detected"],
             )
         if "has_more_locations" in attributes:
-            self._has_more_locations = self._makeBoolAttribute(attributes["has_more_locations"])
+            self._has_more_locations = self._makeBoolAttribute(
+                attributes["has_more_locations"]
+            )
         if "html_url" in attributes:
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "is_base64_encoded" in attributes:
-            self._is_base64_encoded = self._makeBoolAttribute(attributes["is_base64_encoded"])
+            self._is_base64_encoded = self._makeBoolAttribute(
+                attributes["is_base64_encoded"]
+            )
         if "locations_url" in attributes:
             self._locations_url = self._makeStringAttribute(attributes["locations_url"])
         if "multi_repo" in attributes:
@@ -207,7 +214,9 @@ class SecretScanAlert(NonCompletableGithubObject):
         if "number" in attributes:
             self._number = self._makeIntAttribute(attributes["number"])
         if "publicly_leaked" in attributes:
-            self._publicly_leaked = self._makeBoolAttribute(attributes["publicly_leaked"])
+            self._publicly_leaked = self._makeBoolAttribute(
+                attributes["publicly_leaked"]
+            )
         if "push_protection_bypass_request_comment" in attributes:
             self._push_protection_bypass_request_comment = self._makeStringAttribute(
                 attributes["push_protection_bypass_request_comment"]
@@ -218,16 +227,23 @@ class SecretScanAlert(NonCompletableGithubObject):
             )
         if "push_protection_bypass_request_reviewer" in attributes:
             self._push_protection_bypass_request_reviewer = self._makeClassAttribute(
-                github.NamedUser.NamedUser, attributes["push_protection_bypass_request_reviewer"]
+                github.NamedUser.NamedUser,
+                attributes["push_protection_bypass_request_reviewer"],
             )
         if "push_protection_bypass_request_reviewer_comment" in attributes:
-            self._push_protection_bypass_request_reviewer_comment = self._makeStringAttribute(
-                attributes["push_protection_bypass_request_reviewer_comment"]
+            self._push_protection_bypass_request_reviewer_comment = (
+                self._makeStringAttribute(
+                    attributes["push_protection_bypass_request_reviewer_comment"]
+                )
             )
         if "push_protection_bypassed" in attributes:
-            self._push_protection_bypassed = self._makeBoolAttribute(attributes["push_protection_bypassed"])
+            self._push_protection_bypassed = self._makeBoolAttribute(
+                attributes["push_protection_bypassed"]
+            )
         if "push_protection_bypassed_at" in attributes:
-            self._push_protection_bypassed_at = self._makeDatetimeAttribute(attributes["push_protection_bypassed_at"])
+            self._push_protection_bypassed_at = self._makeDatetimeAttribute(
+                attributes["push_protection_bypassed_at"]
+            )
         if "push_protection_bypassed_by" in attributes:
             self._push_protection_bypassed_by = self._makeClassAttribute(
                 github.NamedUser.NamedUser, attributes["push_protection_bypassed_by"]
@@ -235,17 +251,23 @@ class SecretScanAlert(NonCompletableGithubObject):
         if "resolution" in attributes:
             self._resolution = self._makeStringAttribute(attributes["resolution"])
         if "resolution_comment" in attributes:
-            self._resolution_comment = self._makeStringAttribute(attributes["resolution_comment"])
+            self._resolution_comment = self._makeStringAttribute(
+                attributes["resolution_comment"]
+            )
         if "resolved_at" in attributes:
             self._resolved_at = self._makeDatetimeAttribute(attributes["resolved_at"])
         if "resolved_by" in attributes:
-            self._resolved_by = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["resolved_by"])
+            self._resolved_by = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["resolved_by"]
+            )
         if "secret" in attributes:
             self._secret = self._makeStringAttribute(attributes["secret"])
         if "secret_type" in attributes:
             self._secret_type = self._makeStringAttribute(attributes["secret_type"])
         if "secret_type_display_name" in attributes:
-            self._secret_type_display_name = self._makeStringAttribute(attributes["secret_type_display_name"])
+            self._secret_type_display_name = self._makeStringAttribute(
+                attributes["secret_type_display_name"]
+            )
         if "state" in attributes:
             self._state = self._makeStringAttribute(attributes["state"])
         if "updated_at" in attributes:

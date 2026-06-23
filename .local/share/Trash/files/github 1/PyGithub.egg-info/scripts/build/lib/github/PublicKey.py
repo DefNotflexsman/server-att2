@@ -51,9 +51,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 def encrypt(public_key: str, secret_value: str) -> str:
-    """
-    Encrypt a Unicode string using the public key.
-    """
+    """Encrypt a Unicode string using the public key."""
     pk = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder)
     sealed_box = public.SealedBox(pk)
     encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
@@ -61,8 +59,8 @@ def encrypt(public_key: str, secret_value: str) -> str:
 
 
 class PublicKey(CompletableGithubObject):
-    """
-    This class represents either an organization public key or a repository public key.
+    """This class represents either an organization public key or a repository
+    public key.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/actions#get-an-organization-public-key
@@ -72,7 +70,6 @@ class PublicKey(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/actions-public-key
-
     """
 
     def _initAttributes(self) -> None:

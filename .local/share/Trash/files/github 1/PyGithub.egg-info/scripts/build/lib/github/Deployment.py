@@ -64,8 +64,7 @@ if TYPE_CHECKING:
 
 
 class Deployment(CompletableGithubObject):
-    """
-    This class represents Deployments.
+    """This class represents Deployments.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#deployments
@@ -74,7 +73,6 @@ class Deployment(CompletableGithubObject):
 
     - /components/schemas/deployment
     - /components/schemas/deployment-simple
-
     """
 
     def _initAttributes(self) -> None:
@@ -212,7 +210,9 @@ class Deployment(CompletableGithubObject):
             f"{self.url}/statuses/{id_}",
             headers={"Accept": self._get_accept_header()},
         )
-        return github.DeploymentStatus.DeploymentStatus(self._requester, headers, data, completed=True)
+        return github.DeploymentStatus.DeploymentStatus(
+            self._requester, headers, data, completed=True
+        )
 
     def create_status(
         self,
@@ -230,7 +230,9 @@ class Deployment(CompletableGithubObject):
         assert target_url is NotSet or isinstance(target_url, str), target_url
         assert description is NotSet or isinstance(description, str), description
         assert environment is NotSet or isinstance(environment, str), environment
-        assert environment_url is NotSet or isinstance(environment_url, str), environment_url
+        assert environment_url is NotSet or isinstance(
+            environment_url, str
+        ), environment_url
         assert auto_inactive is NotSet or isinstance(auto_inactive, bool), auto_inactive
 
         post_parameters = NotSet.remove_unset_items(
@@ -250,7 +252,9 @@ class Deployment(CompletableGithubObject):
             input=post_parameters,
             headers={"Accept": self._get_accept_header()},
         )
-        return github.DeploymentStatus.DeploymentStatus(self._requester, headers, data, completed=True)
+        return github.DeploymentStatus.DeploymentStatus(
+            self._requester, headers, data, completed=True
+        )
 
     @staticmethod
     def _get_accept_header() -> str:
@@ -285,7 +289,9 @@ class Deployment(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "original_environment" in attributes:  # pragma no branch
-            self._original_environment = self._makeStringAttribute(attributes["original_environment"])
+            self._original_environment = self._makeStringAttribute(
+                attributes["original_environment"]
+            )
         if "payload" in attributes:  # pragma no branch
             self._payload = self._makeDictAttribute(attributes["payload"])
         if "performed_via_github_app" in attributes:  # pragma no branch
@@ -293,11 +299,15 @@ class Deployment(CompletableGithubObject):
                 github.GithubApp.GithubApp, attributes["performed_via_github_app"]
             )
         if "production_environment" in attributes:  # pragma no branch
-            self._production_environment = self._makeBoolAttribute(attributes["production_environment"])
+            self._production_environment = self._makeBoolAttribute(
+                attributes["production_environment"]
+            )
         if "ref" in attributes:  # pragma no branch
             self._ref = self._makeStringAttribute(attributes["ref"])
         if "repository_url" in attributes:  # pragma no branch
-            self._repository_url = self._makeStringAttribute(attributes["repository_url"])
+            self._repository_url = self._makeStringAttribute(
+                attributes["repository_url"]
+            )
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "statuses_url" in attributes:  # pragma no branch
@@ -305,7 +315,9 @@ class Deployment(CompletableGithubObject):
         if "task" in attributes:  # pragma no branch
             self._task = self._makeStringAttribute(attributes["task"])
         if "transient_environment" in attributes:  # pragma no branch
-            self._transient_environment = self._makeBoolAttribute(attributes["transient_environment"])
+            self._transient_environment = self._makeBoolAttribute(
+                attributes["transient_environment"]
+            )
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:  # pragma no branch

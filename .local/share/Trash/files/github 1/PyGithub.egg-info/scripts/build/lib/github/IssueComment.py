@@ -67,8 +67,7 @@ if TYPE_CHECKING:
 
 
 class IssueComment(CompletableGithubObject):
-    """
-    This class represents IssueComments.
+    """This class represents IssueComments.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#comments
@@ -76,7 +75,6 @@ class IssueComment(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/issue-comment
-
     """
 
     def _initAttributes(self) -> None:
@@ -182,7 +180,9 @@ class IssueComment(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -263,7 +263,9 @@ class IssueComment(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch

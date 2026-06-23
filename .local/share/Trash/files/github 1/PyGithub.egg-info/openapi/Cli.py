@@ -21,7 +21,9 @@ class Cli(unittest.TestCase):
 
     pwd = Path(os.curdir).absolute()
     root_path = Path(__file__).parent.parent
-    openapi_spec_path = Path(root_path, f"{openapi_spec}.{openapi_version}.sha-{openapi_commit[:9]}.json")
+    openapi_spec_path = Path(
+        root_path, f"{openapi_spec}.{openapi_version}.sha-{openapi_commit[:9]}.json"
+    )
     tests_path = Path(__file__).parent / "cli-sequence"
     tests = [
         test
@@ -70,8 +72,12 @@ class Cli(unittest.TestCase):
         expected_stdout = Path(expected_path, "stdout")
         expected_diff = Path(expected_path, "run.diff")
 
-        prev_test_path = Path(self.tests_path, prev_test) if prev_test is not None else None
-        prev_run_path = Path(prev_test_path, "run") if prev_test_path is not None else None
+        prev_test_path = (
+            Path(self.tests_path, prev_test) if prev_test is not None else None
+        )
+        prev_run_path = (
+            Path(prev_test_path, "run") if prev_test_path is not None else None
+        )
 
         # copy previous test's run directory
         if run_path.exists():

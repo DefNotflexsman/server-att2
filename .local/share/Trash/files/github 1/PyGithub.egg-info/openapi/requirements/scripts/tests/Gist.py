@@ -48,8 +48,12 @@ class Gist(Framework.TestCase):
         gist = self.g.get_gist("6296732")
         self.assertEqual(gist.comments, 0)
         self.assertIsNone(gist.comments_enabled)
-        self.assertEqual(gist.comments_url, "https://api.github.com/gists/6296732/comments")
-        self.assertEqual(gist.commits_url, "https://api.github.com/gists/6296732/commits")
+        self.assertEqual(
+            gist.comments_url, "https://api.github.com/gists/6296732/comments"
+        )
+        self.assertEqual(
+            gist.commits_url, "https://api.github.com/gists/6296732/commits"
+        )
         self.assertEqual(
             gist.created_at,
             datetime(2013, 8, 21, 16, 28, 24, tzinfo=timezone.utc),
@@ -83,7 +87,9 @@ class Gist(Framework.TestCase):
         )
         self.assertEqual(gist.history[0].user, None)
         self.assertEqual(gist.history[0].owner.login, "jacquev6")
-        self.assertEqual(gist.history[0].version, "c464aecd7fea16684e935607eeea7ae4f8caa0e2")
+        self.assertEqual(
+            gist.history[0].version, "c464aecd7fea16684e935607eeea7ae4f8caa0e2"
+        )
         self.assertEqual(gist.html_url, "https://gist.github.com/6296732")
         self.assertEqual(gist.id, "6296732")
         self.assertIsNone(gist.node_id)
@@ -102,7 +108,9 @@ class Gist(Framework.TestCase):
         self.assertEqual(gist.html_url, "https://gist.github.com/6296732")
         self.assertEqual(gist.url, "https://api.github.com/gists/6296732")
         self.assertEqual(repr(gist), 'Gist(id="6296732")')
-        self.assertEqual(repr(gist.files["GithubAPI.lua"]), 'GistFile(filename="GithubAPI.lua")')
+        self.assertEqual(
+            repr(gist.files["GithubAPI.lua"]), 'GistFile(filename="GithubAPI.lua")'
+        )
 
     def testLazyAttributes(self):
         gist = self.g.withLazy(True).get_gist("gist")
@@ -141,7 +149,13 @@ class Gist(Framework.TestCase):
     def testRenameFile(self):
         gist = self.g.get_gist("5339374")
         self.assertEqual(list(gist.files.keys()), ["bar.txt"])
-        gist.edit(files={"bar.txt": github.InputFileContent(gist.files["bar.txt"].content, new_name="baz.txt")})
+        gist.edit(
+            files={
+                "bar.txt": github.InputFileContent(
+                    gist.files["bar.txt"].content, new_name="baz.txt"
+                )
+            }
+        )
         self.assertEqual(list(gist.files.keys()), ["baz.txt"])
 
     def testCreateComment(self):

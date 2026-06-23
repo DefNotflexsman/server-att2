@@ -38,8 +38,7 @@ if TYPE_CHECKING:
 
 
 class OrganizationVariable(Variable):
-    """
-    This class represents a org level GitHub variable.
+    """This class represents a org level GitHub variable.
 
     The reference can be found here
     https://docs.github.com/en/rest/actions/variables
@@ -47,7 +46,6 @@ class OrganizationVariable(Variable):
     The OpenAPI schema can be found at
 
     - /components/schemas/organization-actions-variable
-
     """
 
     def _initAttributes(self) -> None:
@@ -114,7 +112,9 @@ class OrganizationVariable(Variable):
         """
         if self.visibility != "selected":
             return False
-        self._requester.requestJsonAndCheck("PUT", f"{self._selected_repositories_url.value}/{repo.id}")
+        self._requester.requestJsonAndCheck(
+            "PUT", f"{self._selected_repositories_url.value}/{repo.id}"
+        )
         return True
 
     def remove_repo(self, repo: Repository) -> bool:
@@ -125,12 +125,16 @@ class OrganizationVariable(Variable):
         """
         if self.visibility != "selected":
             return False
-        self._requester.requestJsonAndCheck("DELETE", f"{self._selected_repositories_url.value}/{repo.id}")
+        self._requester.requestJsonAndCheck(
+            "DELETE", f"{self._selected_repositories_url.value}/{repo.id}"
+        )
         return True
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         super()._useAttributes(attributes)
         if "selected_repositories_url" in attributes:
-            self._selected_repositories_url = self._makeStringAttribute(attributes["selected_repositories_url"])
+            self._selected_repositories_url = self._makeStringAttribute(
+                attributes["selected_repositories_url"]
+            )
         if "visibility" in attributes:
             self._visibility = self._makeStringAttribute(attributes["visibility"])

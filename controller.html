@@ -83,7 +83,7 @@
 <body>
 
     <h2>Eaglercraft 1.8.8 Terminal Client Bridge</h2>
-    
+
     <!-- Embedded Full Eaglercraft Web client Instance -->
     <div id="game-container">
         <iframe id="eagler-frame" src="http://test.tuffis.online/" allow="autoplay; gamepad; keyboard;"></iframe>
@@ -117,13 +117,13 @@
                 // Attempt direct pipeline injection into TeaVM runtime engine via the iframe window context
                 const iframeWindow = frame.contentWindow;
 
-                /* 
+                /*
                   TECHNICAL EXPLANATION:
                   Eaglercraft 1.8.8 uses an asset package where JavaScript keyboard event hooks handle strings.
-                  Instead of interacting with internal networking objects, we simulate the actual user opening 
+                  Instead of interacting with internal networking objects, we simulate the actual user opening
                   the game's chat window ('t' key), pasting the command string, and hitting 'Enter'.
                 */
-                
+
                 // 1. Simulate pressing 'T' key to open the in-game chat prompt inside Minecraft
                 simulateKey(iframeWindow, 84, 't');
 
@@ -135,7 +135,7 @@
                          // Alternate path if running a custom local unpack:
                          // iframeWindow.EaglercraftX.sendChat(commandText);
                     }
-                    
+
                     // Fallback to firing keyboard input streams programmatically down into the active Canvas
                     for (let i = 0; i < commandText.length; i++) {
                         simulateCharInput(iframeWindow, commandText.charAt(i));

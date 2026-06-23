@@ -53,8 +53,7 @@ if TYPE_CHECKING:
 
 
 class SelfHostedActionsRunnerToken(NonCompletableGithubObject):
-    """
-    This class represents Self-hosted GitHub Actions Runners Token.
+    """This class represents Self-hosted GitHub Actions Runners Token.
 
     The reference can be found at
     https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#self-hosted-runners
@@ -62,7 +61,6 @@ class SelfHostedActionsRunnerToken(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/authentication-token
-
     """
 
     def _initAttributes(self) -> None:
@@ -110,7 +108,9 @@ class SelfHostedActionsRunnerToken(NonCompletableGithubObject):
                 github.Repository.Repository, attributes["repositories"]
             )
         if "repository_selection" in attributes:  # pragma no branch
-            self._repository_selection = self._makeStringAttribute(attributes["repository_selection"])
+            self._repository_selection = self._makeStringAttribute(
+                attributes["repository_selection"]
+            )
         if "single_file" in attributes:  # pragma no branch
             self._single_file = self._makeStringAttribute(attributes["single_file"])
         if "token" in attributes:

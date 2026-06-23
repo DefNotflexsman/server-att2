@@ -42,8 +42,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class SourceImport(CompletableGithubObject):
-    """
-    This class represents SourceImports.
+    """This class represents SourceImports.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/migrations#source-imports
@@ -51,7 +50,6 @@ class SourceImport(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/import
-
     """
 
     def _initAttributes(self) -> None:
@@ -205,7 +203,9 @@ class SourceImport(CompletableGithubObject):
         return self._vcs_url.value
 
     def update(
-        self, additional_headers: dict[str, Any] | None = None, parameters: dict[str, Any] | None = None
+        self,
+        additional_headers: dict[str, Any] | None = None,
+        parameters: dict[str, Any] | None = None,
     ) -> bool:
         import_header = {"Accept": Consts.mediaTypeImportPreview}
         return super().update(additional_headers=import_header, parameters=parameters)
@@ -222,23 +222,33 @@ class SourceImport(CompletableGithubObject):
         if "failed_step" in attributes:  # pragma no branch
             self._failed_step = self._makeStringAttribute(attributes["failed_step"])
         if "has_large_files" in attributes:  # pragma no branch
-            self._has_large_files = self._makeBoolAttribute(attributes["has_large_files"])
+            self._has_large_files = self._makeBoolAttribute(
+                attributes["has_large_files"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "import_percent" in attributes:  # pragma no branch
             self._import_percent = self._makeIntAttribute(attributes["import_percent"])
         if "large_files_count" in attributes:  # pragma no branch
-            self._large_files_count = self._makeIntAttribute(attributes["large_files_count"])
+            self._large_files_count = self._makeIntAttribute(
+                attributes["large_files_count"]
+            )
         if "large_files_size" in attributes:  # pragma no branch
-            self._large_files_size = self._makeIntAttribute(attributes["large_files_size"])
+            self._large_files_size = self._makeIntAttribute(
+                attributes["large_files_size"]
+            )
         if "message" in attributes:  # pragma no branch
             self._message = self._makeStringAttribute(attributes["message"])
         if "project_choices" in attributes:  # pragma no branch
-            self._project_choices = self._makeListOfDictsAttribute(attributes["project_choices"])
+            self._project_choices = self._makeListOfDictsAttribute(
+                attributes["project_choices"]
+            )
         if "push_percent" in attributes:  # pragma no branch
             self._push_percent = self._makeIntAttribute(attributes["push_percent"])
         if "repository_url" in attributes:  # pragma no branch
-            self._repository_url = self._makeStringAttribute(attributes["repository_url"])
+            self._repository_url = self._makeStringAttribute(
+                attributes["repository_url"]
+            )
         if "status" in attributes:  # pragma no branch
             self._status = self._makeStringAttribute(attributes["status"])
         if "status_text" in attributes:  # pragma no branch

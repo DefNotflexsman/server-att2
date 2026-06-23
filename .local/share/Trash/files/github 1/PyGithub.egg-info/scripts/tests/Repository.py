@@ -128,23 +128,51 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.allow_squash_merge, True)
         self.assertEqual(self.repo.allow_update_branch, True)
         self.assertIsNone(self.repo.anonymous_access_enabled)
-        self.assertEqual(self.repo.archive_url, "https://api.github.com/repos/PyGithub/PyGithub/{archive_format}{/ref}")
+        self.assertEqual(
+            self.repo.archive_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/{archive_format}{/ref}",
+        )
         self.assertEqual(self.repo.archived, False)
-        self.assertEqual(self.repo.assignees_url, "https://api.github.com/repos/PyGithub/PyGithub/assignees{/user}")
-        self.assertEqual(self.repo.blobs_url, "https://api.github.com/repos/PyGithub/PyGithub/git/blobs{/sha}")
-        self.assertEqual(self.repo.branches_url, "https://api.github.com/repos/PyGithub/PyGithub/branches{/branch}")
-        self.assertEqual(self.repo.clone_url, "https://github.com/PyGithub/PyGithub.git")
+        self.assertEqual(
+            self.repo.assignees_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/assignees{/user}",
+        )
+        self.assertEqual(
+            self.repo.blobs_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/git/blobs{/sha}",
+        )
+        self.assertEqual(
+            self.repo.branches_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/branches{/branch}",
+        )
+        self.assertEqual(
+            self.repo.clone_url, "https://github.com/PyGithub/PyGithub.git"
+        )
         self.assertIsNone(self.repo.code_of_conduct)
         self.assertEqual(
-            self.repo.collaborators_url, "https://api.github.com/repos/PyGithub/PyGithub/collaborators{/collaborator}"
+            self.repo.collaborators_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/collaborators{/collaborator}",
         )
-        self.assertEqual(self.repo.comments_url, "https://api.github.com/repos/PyGithub/PyGithub/comments{/number}")
-        self.assertEqual(self.repo.commits_url, "https://api.github.com/repos/PyGithub/PyGithub/commits{/sha}")
         self.assertEqual(
-            self.repo.compare_url, "https://api.github.com/repos/PyGithub/PyGithub/compare/{base}...{head}"
+            self.repo.comments_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/comments{/number}",
         )
-        self.assertEqual(self.repo.contents_url, "https://api.github.com/repos/PyGithub/PyGithub/contents/{+path}")
-        self.assertEqual(self.repo.contributors_url, "https://api.github.com/repos/PyGithub/PyGithub/contributors")
+        self.assertEqual(
+            self.repo.commits_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/commits{/sha}",
+        )
+        self.assertEqual(
+            self.repo.compare_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/compare/{base}...{head}",
+        )
+        self.assertEqual(
+            self.repo.contents_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/contents/{+path}",
+        )
+        self.assertEqual(
+            self.repo.contributors_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/contributors",
+        )
         self.assertEqual(
             self.repo.created_at,
             datetime(2012, 2, 25, 12, 53, 47, tzinfo=timezone.utc),
@@ -152,49 +180,98 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.custom_properties, {})
         self.assertEqual(self.repo.default_branch, "main")
         self.assertEqual(self.repo.delete_branch_on_merge, True)
-        self.assertEqual(self.repo.deployments_url, "https://api.github.com/repos/PyGithub/PyGithub/deployments")
-        self.assertEqual(self.repo.description, "Typed interactions with the GitHub API v3")
+        self.assertEqual(
+            self.repo.deployments_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/deployments",
+        )
+        self.assertEqual(
+            self.repo.description, "Typed interactions with the GitHub API v3"
+        )
         self.assertEqual(self.repo.disabled, False)
-        self.assertEqual(self.repo.downloads_url, "https://api.github.com/repos/PyGithub/PyGithub/downloads")
-        self.assertEqual(self.repo.events_url, "https://api.github.com/repos/PyGithub/PyGithub/events")
+        self.assertEqual(
+            self.repo.downloads_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/downloads",
+        )
+        self.assertEqual(
+            self.repo.events_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/events",
+        )
         self.assertFalse(self.repo.fork)
         self.assertEqual(self.repo.forks, 1793)
         self.assertEqual(self.repo.forks_count, 1793)
-        self.assertEqual(self.repo.forks_url, "https://api.github.com/repos/PyGithub/PyGithub/forks")
+        self.assertEqual(
+            self.repo.forks_url, "https://api.github.com/repos/PyGithub/PyGithub/forks"
+        )
         self.assertEqual(self.repo.full_name, "PyGithub/PyGithub")
-        self.assertEqual(self.repo.git_commits_url, "https://api.github.com/repos/PyGithub/PyGithub/git/commits{/sha}")
-        self.assertEqual(self.repo.git_refs_url, "https://api.github.com/repos/PyGithub/PyGithub/git/refs{/sha}")
-        self.assertEqual(self.repo.git_tags_url, "https://api.github.com/repos/PyGithub/PyGithub/git/tags{/sha}")
+        self.assertEqual(
+            self.repo.git_commits_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/git/commits{/sha}",
+        )
+        self.assertEqual(
+            self.repo.git_refs_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/git/refs{/sha}",
+        )
+        self.assertEqual(
+            self.repo.git_tags_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/git/tags{/sha}",
+        )
         self.assertEqual(self.repo.git_url, "git://github.com/PyGithub/PyGithub.git")
         self.assertEqual(self.repo.has_discussions, True)
         self.assertTrue(self.repo.has_downloads)
         self.assertTrue(self.repo.has_issues)
-        self.assertEqual(self.repo.deployments_url, "https://api.github.com/repos/PyGithub/PyGithub/deployments")
+        self.assertEqual(
+            self.repo.deployments_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/deployments",
+        )
         self.assertFalse(self.repo.has_pages)
         self.assertEqual(self.repo.has_projects, True)
         self.assertEqual(self.repo.has_wiki, False)
         self.assertEqual(self.repo.homepage, "https://pygithub.readthedocs.io/")
-        self.assertEqual(self.repo.hooks_url, "https://api.github.com/repos/PyGithub/PyGithub/hooks")
+        self.assertEqual(
+            self.repo.hooks_url, "https://api.github.com/repos/PyGithub/PyGithub/hooks"
+        )
         self.assertEqual(self.repo.html_url, "https://github.com/PyGithub/PyGithub")
         self.assertEqual(self.repo.id, 3544490)
         self.assertEqual(self.repo.is_template, False)
         self.assertEqual(
-            self.repo.issue_comment_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/comments{/number}"
+            self.repo.issue_comment_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/comments{/number}",
         )
         self.assertEqual(
-            self.repo.issue_events_url, "https://api.github.com/repos/PyGithub/PyGithub/issues/events{/number}"
+            self.repo.issue_events_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues/events{/number}",
         )
-        self.assertEqual(self.repo.issues_url, "https://api.github.com/repos/PyGithub/PyGithub/issues{/number}")
-        self.assertEqual(self.repo.keys_url, "https://api.github.com/repos/PyGithub/PyGithub/keys{/key_id}")
-        self.assertEqual(self.repo.labels_url, "https://api.github.com/repos/PyGithub/PyGithub/labels{/name}")
+        self.assertEqual(
+            self.repo.issues_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/issues{/number}",
+        )
+        self.assertEqual(
+            self.repo.keys_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/keys{/key_id}",
+        )
+        self.assertEqual(
+            self.repo.labels_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/labels{/name}",
+        )
         self.assertEqual(self.repo.language, "Python")
-        self.assertEqual(self.repo.languages_url, "https://api.github.com/repos/PyGithub/PyGithub/languages")
-        self.assertEqual(self.repo.license.name, "GNU Lesser General Public License v3.0")
+        self.assertEqual(
+            self.repo.languages_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/languages",
+        )
+        self.assertEqual(
+            self.repo.license.name, "GNU Lesser General Public License v3.0"
+        )
         self.assertIsNone(self.repo.master_branch)
         self.assertEqual(self.repo.merge_commit_message, "PR_TITLE")
         self.assertEqual(self.repo.merge_commit_title, "MERGE_MESSAGE")
-        self.assertEqual(self.repo.merges_url, "https://api.github.com/repos/PyGithub/PyGithub/merges")
-        self.assertEqual(self.repo.milestones_url, "https://api.github.com/repos/PyGithub/PyGithub/milestones{/number}")
+        self.assertEqual(
+            self.repo.merges_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/merges",
+        )
+        self.assertEqual(
+            self.repo.milestones_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/milestones{/number}",
+        )
         self.assertIsNone(self.repo.mirror_url)
         self.assertEqual(self.repo.name, "PyGithub")
         self.assertEqual(self.repo.network_count, 1793)
@@ -210,9 +287,17 @@ class Repository(Framework.TestCase):
         self.assertIsNone(self.repo.parent)
         self.assertEqual(self.repo.permissions.admin, True)
         self.assertEqual(self.repo.private, False)
-        self.assertEqual(self.repo.pulls_url, "https://api.github.com/repos/PyGithub/PyGithub/pulls{/number}")
-        self.assertEqual(self.repo.pushed_at, datetime(2024, 12, 19, 12, 1, 11, tzinfo=timezone.utc))
-        self.assertEqual(self.repo.releases_url, "https://api.github.com/repos/PyGithub/PyGithub/releases{/id}")
+        self.assertEqual(
+            self.repo.pulls_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/pulls{/number}",
+        )
+        self.assertEqual(
+            self.repo.pushed_at, datetime(2024, 12, 19, 12, 1, 11, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            self.repo.releases_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/releases{/id}",
+        )
         self.assertFalse(self.repo.has_wiki)
         self.assertTrue(self.repo.has_discussions)
         self.assertEqual(self.repo.homepage, "https://pygithub.readthedocs.io/")
@@ -231,7 +316,9 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.permissions.pull, True)
         self.assertEqual(self.repo.permissions.push, True)
         self.assertEqual(self.repo.private, False)
-        self.assertEqual(self.repo.pushed_at, datetime(2024, 12, 19, 12, 1, 11, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.repo.pushed_at, datetime(2024, 12, 19, 12, 1, 11, tzinfo=timezone.utc)
+        )
         self.assertIsNone(self.repo.role_name)
         self.assertIsNone(self.repo.security_and_analysis.advanced_security)
         self.assertEqual(self.repo.size, 16425)
@@ -240,21 +327,46 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.squash_merge_commit_title, "PR_TITLE")
         self.assertEqual(self.repo.ssh_url, "git@github.com:PyGithub/PyGithub.git")
         self.assertEqual(self.repo.stargazers_count, 7122)
-        self.assertEqual(self.repo.stargazers_url, "https://api.github.com/repos/PyGithub/PyGithub/stargazers")
+        self.assertEqual(
+            self.repo.stargazers_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/stargazers",
+        )
         self.assertIsNone(self.repo.starred_at)
-        self.assertEqual(self.repo.statuses_url, "https://api.github.com/repos/PyGithub/PyGithub/statuses/{sha}")
+        self.assertEqual(
+            self.repo.statuses_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/statuses/{sha}",
+        )
         self.assertEqual(self.repo.subscribers_count, 111)
-        self.assertEqual(self.repo.subscribers_url, "https://api.github.com/repos/PyGithub/PyGithub/subscribers")
-        self.assertEqual(self.repo.subscription_url, "https://api.github.com/repos/PyGithub/PyGithub/subscription")
+        self.assertEqual(
+            self.repo.subscribers_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/subscribers",
+        )
+        self.assertEqual(
+            self.repo.subscription_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/subscription",
+        )
         self.assertEqual(self.repo.svn_url, "https://github.com/PyGithub/PyGithub")
-        self.assertEqual(self.repo.tags_url, "https://api.github.com/repos/PyGithub/PyGithub/tags")
-        self.assertEqual(self.repo.teams_url, "https://api.github.com/repos/PyGithub/PyGithub/teams")
+        self.assertEqual(
+            self.repo.tags_url, "https://api.github.com/repos/PyGithub/PyGithub/tags"
+        )
+        self.assertEqual(
+            self.repo.teams_url, "https://api.github.com/repos/PyGithub/PyGithub/teams"
+        )
         self.assertEqual(self.repo.temp_clone_token, "")
         self.assertIsNone(self.repo.template_repository)
-        self.assertEqual(self.repo.topics, ["github", "github-api", "pygithub", "python"])
-        self.assertEqual(self.repo.trees_url, "https://api.github.com/repos/PyGithub/PyGithub/git/trees{/sha}")
-        self.assertEqual(self.repo.updated_at, datetime(2025, 1, 6, 21, 35, 40, tzinfo=timezone.utc))
-        self.assertEqual(self.repo.url, "https://api.github.com/repos/PyGithub/PyGithub")
+        self.assertEqual(
+            self.repo.topics, ["github", "github-api", "pygithub", "python"]
+        )
+        self.assertEqual(
+            self.repo.trees_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/git/trees{/sha}",
+        )
+        self.assertEqual(
+            self.repo.updated_at, datetime(2025, 1, 6, 21, 35, 40, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            self.repo.url, "https://api.github.com/repos/PyGithub/PyGithub"
+        )
         self.assertEqual(self.repo.use_squash_pr_title_as_default, True)
         self.assertEqual(self.repo.visibility, "public")
         self.assertEqual(self.repo.watchers, 7122)
@@ -279,8 +391,13 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.api_version, "2022-11-28")
 
     def testAsUrlParam(self):
-        self.assertEqual(github.Repository.Repository.as_url_param(self.repo), "PyGithub/PyGithub")
-        self.assertEqual(github.Repository.Repository.as_url_param(self.repo._identity), "PyGithub/PyGithub")
+        self.assertEqual(
+            github.Repository.Repository.as_url_param(self.repo), "PyGithub/PyGithub"
+        )
+        self.assertEqual(
+            github.Repository.Repository.as_url_param(self.repo._identity),
+            "PyGithub/PyGithub",
+        )
 
         for repo in ["repo", "repo/name/slash"]:
             with self.assertRaises(AssertionError) as raisedexp:
@@ -321,7 +438,9 @@ class Repository(Framework.TestCase):
         )
         self.assertEqual(self.repo.description, "Description edited by PyGithub")
         self.repo.edit("PyGithub", "Python library implementing the full Github API v3")
-        self.assertEqual(self.repo.description, "Python library implementing the full Github API v3")
+        self.assertEqual(
+            self.repo.description, "Python library implementing the full Github API v3"
+        )
         self.assertFalse(self.repo.archived)
         self.assertTrue(self.repo.allow_update_branch)
         self.assertTrue(self.repo.has_issues)
@@ -340,10 +459,23 @@ class Repository(Framework.TestCase):
         self.assertEqual(self.repo.merge_commit_title, "PR_TITLE")
         self.assertEqual(self.repo.merge_commit_message, "PR_BODY")
         self.assertTrue(self.repo.web_commit_signoff_required)
-        self.assertEqual(self.repo.security_and_analysis.secret_scanning.status, "enabled")
-        self.assertEqual(self.repo.security_and_analysis.dependabot_security_updates.status, "disabled")
-        self.repo.edit("PyGithub", security_and_analysis={"dependabot_security_updates": {"status": "enabled"}})
-        self.assertEqual(self.repo.security_and_analysis.dependabot_security_updates.status, "enabled")
+        self.assertEqual(
+            self.repo.security_and_analysis.secret_scanning.status, "enabled"
+        )
+        self.assertEqual(
+            self.repo.security_and_analysis.dependabot_security_updates.status,
+            "disabled",
+        )
+        self.repo.edit(
+            "PyGithub",
+            security_and_analysis={
+                "dependabot_security_updates": {"status": "enabled"}
+            },
+        )
+        self.assertEqual(
+            self.repo.security_and_analysis.dependabot_security_updates.status,
+            "enabled",
+        )
 
     def testEditWithDefaultBranch(self):
         self.assertEqual(self.repo.master_branch, None)
@@ -433,7 +565,9 @@ class Repository(Framework.TestCase):
         self.assertEqual(hook.id, 257967)
 
     def testCreateHookWithAllParameters(self):
-        hook = self.repo.create_hook("web", {"url": "http://foobar.com"}, ["fork"], False)
+        hook = self.repo.create_hook(
+            "web", {"url": "http://foobar.com"}, ["fork"], False
+        )
         self.assertTrue(hook.active)  # WTF
         self.assertEqual(hook.id, 257993)
 
@@ -448,7 +582,9 @@ class Repository(Framework.TestCase):
         )
 
     def testCreateAutolink(self):
-        key = self.repo.create_autolink("DUMMY-", "https://github.com/PyGithub/PyGithub/issues/<num>")
+        key = self.repo.create_autolink(
+            "DUMMY-", "https://github.com/PyGithub/PyGithub/issues/<num>"
+        )
         self.assertEqual(key.id, 209614)
 
     def testCreateGitBlob(self):
@@ -457,12 +593,18 @@ class Repository(Framework.TestCase):
 
     def testCreateGitTree(self):
         tree = self.repo.create_git_tree(
-            [github.InputGitTreeElement("Foobar.txt", "100644", "blob", content="File created by PyGithub")]
+            [
+                github.InputGitTreeElement(
+                    "Foobar.txt", "100644", "blob", content="File created by PyGithub"
+                )
+            ]
         )
         self.assertEqual(tree.sha, "41cf8c178c636a018d537cb20daae09391efd70b")
 
     def testCreateGitTreeWithBaseTree(self):
-        base_tree = self.repo.get_git_tree("41cf8c178c636a018d537cb20daae09391efd70b", recursive=False)
+        base_tree = self.repo.get_git_tree(
+            "41cf8c178c636a018d537cb20daae09391efd70b", recursive=False
+        )
         tree = self.repo.create_git_tree(
             [
                 github.InputGitTreeElement(
@@ -513,7 +655,9 @@ class Repository(Framework.TestCase):
             self.repo.get_git_commit("12d427464f8d91c8e981043a86ba8a2a9e7319ea"),
         ]
         tree = self.repo.get_git_tree("fae707821159639589bf94f3fb0a7154ec5d441b")
-        commit = self.repo.create_git_commit("Commit created by PyGithub", tree, parents)
+        commit = self.repo.create_git_commit(
+            "Commit created by PyGithub", tree, parents
+        )
         self.assertEqual(commit.sha, "6adf9ea25ff8a8f2a42bcb1c09e42526339037cd")
 
     def testCreateGitCommitWithAllArguments(self):
@@ -522,8 +666,12 @@ class Repository(Framework.TestCase):
             "Commit created by PyGithub",
             tree,
             [],
-            github.InputGitAuthor("John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"),
-            github.InputGitAuthor("John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"),
+            github.InputGitAuthor(
+                "John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"
+            ),
+            github.InputGitAuthor(
+                "John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"
+            ),
         )
         self.assertEqual(commit.sha, "526946197ae9da59c6507cacd13ad6f1cfb686ea")
 
@@ -540,7 +688,9 @@ class Repository(Framework.TestCase):
         self.assertEqual(release.prerelease, False)
 
     def testCreateGitReleaseGenerateReleaseNotes(self):
-        release = self.repo.create_git_release("vX.Y.Z-by-PyGithub-acctest-release-notes", generate_release_notes=True)
+        release = self.repo.create_git_release(
+            "vX.Y.Z-by-PyGithub-acctest-release-notes", generate_release_notes=True
+        )
         self.assertEqual(release.tag_name, "vX.Y.Z-by-PyGithub-acctest-release-notes")
         self.assertEqual(release.draft, False)
         self.assertEqual(release.prerelease, False)
@@ -561,14 +711,19 @@ class Repository(Framework.TestCase):
         self.assertEqual(release.body, "This release is also created by PyGithub")
         self.assertEqual(release.draft, False)
         self.assertEqual(release.prerelease, True)
-        tag = [tag for tag in self.repo.get_tags() if tag.name == "vX.Y.Z-by-PyGithub-acctest2"].pop()
+        tag = [
+            tag
+            for tag in self.repo.get_tags()
+            if tag.name == "vX.Y.Z-by-PyGithub-acctest2"
+        ].pop()
         self.assertEqual(tag.commit.sha, "da9a285fd8b782461e56cba39ae8d2fa41ca7cdc")
 
     def testGenerateReleaseNotes(self):
         notes = self.repo.generate_release_notes("vX.Y.Z-by-PyGithub-acctest")
         self.assertEqual(notes.name, "vX.Y.Z-by-PyGithub-acctest")
         self.assertEqual(
-            notes.body, "**Full Changelog**: https://github.com/PyGithub/PyGithub/commits/vX.Y.Z-by-PyGithub-acctest"
+            notes.body,
+            "**Full Changelog**: https://github.com/PyGithub/PyGithub/commits/vX.Y.Z-by-PyGithub-acctest",
         )
         self.assertEqual(
             repr(notes),
@@ -588,7 +743,10 @@ class Repository(Framework.TestCase):
             configuration_file_path="tests/test_release_notes.yml",
         )
         self.assertEqual(notes.name, "vX.Y.Z-by-PyGithub-acctest")
-        self.assertIn("Release notes generated using configuration in tests/test_release_notes.yml at main", notes.body)
+        self.assertIn(
+            "Release notes generated using configuration in tests/test_release_notes.yml at main",
+            notes.body,
+        )
 
     def testCreateGitTag(self):
         tag = self.repo.create_git_tag(
@@ -605,7 +763,9 @@ class Repository(Framework.TestCase):
             "Tag also created by PyGithub",
             "526946197ae9da59c6507cacd13ad6f1cfb686ea",
             "commit",
-            github.InputGitAuthor("John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"),
+            github.InputGitAuthor(
+                "John Doe", "j.doe@vincent-jacques.net", "2008-07-09T16:13:30+12:00"
+            ),
         )
         self.assertEqual(tag.sha, "f0e99a8335fbc84c53366c4a681118468f266625")
 
@@ -618,7 +778,9 @@ class Repository(Framework.TestCase):
 
     def testCreateSourceImport(self):
         import_repo = self.g.get_user("brix4dayz").get_repo("source-import-test")
-        source_import = import_repo.create_source_import("mercurial", "https://bitbucket.org/hfuss/source-import-test")
+        source_import = import_repo.create_source_import(
+            "mercurial", "https://bitbucket.org/hfuss/source-import-test"
+        )
         self.assertEqual(source_import.authors_count, 0)
         self.assertEqual(
             source_import.authors_url,
@@ -639,7 +801,9 @@ class Repository(Framework.TestCase):
             "https://api.github.com/repos/brix4dayz/source-import-test/import",
         )
         self.assertEqual(source_import.vcs, "mercurial")
-        self.assertEqual(source_import.vcs_url, "https://bitbucket.org/hfuss/source-import-test")
+        self.assertEqual(
+            source_import.vcs_url, "https://bitbucket.org/hfuss/source-import-test"
+        )
 
     def testCreateRepositoryDispatch(self):
         with_payload = self.repo.create_repository_dispatch("type", {"foo": "bar"})
@@ -652,7 +816,10 @@ class Repository(Framework.TestCase):
         # encrypt returns a non-deterministic value, we need to mock it so the replay data matches
         encrypt.return_value = "M+5Fm/BqTfB90h3nC7F3BoZuu3nXs+/KtpXwxm9gG211tbRo0F5UiN0OIfYT83CKcx9oKES9Va4E96/b"
         # GitHub will always capitalize the secret name
-        secrets = (("SECRET_NAME_ONE", "secret-value-one"), ("SECRET_NAME_TWO", "secret-value-two"))
+        secrets = (
+            ("SECRET_NAME_ONE", "secret-value-one"),
+            ("SECRET_NAME_TWO", "secret-value-two"),
+        )
         repo = self.g.get_repo("AndrewJDawes/PyGithub")
         for matched_repo_secret in secrets:
             repo.create_secret(matched_repo_secret[0], matched_repo_secret[1])
@@ -685,7 +852,9 @@ class Repository(Framework.TestCase):
             ],
         )
         codescan_alert = codescan_alerts[0]
-        self.assertEqual(repr(codescan_alert), 'CodeScanAlert(number=6, id="py/rule-id")')
+        self.assertEqual(
+            repr(codescan_alert), 'CodeScanAlert(number=6, id="py/rule-id")'
+        )
         self.assertEqual(codescan_alert.state, "open")
         self.assertEqual(
             codescan_alert.url,
@@ -711,7 +880,9 @@ class Repository(Framework.TestCase):
             ")",
         )
         self.assertEqual(instance.ref, "refs/heads/master")
-        self.assertEqual(instance.analysis_key, ".github/workflows/codeql-analysis.yml:analyze")
+        self.assertEqual(
+            instance.analysis_key, ".github/workflows/codeql-analysis.yml:analyze"
+        )
         self.assertEqual(instance.environment, "{language:python}")
         self.assertEqual(instance.state, "open")
         self.assertListEqual(instance.classifications, ["stupid typo"])
@@ -730,20 +901,26 @@ class Repository(Framework.TestCase):
             "end_line=10, end_column=48"
             ")",
         )
-        self.assertEqual(location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt")
+        self.assertEqual(
+            location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt"
+        )
         self.assertEqual(location.start_line, 10)
         self.assertEqual(location.start_column, 2)
         self.assertEqual(location.end_line, 10)
         self.assertEqual(location.end_column, 48)
         rule = codescan_alert.rule
-        self.assertEqual(repr(rule), 'CodeScanRule(name="py/rule-name", id="py/rule-id")')
+        self.assertEqual(
+            repr(rule), 'CodeScanRule(name="py/rule-name", id="py/rule-id")'
+        )
         self.assertEqual(rule.id, "py/rule-id")
         self.assertEqual(rule.name, "py/rule-name")
         self.assertEqual(rule.security_severity_level, "high")
         self.assertEqual(rule.severity, "warning")
         self.assertEqual(rule.description, "Bad practice")
         tool = codescan_alert.tool
-        self.assertEqual(repr(tool), 'CodeScanTool(version="2.5.7", name="CodeQL", guid=None)')
+        self.assertEqual(
+            repr(tool), 'CodeScanTool(version="2.5.7", name="CodeQL", guid=None)'
+        )
         self.assertEqual(tool.guid, None)
         self.assertEqual(tool.name, "CodeQL")
         self.assertEqual(tool.version, "2.5.7")
@@ -759,7 +936,9 @@ class Repository(Framework.TestCase):
         self.assertDictEqual(instance.message, {"text": "instances[0].message"})
         self.assertEqual(instance.commit_sha, "instances[0].commit_sha")
         location = instance.location
-        self.assertEqual(location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt")
+        self.assertEqual(
+            location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt"
+        )
         self.assertEqual(location.start_line, 10)
         self.assertEqual(location.start_column, 2)
         self.assertEqual(location.end_line, 10)
@@ -774,7 +953,9 @@ class Repository(Framework.TestCase):
         self.assertDictEqual(instance.message, {"text": "instances[1].message"})
         self.assertEqual(instance.commit_sha, "instances[1].commit_sha")
         location = instance.location
-        self.assertEqual(location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt")
+        self.assertEqual(
+            location.path, "tests/ReplayData/Repository.testCodeScanAlerts.txt"
+        )
         self.assertEqual(location.start_line, 20)
         self.assertEqual(location.start_column, 17)
         self.assertEqual(location.end_line, 20)
@@ -820,7 +1001,10 @@ class Repository(Framework.TestCase):
     def testCollaboratorPermissionNoPushAccess(self):
         with self.assertRaises(github.GithubException) as raisedexp:
             self.repo.get_collaborator_permission("lyloa")
-        self.assertEqual(raisedexp.exception.message, "Must have push access to view collaborator permission.")
+        self.assertEqual(
+            raisedexp.exception.message,
+            "Must have push access to view collaborator permission.",
+        )
         self.assertEqual(raisedexp.exception.status, 403)
         self.assertEqual(
             raisedexp.exception.data,
@@ -867,7 +1051,9 @@ class Repository(Framework.TestCase):
                     "setup.py",
                 ],
             )
-            self.assertEqual(comparison.base_commit.sha, "4303c5b90e2216d927155e9609436ccb8984c495")
+            self.assertEqual(
+                comparison.base_commit.sha, "4303c5b90e2216d927155e9609436ccb8984c495"
+            )
             self.assertListKeyEqual(
                 comparison.commits,
                 lambda c: c.sha,
@@ -887,7 +1073,9 @@ class Repository(Framework.TestCase):
 
     def testCompareCommitsPerPage(self):
         with self.captureRequests() as requests:
-            comparison = self.repo.compare("v0.6", "v0.7", comparison_commits_per_page=3)
+            comparison = self.repo.compare(
+                "v0.6", "v0.7", comparison_commits_per_page=3
+            )
 
             self.assertEqual(
                 comparison.diff_url,
@@ -1059,7 +1247,9 @@ class Repository(Framework.TestCase):
 
     def testGetCommitsWithArguments(self):
         self.assertListKeyEqual(
-            self.repo.get_commits("topic/RewriteWithGeneratedCode", "codegen/GenerateCode.py"),
+            self.repo.get_commits(
+                "topic/RewriteWithGeneratedCode", "codegen/GenerateCode.py"
+            ),
             lambda c: c.sha,
             [
                 "de386d5dc9cf103c90c4128eeca0e6abdd382065",
@@ -1167,10 +1357,14 @@ class Repository(Framework.TestCase):
         )
 
     def testGetForks(self):
-        self.assertListKeyEqual(self.repo.get_forks(), lambda r: r.owner.login, ["abersager"])
+        self.assertListKeyEqual(
+            self.repo.get_forks(), lambda r: r.owner.login, ["abersager"]
+        )
 
     def testCreateFork(self):
-        self.assertEqual(self.repo.create_fork("prtg-dev").full_name, "prtg-dev/PyGithub")
+        self.assertEqual(
+            self.repo.create_fork("prtg-dev").full_name, "prtg-dev/PyGithub"
+        )
 
     def testCreateForkOrg(self):
         c = self.g.get_organization("prtg-dev")
@@ -1241,8 +1435,12 @@ class Repository(Framework.TestCase):
         self.assertIsInstance(delivery.request, github.HookDelivery.HookDeliveryRequest)
         self.assertEqual(delivery.request.headers, {"content-type": "application/json"})
         self.assertEqual(delivery.request.payload, {"action": "opened"})
-        self.assertIsInstance(delivery.response, github.HookDelivery.HookDeliveryResponse)
-        self.assertEqual(delivery.response.headers, {"content-type": "text/html;charset=utf-8"})
+        self.assertIsInstance(
+            delivery.response, github.HookDelivery.HookDeliveryResponse
+        )
+        self.assertEqual(
+            delivery.response.headers, {"content-type": "text/html;charset=utf-8"}
+        )
         self.assertEqual(delivery.response.payload, "ok")
 
     def testGetHookDeliveries(self):
@@ -1298,8 +1496,12 @@ class Repository(Framework.TestCase):
             lambda i: i.id,
             [3624472, 3620132, 3619658, 3561926],
         )
-        self.assertListKeyEqual(self.repo.get_issues(labels=[bug]), lambda i: i.id, [4780155])
-        self.assertListKeyEqual(self.repo.get_issues(labels=[bug.name]), lambda i: i.id, [4780155])
+        self.assertListKeyEqual(
+            self.repo.get_issues(labels=[bug]), lambda i: i.id, [4780155]
+        )
+        self.assertListKeyEqual(
+            self.repo.get_issues(labels=[bug.name]), lambda i: i.id, [4780155]
+        )
         self.assertListKeyEqual(
             self.repo.get_issues(assignee=user, sort="comments", direction="asc"),
             lambda i: i.id,
@@ -1321,11 +1523,15 @@ class Repository(Framework.TestCase):
             ],
         )
         self.assertListKeyEqual(
-            self.repo.get_issues(since=datetime(2012, 5, 28, 23, 0, 0, tzinfo=timezone.utc)),
+            self.repo.get_issues(
+                since=datetime(2012, 5, 28, 23, 0, 0, tzinfo=timezone.utc)
+            ),
             lambda i: i.id,
             [4793216, 4793162, 4793106, 3624556, 3619973, 3527266],
         )
-        self.assertListKeyEqual(self.repo.get_issues(mentioned=otherUser), lambda i: i.id, [4793162])
+        self.assertListKeyEqual(
+            self.repo.get_issues(mentioned=otherUser), lambda i: i.id, [4793162]
+        )
 
     def testGetIssuesWithWildcards(self):
         self.assertListKeyEqual(
@@ -1357,7 +1563,9 @@ class Repository(Framework.TestCase):
                 3527231,
             ],
         )
-        self.assertListKeyEqual(self.repo.get_issues(assignee="none"), lambda i: i.id, [3619973])
+        self.assertListKeyEqual(
+            self.repo.get_issues(assignee="none"), lambda i: i.id, [3619973]
+        )
 
     def testGetIssuesWithTypeArgument(self):
         self.assertListKeyEqual(
@@ -1365,7 +1573,11 @@ class Repository(Framework.TestCase):
             lambda i: i.id,
             [3425963739, 3399666591, 3398817538],
         )
-        self.assertListKeyEqual(self.repo.get_issues(type="feature", state="closed"), lambda i: i.id, [3326107606])
+        self.assertListKeyEqual(
+            self.repo.get_issues(type="feature", state="closed"),
+            lambda i: i.id,
+            [3326107606],
+        )
 
     def testGetIssuesWithTypeWildcard(self):
         self.assertListKeyEqual(
@@ -1380,7 +1592,9 @@ class Repository(Framework.TestCase):
         )
 
     def testGetKeys(self):
-        self.assertListKeyEqual(self.repo.get_keys(), lambda k: k.title, ["Key added through PyGithub"])
+        self.assertListKeyEqual(
+            self.repo.get_keys(), lambda k: k.title, ["Key added through PyGithub"]
+        )
 
     def testGetLabels(self):
         self.assertListKeyEqual(
@@ -1399,7 +1613,11 @@ class Repository(Framework.TestCase):
     def testGetLanguages(self):
         self.assertEqual(
             self.repo.get_languages(),
-            {"Python": 127266, "Shell": 673, "url": "https://api.github.com/repos/PyGithub/PyGithub/languages"},
+            {
+                "Python": 127266,
+                "Shell": 673,
+                "url": "https://api.github.com/repos/PyGithub/PyGithub/languages",
+            },
         )
 
     def testGetMilestones(self):
@@ -1461,7 +1679,9 @@ class Repository(Framework.TestCase):
 
     def testGetWorkflows(self):
         workflows = self.g.get_repo("PyGithub/PyGithub").get_workflows()
-        self.assertListKeyEqual(workflows, lambda w: w.name, ["check", "Publish to PyPI"])
+        self.assertListKeyEqual(
+            workflows, lambda w: w.name, ["check", "Publish to PyPI"]
+        )
 
     def testGetWorkflowId(self):
         workflows = self.g.get_repo("PyGithub/PyGithub").get_workflow("1122712")
@@ -1480,7 +1700,9 @@ class Repository(Framework.TestCase):
 
     def testGetWorkflowRunsCreated(self):
         self.assertListKeyEqual(
-            self.g.get_repo("PyGithub/PyGithub").get_workflow_runs(created="2022-12-24"),
+            self.g.get_repo("PyGithub/PyGithub").get_workflow_runs(
+                created="2022-12-24"
+            ),
             lambda r: r.id,
             [3770390952],
         )
@@ -1512,7 +1734,9 @@ class Repository(Framework.TestCase):
         )
         self.assertEqual(source_import.use_lfs, "undecided")
         self.assertEqual(source_import.vcs, "mercurial")
-        self.assertEqual(source_import.vcs_url, "https://bitbucket.org/hfuss/source-import-test")
+        self.assertEqual(
+            source_import.vcs_url, "https://bitbucket.org/hfuss/source-import-test"
+        )
 
     def testGetStargazers(self):
         self.assertListKeyEqual(
@@ -1665,19 +1889,25 @@ class Repository(Framework.TestCase):
         self.assertEqual(pull.head.repo.full_name, "octocat/PyGithub")
 
     def testCreateProject(self):
-        project = self.repo.create_project("Project created by PyGithub", "Body of the project")
+        project = self.repo.create_project(
+            "Project created by PyGithub", "Body of the project"
+        )
         self.assertEqual(project.id, 2013820)
 
     def testCreatePullFromIssue(self):
         issue = self.repo.get_issue(32)
-        pull = self.repo.create_pull("topic/RewriteWithGeneratedCode", "BeaverSoftware:master", issue=issue)
+        pull = self.repo.create_pull(
+            "topic/RewriteWithGeneratedCode", "BeaverSoftware:master", issue=issue
+        )
         self.assertEqual(pull.id, 1436310)
 
     def testGetPulls(self):
         self.assertListKeyEqual(self.repo.get_pulls(), lambda p: p.id, [1436310])
 
     def testGetPullsWithArguments(self):
-        self.assertListKeyEqual(self.repo.get_pulls("closed"), lambda p: p.id, [1448168, 1436310, 1436215])
+        self.assertListKeyEqual(
+            self.repo.get_pulls("closed"), lambda p: p.id, [1448168, 1436310, 1436215]
+        )
 
     def testGetAutolinks(self):
         self.assertListKeyEqual(
@@ -1708,7 +1938,9 @@ class Repository(Framework.TestCase):
         )
         self.assertEqual(issues[0].user.login, "kukuts")
         self.assertEqual(issues[0].user.url, "/users/kukuts")
-        self.assertListKeyEqual(issues[0].labels, lambda lb: lb.name, ["Functionalities", "RequestedByUser"])
+        self.assertListKeyEqual(
+            issues[0].labels, lambda lb: lb.name, ["Functionalities", "RequestedByUser"]
+        )
         self.assertEqual(issues[0].state, "open")
 
     def testMarkNotificationsAsRead(self):
@@ -1722,13 +1954,17 @@ class Repository(Framework.TestCase):
         self.assertFalse(self.repo.has_in_assignees(lyloa))
         self.repo.add_to_collaborators(lyloa)
         self.assertTrue(self.repo.has_in_assignees(lyloa))
-        self.assertListKeyEqual(self.repo.get_assignees(), lambda u: u.login, ["jacquev6", "Lyloa"])
+        self.assertListKeyEqual(
+            self.repo.get_assignees(), lambda u: u.login, ["jacquev6", "Lyloa"]
+        )
         self.repo.remove_from_collaborators(lyloa)
         self.assertFalse(self.repo.has_in_assignees(lyloa))
 
     def testGetContents(self):
         self.assertEqual(len(self.repo.get_readme().content), 10212)
-        self.assertEqual(len(self.repo.get_contents("doc/ReferenceOfClasses.md").content), 38121)
+        self.assertEqual(
+            len(self.repo.get_contents("doc/ReferenceOfClasses.md").content), 38121
+        )
 
     def testGetContentsDir(self):
         contents = self.repo.get_contents("")
@@ -1742,7 +1978,11 @@ class Repository(Framework.TestCase):
 
     def testGetContentsWithRef(self):
         self.assertEqual(
-            len(self.repo.get_readme(ref="refs/heads/topic/ExperimentOnDocumentation").content),
+            len(
+                self.repo.get_readme(
+                    ref="refs/heads/topic/ExperimentOnDocumentation"
+                ).content
+            ),
             6747,
         )
         self.assertEqual(
@@ -1797,36 +2037,51 @@ class Repository(Framework.TestCase):
         self.assertEqual(discussion.number, 2480)
         self.assertEqual(discussion.repository.owner.login, "PyGithub")
         self.assertEqual(discussion.repository.name, "PyGithub")
-        self.assertEqual(discussion.title, "Is there a way to search if a string present in default branch?")
+        self.assertEqual(
+            discussion.title,
+            "Is there a way to search if a string present in default branch?",
+        )
 
     def testGetDiscussion(self):
         repo = self.g.get_repo("PyGithub/PyGithub")
         discussion = repo.get_discussion(2205, "author { login } number title")
         self.assertEqual(discussion.author.login, "EnricoMi")
         self.assertEqual(discussion.number, 2205)
-        self.assertEqual(discussion.title, "Is the PyGithub project dead? How can the community help?")
+        self.assertEqual(
+            discussion.title,
+            "Is the PyGithub project dead? How can the community help?",
+        )
 
     def testGetDiscussionsByAnswered(self):
         repo = self.g.get_repo("PyGithub/PyGithub")
         discussions = repo.get_discussions("number title", answered=True)
         self.assertListEqual(
-            [d.number for d in discussions], [2993, 2619, 2104, 2500, 2292, 2153, 2277, 2023, 1964, 1778]
+            [d.number for d in discussions],
+            [2993, 2619, 2104, 2500, 2292, 2153, 2277, 2023, 1964, 1778],
         )
 
     def testGetDiscussionsByCategory(self):
         repo = self.g.get_repo("PyGithub/PyGithub")
-        discussions = repo.get_discussions("number title", category_id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyMDI5MDYy")
-        self.assertListEqual([d.number for d in discussions], [3044, 2997, 2057, 2242, 2173, 1993, 1780])
+        discussions = repo.get_discussions(
+            "number title", category_id="MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyMDI5MDYy"
+        )
+        self.assertListEqual(
+            [d.number for d in discussions], [3044, 2997, 2057, 2242, 2173, 1993, 1780]
+        )
 
     def testGetDiscussionsByStates(self):
         repo = self.g.get_repo("PyGithub/PyGithub")
         discussions = repo.get_discussions("number title", states=["CLOSED"])
-        self.assertListEqual([d.number for d in discussions], [2938, 2495, 2559, 2104, 2539, 2480])
+        self.assertListEqual(
+            [d.number for d in discussions], [2938, 2495, 2559, 2104, 2539, 2480]
+        )
 
     def testCreateFile(self):
         newFile = "doc/testCreateUpdateDeleteFile.md"
         content = b"Hello world"
-        author = github.InputGitAuthor("Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00")
+        author = github.InputGitAuthor(
+            "Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00"
+        )
         self.assertEqual(repr(author), 'InputGitAuthor(name="Enix Yu")')
         self.repo.create_file(
             path=newFile,
@@ -1847,8 +2102,12 @@ class Repository(Framework.TestCase):
             content=content,
             sha=sha,
             branch="master",
-            committer=github.InputGitAuthor("Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00"),
-            author=github.InputGitAuthor("Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00"),
+            committer=github.InputGitAuthor(
+                "Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00"
+            ),
+            author=github.InputGitAuthor(
+                "Enix Yu", "enix223@163.com", "2016-01-15T16:13:30+12:00"
+            ),
         )
 
     def testDeleteFile(self):
@@ -1892,14 +2151,20 @@ class Repository(Framework.TestCase):
 
     def testMergeWithoutMessage(self):
         commit = self.repo.merge("branchForBase", "branchForHead")
-        self.assertEqual(commit.commit.message, "Merge branchForHead into branchForBase")
+        self.assertEqual(
+            commit.commit.message, "Merge branchForHead into branchForBase"
+        )
 
     def testMergeWithMessage(self):
-        commit = self.repo.merge("branchForBase", "branchForHead", "Commit message created by PyGithub")
+        commit = self.repo.merge(
+            "branchForBase", "branchForHead", "Commit message created by PyGithub"
+        )
         self.assertEqual(commit.commit.message, "Commit message created by PyGithub")
 
     def testMergeWithNothingToDo(self):
-        commit = self.repo.merge("branchForBase", "branchForHead", "Commit message created by PyGithub")
+        commit = self.repo.merge(
+            "branchForBase", "branchForHead", "Commit message created by PyGithub"
+        )
         self.assertEqual(commit, None)
 
     def testMergeWithConflict(self):
@@ -1914,12 +2179,17 @@ class Repository(Framework.TestCase):
         repo = self.g.get_repo("Felixoid/PyGithub")
         # First one to sync with upstream
         result = repo.merge_upstream("main")
-        self.assertEqual(result.message, "Successfully fetched and fast-forwarded from upstream PyGithub:main.")
+        self.assertEqual(
+            result.message,
+            "Successfully fetched and fast-forwarded from upstream PyGithub:main.",
+        )
         self.assertEqual(result.base_branch, "PyGithub:main")
         self.assertEqual(result.merge_type, "fast-forward")
         # Second one to check it's already synced
         result = repo.merge_upstream("main")
-        self.assertEqual(result.message, "This branch is not behind the upstream PyGithub:main.")
+        self.assertEqual(
+            result.message, "This branch is not behind the upstream PyGithub:main."
+        )
         self.assertEqual(result.base_branch, "PyGithub:main")
         self.assertEqual(result.merge_type, "none")
 
@@ -2077,7 +2347,9 @@ class Repository(Framework.TestCase):
         )
 
     def testGetPullsComments(self):
-        self.assertListKeyEqual(self.repo.get_pulls_comments(), lambda c: c.id, [1580134])
+        self.assertListKeyEqual(
+            self.repo.get_pulls_comments(), lambda c: c.id, [1580134]
+        )
         self.assertListKeyEqual(
             self.repo.get_pulls_comments(sort="created", direction="asc"),
             lambda c: c.id,
@@ -2094,10 +2366,16 @@ class Repository(Framework.TestCase):
 
     def testBadSubscribePubSubHubbub(self):
         with self.assertRaises(github.GithubException) as raisedexp:
-            self.repo.subscribe_to_hub("non-existing-event", "http://requestb.in/1bc1sc61")
-        self.assertEqual(raisedexp.exception.message, 'Invalid event: "non-existing-event"')
+            self.repo.subscribe_to_hub(
+                "non-existing-event", "http://requestb.in/1bc1sc61"
+            )
+        self.assertEqual(
+            raisedexp.exception.message, 'Invalid event: "non-existing-event"'
+        )
         self.assertEqual(raisedexp.exception.status, 422)
-        self.assertEqual(raisedexp.exception.data, {"message": 'Invalid event: "non-existing-event"'})
+        self.assertEqual(
+            raisedexp.exception.data, {"message": 'Invalid event: "non-existing-event"'}
+        )
 
     def testUnsubscribePubSubHubbub(self):
         self.repo.unsubscribe_from_hub("push", "http://requestb.in/1bc1sc61")
@@ -2304,7 +2582,10 @@ class Repository(Framework.TestCase):
 
     def testRepoVariables(self):
         # GitHub will always capitalize the variable name
-        variables = (("VARIABLE_NAME_ONE", "variable-value-one"), ("VARIABLE_NAME_TWO", "variable-value-two"))
+        variables = (
+            ("VARIABLE_NAME_ONE", "variable-value-one"),
+            ("VARIABLE_NAME_TWO", "variable-value-two"),
+        )
         repo = self.g.get_repo("AndrewJDawes/PyGithub")
         for variable in variables:
             repo.create_variable(variable[0], variable[1])
@@ -2314,7 +2595,10 @@ class Repository(Framework.TestCase):
         for variable in variables:
             for repo_variable in repo_variables:
                 # GitHub will always capitalize the variable name, may be best to uppercase test data for comparison
-                if repo_variable.name == variable[0].upper() and repo_variable.value == variable[1]:
+                if (
+                    repo_variable.name == variable[0].upper()
+                    and repo_variable.value == variable[1]
+                ):
                     matched_repo_variables.append(repo_variable)
                     break
         self.assertEqual(len(matched_repo_variables), len(variables))
@@ -2341,7 +2625,9 @@ class Repository(Framework.TestCase):
         repo = self.g.get_repo("demoorg/demo-repo-1")
         with self.assertRaises(AssertionError) as exc:
             repo.get_secret(secret_name="splat", secret_type="supersecret")
-        self.assertEqual(str(exc.exception), "secret_type should be actions or dependabot")
+        self.assertEqual(
+            str(exc.exception), "secret_type should be actions or dependabot"
+        )
 
     def testGetCustomProperties(self):
         custom_properties = self.repo.get_custom_properties()
@@ -2352,7 +2638,9 @@ class Repository(Framework.TestCase):
         self.repo.update_custom_properties(custom_properties)
 
     def testTransferOwnership(self):
-        status = self.repo.transfer_ownership(new_owner="An-Nie-Tan-99", new_name="PyGithub-test")
+        status = self.repo.transfer_ownership(
+            new_owner="An-Nie-Tan-99", new_name="PyGithub-test"
+        )
         self.assertTrue(status)
 
     def testTransferOwnershipInvalidOwner(self):
@@ -2408,29 +2696,51 @@ class LazyRepository(Framework.TestCase):
         self.assertEqual(repo.url, "/repositories/42")
 
     def testCreatFromUrl(self):
-        requester = mock.Mock(github.Requester.Requester, base_url="https://test.ing/api/", is_not_lazy=False)
+        requester = mock.Mock(
+            github.Requester.Requester,
+            base_url="https://test.ing/api/",
+            is_not_lazy=False,
+        )
 
         for base_url in [requester.base_url[:-1], ""]:
-            repo = github.Repository.Repository(requester, url=f"{base_url}/repositories/12345")
-            self.assertEqual(repo.url, f"{base_url}/repositories/12345", msg=f"base url: '{base_url}'")
+            repo = github.Repository.Repository(
+                requester, url=f"{base_url}/repositories/12345"
+            )
+            self.assertEqual(
+                repo.url,
+                f"{base_url}/repositories/12345",
+                msg=f"base url: '{base_url}'",
+            )
             self.assertEqual(repo.id, 12345)
             self.assertTrue(is_undefined(repo._full_name))
             self.assertTrue(is_undefined(repo._name))
 
-            repo = github.Repository.Repository(requester, url=f"{base_url}/repos/login/name")
-            self.assertEqual(repo.url, f"{base_url}/repos/login/name", msg=f"base url: '{base_url}'")
+            repo = github.Repository.Repository(
+                requester, url=f"{base_url}/repos/login/name"
+            )
+            self.assertEqual(
+                repo.url, f"{base_url}/repos/login/name", msg=f"base url: '{base_url}'"
+            )
             self.assertTrue(is_undefined(repo._id))
             self.assertEqual(repo.full_name, "login/name")
             self.assertEqual(repo.name, "name")
 
-            repo = github.Repository.Repository(requester, url=f"{base_url}/repos/login/12345")
-            self.assertEqual(repo.url, f"{base_url}/repos/login/12345", msg=f"base url: '{base_url}'")
+            repo = github.Repository.Repository(
+                requester, url=f"{base_url}/repos/login/12345"
+            )
+            self.assertEqual(
+                repo.url, f"{base_url}/repos/login/12345", msg=f"base url: '{base_url}'"
+            )
             self.assertTrue(is_undefined(repo._id))
             self.assertEqual(repo.full_name, "login/12345")
             self.assertEqual(repo.name, "12345")
 
     def testCreatFromAttributes(self):
-        requester = mock.Mock(github.Requester.Requester, base_url="https://test.ing/api/", is_not_lazy=False)
+        requester = mock.Mock(
+            github.Requester.Requester,
+            base_url="https://test.ing/api/",
+            is_not_lazy=False,
+        )
 
         repo = github.Repository.Repository(requester, attributes={"id": 12345})
         self.assertEqual(repo.url, "/repositories/12345")
@@ -2438,13 +2748,17 @@ class LazyRepository(Framework.TestCase):
         self.assertTrue(is_undefined(repo._full_name))
         self.assertTrue(is_undefined(repo._name))
 
-        repo = github.Repository.Repository(requester, attributes={"owner": {"login": "login"}, "name": "name"})
+        repo = github.Repository.Repository(
+            requester, attributes={"owner": {"login": "login"}, "name": "name"}
+        )
         self.assertEqual(repo.url, "/repos/login/name")
         self.assertTrue(is_undefined(repo._id))
         self.assertEqual(repo.full_name, "login/name")
         self.assertEqual(repo.name, "name")
 
-        repo = github.Repository.Repository(requester, attributes={"full_name": "full/name"})
+        repo = github.Repository.Repository(
+            requester, attributes={"full_name": "full/name"}
+        )
         self.assertEqual(repo.url, "/repos/full/name")
         self.assertTrue(is_undefined(repo._id))
         self.assertEqual(repo.full_name, "full/name")

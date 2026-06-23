@@ -127,9 +127,13 @@ class AdvisoryBase(NonCompletableGithubObject):
         if "cvss" in attributes:  # pragma no branch
             self._cvss = self._makeClassAttribute(github.CVSS.CVSS, attributes["cvss"])
         if "cvss_severities" in attributes:  # pragma no branch
-            self._cvss_severities = self._makeDictAttribute(attributes["cvss_severities"])
+            self._cvss_severities = self._makeDictAttribute(
+                attributes["cvss_severities"]
+            )
         if "cwes" in attributes:  # pragma no branch
-            self._cwes = self._makeListOfClassesAttribute(github.CWE.CWE, attributes["cwes"])
+            self._cwes = self._makeListOfClassesAttribute(
+                github.CWE.CWE, attributes["cwes"]
+            )
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "ghsa_id" in attributes:  # pragma no branch
@@ -137,25 +141,27 @@ class AdvisoryBase(NonCompletableGithubObject):
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "identifiers" in attributes:  # pragma no branch
-            self._identifiers = self._makeListOfDictsAttribute(attributes["identifiers"])
+            self._identifiers = self._makeListOfDictsAttribute(
+                attributes["identifiers"]
+            )
         if "published_at" in attributes:  # pragma no branch
-            assert attributes["published_at"] is None or isinstance(attributes["published_at"], str), attributes[
-                "published_at"
-            ]
+            assert attributes["published_at"] is None or isinstance(
+                attributes["published_at"], str
+            ), attributes["published_at"]
             self._published_at = self._makeDatetimeAttribute(attributes["published_at"])
         if "severity" in attributes:  # pragma no branch
             self._severity = self._makeStringAttribute(attributes["severity"])
         if "summary" in attributes:  # pragma no branch
             self._summary = self._makeStringAttribute(attributes["summary"])
         if "updated_at" in attributes:  # pragma no branch
-            assert attributes["updated_at"] is None or isinstance(attributes["updated_at"], str), attributes[
-                "updated_at"
-            ]
+            assert attributes["updated_at"] is None or isinstance(
+                attributes["updated_at"], str
+            ), attributes["updated_at"]
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "withdrawn_at" in attributes:  # pragma no branch
-            assert attributes["withdrawn_at"] is None or isinstance(attributes["withdrawn_at"], str), attributes[
-                "withdrawn_at"
-            ]
+            assert attributes["withdrawn_at"] is None or isinstance(
+                attributes["withdrawn_at"], str
+            ), attributes["withdrawn_at"]
             self._withdrawn_at = self._makeDatetimeAttribute(attributes["withdrawn_at"])

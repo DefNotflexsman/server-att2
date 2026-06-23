@@ -44,7 +44,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import github.NamedEnterpriseUser
-from github.GithubObject import Attribute, CompletableGithubObjectWithPaginatedProperty, NotSet
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObjectWithPaginatedProperty,
+    NotSet,
+)
 from github.PaginatedList import PaginatedList
 
 if TYPE_CHECKING:
@@ -52,15 +56,13 @@ if TYPE_CHECKING:
 
 
 class EnterpriseConsumedLicenses(CompletableGithubObjectWithPaginatedProperty):
-    """
-    This class represents license consumed by enterprises.
+    """This class represents license consumed by enterprises.
 
     The reference can be found here
     https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin/license#list-enterprise-consumed-licenses
 
     This class has a `paginated property <https://pygithub.readthedocs.io/en/stable/utilities.html#classes-with-paginated-properties>`_.
     For details, see :meth:`EnterpriseConsumedLicenses.users` or :meth:`EnterpriseConsumedLicenses.get_users`.
-
     """
 
     def _initAttributes(self) -> None:
@@ -107,7 +109,9 @@ class EnterpriseConsumedLicenses(CompletableGithubObjectWithPaginatedProperty):
             firstHeaders=self.raw_headers,
         )
 
-    def get_users(self, licence_users_per_page: int | None = None) -> PaginatedList[NamedEnterpriseUser]:
+    def get_users(
+        self, licence_users_per_page: int | None = None
+    ) -> PaginatedList[NamedEnterpriseUser]:
         """
         :calls: `GET /enterprises/{enterprise}/consumed-licenses <https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin/license#list-enterprise-consumed-licenses>`_
 
@@ -132,6 +136,10 @@ class EnterpriseConsumedLicenses(CompletableGithubObjectWithPaginatedProperty):
         if "enterprise" in attributes:  # pragma no branch
             self._enterprise = self._makeStringAttribute(attributes["enterprise"])
         if "total_seats_consumed" in attributes:  # pragma no branch
-            self._total_seats_consumed = self._makeIntAttribute(attributes["total_seats_consumed"])
+            self._total_seats_consumed = self._makeIntAttribute(
+                attributes["total_seats_consumed"]
+            )
         if "total_seats_purchased" in attributes:  # pragma no branch
-            self._total_seats_purchased = self._makeIntAttribute(attributes["total_seats_purchased"])
+            self._total_seats_purchased = self._makeIntAttribute(
+                attributes["total_seats_purchased"]
+            )

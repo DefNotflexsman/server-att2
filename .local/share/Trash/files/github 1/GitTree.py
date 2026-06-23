@@ -50,8 +50,7 @@ if TYPE_CHECKING:
 
 
 class GitTree(CompletableGithubObject):
-    """
-    This class represents GitTrees.
+    """This class represents GitTrees.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/git#trees
@@ -63,7 +62,6 @@ class GitTree(CompletableGithubObject):
     - /components/schemas/file-commit/properties/commit/properties/tree
     - /components/schemas/git-commit/properties/tree
     - /components/schemas/git-tree
-
     """
 
     def _initAttributes(self) -> None:
@@ -103,7 +101,9 @@ class GitTree(CompletableGithubObject):
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "tree" in attributes:  # pragma no branch
-            self._tree = self._makeListOfClassesAttribute(github.GitTreeElement.GitTreeElement, attributes["tree"])
+            self._tree = self._makeListOfClassesAttribute(
+                github.GitTreeElement.GitTreeElement, attributes["tree"]
+            )
         if "truncated" in attributes:  # pragma no branch
             self._truncated = self._makeBoolAttribute(attributes["truncated"])
         if "url" in attributes:  # pragma no branch

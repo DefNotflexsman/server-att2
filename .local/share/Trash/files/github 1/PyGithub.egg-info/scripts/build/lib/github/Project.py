@@ -65,8 +65,7 @@ if TYPE_CHECKING:
 
 
 class Project(CompletableGithubObject):
-    """
-    This class represents Projects.
+    """This class represents Projects.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/projects
@@ -74,7 +73,6 @@ class Project(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/project
-
     """
 
     def _initAttributes(self) -> None:
@@ -194,7 +192,9 @@ class Project(CompletableGithubObject):
         assert name is NotSet or isinstance(name, str), name
         assert body is NotSet or isinstance(body, str), body
         assert state is NotSet or isinstance(state, str), state
-        assert organization_permission is NotSet or isinstance(organization_permission, str), organization_permission
+        assert organization_permission is NotSet or isinstance(
+            organization_permission, str
+        ), organization_permission
         assert private is NotSet or isinstance(private, bool), private
         patch_parameters = NotSet.remove_unset_items(
             {
@@ -270,7 +270,9 @@ class Project(CompletableGithubObject):
         if "number" in attributes:  # pragma no branch
             self._number = self._makeIntAttribute(attributes["number"])
         if "organization_permission" in attributes:  # pragma no branch
-            self._organization_permission = self._makeStringAttribute(attributes["organization_permission"])
+            self._organization_permission = self._makeStringAttribute(
+                attributes["organization_permission"]
+            )
         if "owner_url" in attributes:  # pragma no branch
             self._owner_url = self._makeStringAttribute(attributes["owner_url"])
         if "private" in attributes:  # pragma no branch

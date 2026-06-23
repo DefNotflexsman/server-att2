@@ -119,7 +119,9 @@ class DiscussionCommentBase(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author" in attributes:  # pragma no branch
-            self._author = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["author"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -129,7 +131,9 @@ class DiscussionCommentBase(CompletableGithubObject):
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "last_edited_at" in attributes:  # pragma no branch
-            self._last_edited_at = self._makeDatetimeAttribute(attributes["last_edited_at"])
+            self._last_edited_at = self._makeDatetimeAttribute(
+                attributes["last_edited_at"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "updated_at" in attributes:  # pragma no branch

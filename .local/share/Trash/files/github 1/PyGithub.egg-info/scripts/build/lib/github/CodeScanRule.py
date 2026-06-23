@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CodeScanRule(NonCompletableGithubObject):
-    """
-    This class represents Alerts from code scanning.
+    """This class represents Alerts from code scanning.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/code-scanning.
@@ -58,7 +57,6 @@ class CodeScanRule(NonCompletableGithubObject):
 
     - /components/schemas/code-scanning-alert-rule
     - /components/schemas/code-scanning-alert-rule-summary
-
     """
 
     def _initAttributes(self) -> None:
@@ -115,7 +113,9 @@ class CodeScanRule(NonCompletableGithubObject):
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "full_description" in attributes:  # pragma no branch
-            self._full_description = self._makeStringAttribute(attributes["full_description"])
+            self._full_description = self._makeStringAttribute(
+                attributes["full_description"]
+            )
         if "help" in attributes:  # pragma no branch
             self._help = self._makeStringAttribute(attributes["help"])
         if "help_uri" in attributes:  # pragma no branch
@@ -125,7 +125,9 @@ class CodeScanRule(NonCompletableGithubObject):
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "security_severity_level" in attributes:  # pragma no branch
-            self._security_severity_level = self._makeStringAttribute(attributes["security_severity_level"])
+            self._security_severity_level = self._makeStringAttribute(
+                attributes["security_severity_level"]
+            )
         if "severity" in attributes:  # pragma no branch
             self._severity = self._makeStringAttribute(attributes["severity"])
         if "tags" in attributes:  # pragma no branch

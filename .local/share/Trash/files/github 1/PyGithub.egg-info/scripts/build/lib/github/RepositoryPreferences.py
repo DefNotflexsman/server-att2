@@ -50,8 +50,7 @@ if TYPE_CHECKING:
 
 
 class RepositoryPreferences(NonCompletableGithubObject):
-    """
-    This class represents repository preferences.
+    """This class represents repository preferences.
 
     The reference can be found here
     https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#update-repository-preferences-for-check-suites
@@ -59,7 +58,6 @@ class RepositoryPreferences(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/check-suite-preference
-
     """
 
     def _initAttributes(self) -> None:
@@ -78,4 +76,6 @@ class RepositoryPreferences(NonCompletableGithubObject):
         if "preferences" in attributes:  # pragma no branch
             self._preferences = self._makeDictAttribute(attributes["preferences"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )

@@ -66,8 +66,7 @@ if TYPE_CHECKING:
 
 
 class IssueEvent(CompletableGithubObject):
-    """
-    This class represents IssueEvents.
+    """This class represents IssueEvents.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#events
@@ -76,7 +75,6 @@ class IssueEvent(CompletableGithubObject):
 
     - /components/schemas/issue-event
     - /components/schemas/issue-event-for-issue
-
     """
 
     def _initAttributes(self) -> None:
@@ -242,7 +240,9 @@ class IssueEvent(CompletableGithubObject):
                 (github.Organization.Organization, "Organization"),
             )
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeDictAttribute(attributes["author_association"])
+            self._author_association = self._makeDictAttribute(
+                attributes["author_association"]
+            )
         if "commit_id" in attributes:  # pragma no branch
             self._commit_id = self._makeStringAttribute(attributes["commit_id"])
         if "commit_url" in attributes:  # pragma no branch
@@ -250,19 +250,27 @@ class IssueEvent(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "dismissed_review" in attributes:  # pragma no branch
-            self._dismissed_review = self._makeDictAttribute(attributes["dismissed_review"])
+            self._dismissed_review = self._makeDictAttribute(
+                attributes["dismissed_review"]
+            )
         if "event" in attributes:  # pragma no branch
             self._event = self._makeStringAttribute(attributes["event"])
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "issue" in attributes:  # pragma no branch
-            self._issue = self._makeClassAttribute(github.Issue.Issue, attributes["issue"])
+            self._issue = self._makeClassAttribute(
+                github.Issue.Issue, attributes["issue"]
+            )
         if "label" in attributes:  # pragma no branch
-            self._label = self._makeClassAttribute(github.Label.Label, attributes["label"])
+            self._label = self._makeClassAttribute(
+                github.Label.Label, attributes["label"]
+            )
         if "lock_reason" in attributes:  # pragma no branch
             self._lock_reason = self._makeStringAttribute(attributes["lock_reason"])
         if "milestone" in attributes:  # pragma no branch
-            self._milestone = self._makeClassAttribute(github.Milestone.Milestone, attributes["milestone"])
+            self._milestone = self._makeClassAttribute(
+                github.Milestone.Milestone, attributes["milestone"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "performed_via_github_app" in attributes:  # pragma no branch
@@ -282,7 +290,9 @@ class IssueEvent(CompletableGithubObject):
                 (github.Organization.Organization, "Organization"),
             )
         if "requested_team" in attributes:  # pragma no branch
-            self._requested_team = self._makeClassAttribute(github.Team.Team, attributes["requested_team"])
+            self._requested_team = self._makeClassAttribute(
+                github.Team.Team, attributes["requested_team"]
+            )
         if "review_requester" in attributes:  # pragma no branch
             self._review_requester = self._makeUnionClassAttributeFromTypeKey(
                 "type",

@@ -46,8 +46,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class StatsParticipation(NonCompletableGithubObject):
-    """
-    This class represents StatsParticipations.
+    """This class represents StatsParticipations.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-the-weekly-commit-count
@@ -55,7 +54,6 @@ class StatsParticipation(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/participation-stats
-
     """
 
     def _initAttributes(self) -> None:

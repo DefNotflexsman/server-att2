@@ -38,8 +38,7 @@ if TYPE_CHECKING:
 
 
 class CodeScanAlertInstance(NonCompletableGithubObject):
-    """
-    This class represents code scanning alert instances.
+    """This class represents code scanning alert instances.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/code-scanning.
@@ -47,7 +46,6 @@ class CodeScanAlertInstance(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-scanning-alert-instance
-
     """
 
     def _initAttributes(self) -> None:
@@ -111,7 +109,9 @@ class CodeScanAlertInstance(NonCompletableGithubObject):
         if "category" in attributes:  # pragma no branch
             self._category = self._makeStringAttribute(attributes["category"])
         if "classifications" in attributes:  # pragma no branch
-            self._classifications = self._makeListOfStringsAttribute(attributes["classifications"])
+            self._classifications = self._makeListOfStringsAttribute(
+                attributes["classifications"]
+            )
         if "commit_sha" in attributes:  # pragma no branch
             self._commit_sha = self._makeStringAttribute(attributes["commit_sha"])
         if "environment" in attributes:  # pragma no branch

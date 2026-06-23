@@ -58,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class TimelineEvent(NonCompletableGithubObject):
-    """
-    This class represents IssueTimelineEvents.
+    """This class represents IssueTimelineEvents.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#timeline
@@ -67,7 +66,6 @@ class TimelineEvent(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/timeline-issue-events
-
     """
 
     def _initAttributes(self) -> None:
@@ -137,9 +135,13 @@ class TimelineEvent(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "actor" in attributes:  # pragma no branch
-            self._actor = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["actor"])
+            self._actor = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["actor"]
+            )
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "commit_id" in attributes:  # pragma no branch

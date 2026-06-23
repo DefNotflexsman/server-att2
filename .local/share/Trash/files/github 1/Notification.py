@@ -62,8 +62,7 @@ if TYPE_CHECKING:
 
 
 class Notification(CompletableGithubObject):
-    """
-    This class represents Notifications.
+    """This class represents Notifications.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/activity#notifications
@@ -71,7 +70,6 @@ class Notification(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/thread
-
     """
 
     def _initAttributes(self) -> None:
@@ -165,13 +163,17 @@ class Notification(CompletableGithubObject):
         if "reason" in attributes:  # pragma no branch
             self._reason = self._makeStringAttribute(attributes["reason"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "subject" in attributes:  # pragma no branch
             self._subject = self._makeClassAttribute(
                 github.NotificationSubject.NotificationSubject, attributes["subject"]
             )
         if "subscription_url" in attributes:  # pragma no branch
-            self._subscription_url = self._makeStringAttribute(attributes["subscription_url"])
+            self._subscription_url = self._makeStringAttribute(
+                attributes["subscription_url"]
+            )
         if "unread" in attributes:  # pragma no branch
             self._unread = self._makeBoolAttribute(attributes["unread"])
         if "updated_at" in attributes:  # pragma no branch

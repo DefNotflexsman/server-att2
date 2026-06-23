@@ -39,14 +39,19 @@ class SingleLineStatementTransformer(cst.CSTTransformer):
         if node.name.value == self.function:
             self.in_function = True
 
-    def leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef):
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ):
         self.in_function = False
         return updated_node
 
-    def leave_Call(self, original_node: cst.Call, updated_node: cst.Call) -> cst.BaseExpression:
+    def leave_Call(
+        self, original_node: cst.Call, updated_node: cst.Call
+    ) -> cst.BaseExpression:
         if self.in_function:
             return updated_node.with_changes(
-                whitespace_after_func=SimpleWhitespace(""), whitespace_before_args=SimpleWhitespace("")
+                whitespace_after_func=SimpleWhitespace(""),
+                whitespace_before_args=SimpleWhitespace(""),
             )
         return updated_node
 
@@ -55,16 +60,21 @@ class SingleLineStatementTransformer(cst.CSTTransformer):
     ) -> Union[cst.Arg, cst.FlattenSentinel[cst.Arg], cst.RemovalSentinel]:
         if self.in_function:
             return updated_node.with_changes(
-                whitespace_after_star=SimpleWhitespace(""), whitespace_after_arg=SimpleWhitespace("")
+                whitespace_after_star=SimpleWhitespace(""),
+                whitespace_after_arg=SimpleWhitespace(""),
             )
         return updated_node
 
-    def leave_LeftParen(self, original_node: cst.LeftParen, updated_node: cst.LeftParen) -> cst.LeftParen:
+    def leave_LeftParen(
+        self, original_node: cst.LeftParen, updated_node: cst.LeftParen
+    ) -> cst.LeftParen:
         if self.in_function:
             return updated_node.with_changes(whitespace_after=SimpleWhitespace(""))
         return updated_node
 
-    def leave_RightParen(self, original_node: cst.RightParen, updated_node: cst.RightParen) -> cst.RightParen:
+    def leave_RightParen(
+        self, original_node: cst.RightParen, updated_node: cst.RightParen
+    ) -> cst.RightParen:
         if self.in_function:
             return updated_node.with_changes(whitespace_before=SimpleWhitespace(""))
         return updated_node
@@ -91,16 +101,21 @@ class SingleLineStatementTransformer(cst.CSTTransformer):
         return updated_node
 
     def leave_RightSquareBracket(
-        self, original_node: cst.RightSquareBracket, updated_node: cst.RightSquareBracket
+        self,
+        original_node: cst.RightSquareBracket,
+        updated_node: cst.RightSquareBracket,
     ) -> cst.RightSquareBracket:
         if self.in_function:
             return updated_node.with_changes(whitespace_before=SimpleWhitespace(""))
         return updated_node
 
-    def leave_Comma(self, original_node: cst.Comma, updated_node: cst.Comma) -> Union[cst.Comma, cst.MaybeSentinel]:
+    def leave_Comma(
+        self, original_node: cst.Comma, updated_node: cst.Comma
+    ) -> Union[cst.Comma, cst.MaybeSentinel]:
         if self.in_function:
             return updated_node.with_changes(
-                whitespace_before=SimpleWhitespace(""), whitespace_after=SimpleWhitespace(" ")
+                whitespace_before=SimpleWhitespace(""),
+                whitespace_after=SimpleWhitespace(" "),
             )
         return updated_node
 
@@ -114,7 +129,9 @@ def main(filename: str, function: str, dry_run: bool) -> bool:
     tree_updated = tree.visit(transformer)
 
     if dry_run:
-        diff = "".join(difflib.unified_diff(code.splitlines(1), tree_updated.code.splitlines(1)))
+        diff = "".join(
+            difflib.unified_diff(code.splitlines(1), tree_updated.code.splitlines(1))
+        )
         if diff:
             print(f"Diff of {filename}:")
             print(diff)
@@ -136,10 +153,16 @@ def parse_args():
     args_parser.add_argument("filename", help="Path of test file")
     args_parser.add_argument("function", help="Name of the test function")
     args_parser.add_argument(
-        "--dry-run", default=False, action="store_true", help="Show prospect changes and do not modify the file"
+        "--dry-run",
+        default=False,
+        action="store_true",
+        help="Show prospect changes and do not modify the file",
     )
     args_parser.add_argument(
-        "--exit-code", default=False, action="store_true", help="Indicate changes via non-zero exit code"
+        "--exit-code",
+        default=False,
+        action="store_true",
+        help="Indicate changes via non-zero exit code",
     )
 
     if len(sys.argv) == 1:

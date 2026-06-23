@@ -58,8 +58,7 @@ if TYPE_CHECKING:
 
 
 class Reaction(NonCompletableGithubObject):
-    """
-    This class represents Reactions.
+    """This class represents Reactions.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/reactions
@@ -67,7 +66,6 @@ class Reaction(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/reaction
-
     """
 
     def _initAttributes(self) -> None:
@@ -124,4 +122,6 @@ class Reaction(NonCompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

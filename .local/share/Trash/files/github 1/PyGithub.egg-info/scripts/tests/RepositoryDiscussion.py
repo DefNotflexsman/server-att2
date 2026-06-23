@@ -111,7 +111,9 @@ class RepositoryDiscussion(Framework.TestCase):
 
     def setUp(self):
         super().setUp()
-        self.discussion = self.g.get_repository_discussion("D_kwDOADYVqs4AaHoG", self.discussion_schema)
+        self.discussion = self.g.get_repository_discussion(
+            "D_kwDOADYVqs4AaHoG", self.discussion_schema
+        )
 
     def testAttributes(self):
         self.assertEqual(self.discussion.answer.author.login, "dawngerpony")
@@ -127,13 +129,21 @@ class RepositoryDiscussion(Framework.TestCase):
             self.discussion.answer.body_text,
             "This comment contains the answer to your question:\nmy_repo.raw_data[\"custom_properties\"]\n#2968 appears to add proper support for custom properties, but doesn't look like it's made it into a release yet.",
         )
-        self.assertEqual(self.discussion.answer.created_at, datetime(2024, 8, 23, 6, 36, 50, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.discussion.answer.created_at,
+            datetime(2024, 8, 23, 6, 36, 50, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.discussion.answer.database_id, 10426644)
-        self.assertEqual(self.discussion.answer.discussion.node_id, "D_kwDOADYVqs4AaHoG")
+        self.assertEqual(
+            self.discussion.answer.discussion.node_id, "D_kwDOADYVqs4AaHoG"
+        )
         self.assertIsNone(self.discussion.answer.editor)
         self.assertEqual(self.discussion.answer.node_id, "DC_kwDOADYVqs4AnxkU")
         self.assertIsNone(self.discussion.answer.last_edited_at)
-        self.assertEqual(self.discussion.answer.updated_at, datetime(2024, 8, 23, 6, 36, 51, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.discussion.answer.updated_at,
+            datetime(2024, 8, 23, 6, 36, 51, tzinfo=timezone.utc),
+        )
         self.assertEqual(
             self.discussion.answer.html_url,
             "https://github.com/PyGithub/PyGithub/discussions/2993#discussioncomment-10426644",
@@ -151,18 +161,31 @@ class RepositoryDiscussion(Framework.TestCase):
             self.discussion.body_text,
             """What is the equivalent of https://api.github.com/repos/OWNER/REPO/properties/values? I'm interested in getting/setting custom properties for my repos. I can do that with curl, but couldn't find a way to do it via this project.\nDocs here: Get all custom property values for a repository.""",
         )
-        self.assertEqual(self.discussion.category.created_at, datetime(2020, 12, 8, 23, 29, 13, tzinfo=timezone.utc))
-        self.assertEqual(self.discussion.category.description, "Ask the community for help")
+        self.assertEqual(
+            self.discussion.category.created_at,
+            datetime(2020, 12, 8, 23, 29, 13, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.discussion.category.description, "Ask the community for help"
+        )
         self.assertEqual(self.discussion.category.emoji, ":pray:")
         self.assertEqual(self.discussion.category.emoji_html, "<div>🙏</div>")
-        self.assertEqual(self.discussion.category.id, "MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyMDI5MDYx")
+        self.assertEqual(
+            self.discussion.category.id, "MDE4OkRpc2N1c3Npb25DYXRlZ29yeTMyMDI5MDYx"
+        )
         self.assertEqual(self.discussion.category.is_answerable, True)
         self.assertEqual(self.discussion.category.name, "Q&A")
         self.assertEqual(self.discussion.category.repository.owner.login, "PyGithub")
         self.assertEqual(self.discussion.category.repository.name, "PyGithub")
         self.assertEqual(self.discussion.category.slug, "q-a")
-        self.assertEqual(self.discussion.category.updated_at, datetime(2020, 12, 8, 23, 29, 13, tzinfo=timezone.utc))
-        self.assertEqual(self.discussion.created_at, datetime(2024, 6, 21, 13, 11, 38, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.discussion.category.updated_at,
+            datetime(2020, 12, 8, 23, 29, 13, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.discussion.created_at,
+            datetime(2024, 6, 21, 13, 11, 38, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.discussion.database_id, 6846982)
         self.assertIsNone(self.discussion.editor)
         self.assertEqual(self.discussion.node_id, "D_kwDOADYVqs4AaHoG")
@@ -170,11 +193,17 @@ class RepositoryDiscussion(Framework.TestCase):
         self.assertEqual(self.discussion.number, 2993)
         self.assertEqual(self.discussion.repository.owner.login, "PyGithub")
         self.assertEqual(self.discussion.repository.name, "PyGithub")
-        self.assertEqual(self.discussion.title, "How to get a list of custom repository properties?")
-        self.assertEqual(self.discussion.updated_at, datetime(2024, 8, 29, 16, 1, 0, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.discussion.title, "How to get a list of custom repository properties?"
+        )
+        self.assertEqual(
+            self.discussion.updated_at,
+            datetime(2024, 8, 29, 16, 1, 0, tzinfo=timezone.utc),
+        )
 
         self.assertListEqual(
-            [c.node_id for c in self.discussion.get_comments("id")], ["DC_kwDOADYVqs4AnxkU", "DC_kwDOADYVqs4AoA2V"]
+            [c.node_id for c in self.discussion.get_comments("id")],
+            ["DC_kwDOADYVqs4AnxkU", "DC_kwDOADYVqs4AoA2V"],
         )
         self.assertEqual(self.discussion.get_labels().totalCount, 0)
         self.assertEqual(self.discussion.get_reactions().totalCount, 0)
@@ -185,13 +214,18 @@ class RepositoryDiscussion(Framework.TestCase):
         comments = list(comments_pages)
         self.assertEqual(comments_pages.totalCount, 2)
         self.assertEqual(len(comments), 2)
-        self.assertListEqual([c.id for c in comments], ["DC_kwDOADYVqs4AnxkU", "DC_kwDOADYVqs4AoA2V"])
+        self.assertListEqual(
+            [c.id for c in comments], ["DC_kwDOADYVqs4AnxkU", "DC_kwDOADYVqs4AoA2V"]
+        )
 
     def testGetCommentsWithoutNodeId(self):
         discussion = self.g.get_repository_discussion("D_kwDOADYVqs4AaHoG", "title")
         with self.assertRaises(RuntimeError) as e:
             discussion.get_comments("id")
-        self.assertEqual(e.exception.args, ("Retrieving discussion comments requires the discussion field 'id'",))
+        self.assertEqual(
+            e.exception.args,
+            ("Retrieving discussion comments requires the discussion field 'id'",),
+        )
 
     def testAddAndDeleteComment(self):
         discussion = self.g.get_repository_discussion("D_kwDOADYVqs4AaHoG", "id")
@@ -199,7 +233,9 @@ class RepositoryDiscussion(Framework.TestCase):
         self.assertEqual(comment.id, "DC_kwDOADYVqs4AovYk")
         self.assertEqual(comment.body, "test comment")
 
-        reply = discussion.add_comment("test reply", reply_to=comment, output_schema="id body")
+        reply = discussion.add_comment(
+            "test reply", reply_to=comment, output_schema="id body"
+        )
         self.assertEqual(reply.id, "DC_kwDOADYVqs4AovYl")
         self.assertEqual(reply.body, "test reply")
 

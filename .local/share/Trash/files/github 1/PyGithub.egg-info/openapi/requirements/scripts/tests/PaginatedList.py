@@ -224,8 +224,12 @@ class PaginatedList(Framework.TestCase):
                 lambda i: i.id,
                 [4772349, 4700182, 4604661, 4554058, 4507492],
             )
-            self.assertListKeyEqual(self.list[10:13], lambda i: i.id, [4539985, 4507572, 4507492])
-            self.assertListKeyEqual(self.list[5:13:3], lambda i: i.id, [4608132, 4557803, 4507572])
+            self.assertListKeyEqual(
+                self.list[10:13], lambda i: i.id, [4539985, 4507572, 4507492]
+            )
+            self.assertListKeyEqual(
+                self.list[5:13:3], lambda i: i.id, [4608132, 4557803, 4507572]
+            )
 
     def testSliceIndexingUntilFourthPage(self):
         self.assertListKeyEqual(
@@ -499,14 +503,18 @@ class PaginatedList(Framework.TestCase):
         # fetching the commit also fetches the fist page of files
         with self.captureRequests() as requests:
             repo = self.g.get_repo("PyGithub/PyGithub", lazy=True)
-            commit = repo.get_commit("e359b83a04e8f34bedab0f2180169012d238a135", commit_files_per_page=3)
+            commit = repo.get_commit(
+                "e359b83a04e8f34bedab0f2180169012d238a135", commit_files_per_page=3
+            )
             # repo is lazy, so this commit is also lazy, here we test with an eager (fetched) commit
             commit.complete()
             files = commit.files
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repos/PyGithub/PyGithub/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"],
+            [
+                "/repos/PyGithub/PyGithub/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"
+            ],
         )
 
         # consuming the first page of files should not fire a request
@@ -518,17 +526,23 @@ class PaginatedList(Framework.TestCase):
 
         # consuming items of the second page fetches the second page
         with self.captureRequests() as requests:
-            self.assertEqual(files[3].filename, "tests/ReplayData/Repository.testGenerateReleaseNotes.txt")
+            self.assertEqual(
+                files[3].filename,
+                "tests/ReplayData/Repository.testGenerateReleaseNotes.txt",
+            )
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=2&per_page=3"],
+            [
+                "/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=2&per_page=3"
+            ],
         )
 
         # consuming further items of the second page does not fire a request
         with self.captureRequests() as requests:
             self.assertEqual(
-                files[4].filename, "tests/ReplayData/Repository.testGenerateReleaseNotesWithAllArguments.txt"
+                files[4].filename,
+                "tests/ReplayData/Repository.testGenerateReleaseNotesWithAllArguments.txt",
             )
             self.assertEqual(files[5].filename, "tests/Repository.py")
         self.assertEqual(len(requests), 0)
@@ -539,14 +553,18 @@ class PaginatedList(Framework.TestCase):
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=3&per_page=3"],
+            [
+                "/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=3&per_page=3"
+            ],
         )
 
     def testWithFirstSinglePage(self):
         # fetching the commit also fetches the fist page of files
         with self.captureRequests() as requests:
             repo = self.g.get_repo("PyGithub/PyGithub", lazy=True)
-            commit = repo.get_commit("f5f9756a1dd52a53820cc54927abb34725377987", commit_files_per_page=3)
+            commit = repo.get_commit(
+                "f5f9756a1dd52a53820cc54927abb34725377987", commit_files_per_page=3
+            )
             # repo is lazy, so this commit is also lazy, here we test with an eager (fetched) commit
             commit.complete()
             files = commit.files
@@ -555,7 +573,9 @@ class PaginatedList(Framework.TestCase):
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repos/PyGithub/PyGithub/commits/f5f9756a1dd52a53820cc54927abb34725377987?page=1&per_page=3"],
+            [
+                "/repos/PyGithub/PyGithub/commits/f5f9756a1dd52a53820cc54927abb34725377987?page=1&per_page=3"
+            ],
         )
 
         # consuming the first page of files should not fire a request
@@ -569,14 +589,18 @@ class PaginatedList(Framework.TestCase):
         # this is all lazy, no requests fired
         with self.captureRequests() as requests:
             repo = self.g.get_repo("PyGithub/PyGithub", lazy=True)
-            commit = repo.get_commit("e359b83a04e8f34bedab0f2180169012d238a135", commit_files_per_page=3)
+            commit = repo.get_commit(
+                "e359b83a04e8f34bedab0f2180169012d238a135", commit_files_per_page=3
+            )
             # repo is lazy, so this commit is also lazy, here we test with an eager (fetched) commit
             commit.complete()
             files = commit.files
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repos/PyGithub/PyGithub/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"],
+            [
+                "/repos/PyGithub/PyGithub/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"
+            ],
         )
 
         # reversing files does not fire a request because there is a last Link header in the first response
@@ -590,7 +614,9 @@ class PaginatedList(Framework.TestCase):
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=3&per_page=3"],
+            [
+                "/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=3&per_page=3"
+            ],
         )
 
         # consuming items of the second page fetches the second page
@@ -599,14 +625,20 @@ class PaginatedList(Framework.TestCase):
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=2&per_page=3"],
+            [
+                "/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=2&per_page=3"
+            ],
         )
         # consuming further items of the second page does not fire a request
         with self.captureRequests() as requests:
             self.assertEqual(
-                files[2].filename, "tests/ReplayData/Repository.testGenerateReleaseNotesWithAllArguments.txt"
+                files[2].filename,
+                "tests/ReplayData/Repository.testGenerateReleaseNotesWithAllArguments.txt",
             )
-            self.assertEqual(files[3].filename, "tests/ReplayData/Repository.testGenerateReleaseNotes.txt")
+            self.assertEqual(
+                files[3].filename,
+                "tests/ReplayData/Repository.testGenerateReleaseNotes.txt",
+            )
         self.assertEqual(len(requests), 0)
 
         # consuming items of the last page fetches the that page
@@ -617,14 +649,18 @@ class PaginatedList(Framework.TestCase):
         self.assertListKeyEqual(
             requests,
             lambda r: r.url,
-            ["/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"],
+            [
+                "/repositories/3544490/commits/e359b83a04e8f34bedab0f2180169012d238a135?page=1&per_page=3"
+            ],
         )
 
     def testReversedWithFirstSinglePage(self):
         # fetching the commit also fetches the fist page of files
         with self.captureRequests() as requests:
             repo = self.g.get_repo("PyGithub/PyGithub", lazy=True)
-            commit = repo.get_commit("f5f9756a1dd52a53820cc54927abb34725377987", commit_files_per_page=3)
+            commit = repo.get_commit(
+                "f5f9756a1dd52a53820cc54927abb34725377987", commit_files_per_page=3
+            )
             # repo is lazy, so this commit is also lazy, here we test with an eager (fetched) commit
             commit.complete()
             files = commit.files
@@ -642,7 +678,11 @@ class PaginatedList(Framework.TestCase):
         with self.captureRequests() as requests:
             files = files.reversed
         self.assertListKeyEqual(
-            requests, lambda r: r.url, ["/repos/PyGithub/PyGithub/commits/f5f9756a1dd52a53820cc54927abb34725377987"]
+            requests,
+            lambda r: r.url,
+            [
+                "/repos/PyGithub/PyGithub/commits/f5f9756a1dd52a53820cc54927abb34725377987"
+            ],
         )
 
         # consuming the first page of files should not fire a request
@@ -668,7 +708,9 @@ class PaginatedList(Framework.TestCase):
         input_dict = {"a": 1, "b": 2, "c": 3}
         overrides_dict = {"c": 4, "d": 5, "e": 6}
         transformer = PaginatedListImpl.override_attributes(overrides_dict)
-        self.assertDictEqual(transformer(input_dict), {"a": 1, "b": 2, "c": 4, "d": 5, "e": 6})
+        self.assertDictEqual(
+            transformer(input_dict), {"a": 1, "b": 2, "c": 4, "d": 5, "e": 6}
+        )
 
     def testGraphQlPagination(self):
         repo = self.g.get_repo("PyGithub/PyGithub")
@@ -686,7 +728,10 @@ class PaginatedList(Framework.TestCase):
         reversed_list = list(rev)
         self.assertEqual(rev.totalCount, 65)
         self.assertEqual(len(reversed_list), 65)
-        self.assertListEqual([d.number for d in reversed_list], [d.number for d in reversed(discussions_list)])
+        self.assertListEqual(
+            [d.number for d in reversed_list],
+            [d.number for d in reversed(discussions_list)],
+        )
 
         # accessing totalCount before iterating the PaginatedList triggers another request
         self.assertEqual(repo.get_discussions("id number").totalCount, 65)

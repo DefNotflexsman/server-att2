@@ -54,8 +54,7 @@ if TYPE_CHECKING:
 
 
 class GistComment(CompletableGithubObject):
-    """
-    This class represents GistComments.
+    """This class represents GistComments.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/gists#comments
@@ -63,7 +62,6 @@ class GistComment(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/gist-comment
-
     """
 
     def _initAttributes(self) -> None:
@@ -133,13 +131,17 @@ class GistComment(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "created_at" in attributes:  # pragma no branch
@@ -157,4 +159,6 @@ class GistComment(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

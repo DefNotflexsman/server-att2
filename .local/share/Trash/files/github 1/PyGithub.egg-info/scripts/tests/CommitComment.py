@@ -50,8 +50,13 @@ class CommitComment(Framework.TestCase):
     def testAttributes(self):
         self.assertEqual(self.comment.author_association, "MEMBER")
         self.assertEqual(self.comment.body, "Comment created by PyGithub\n")
-        self.assertEqual(self.comment.commit_id, "6945921c529be14c3a8f566dd1e483674516d46d")
-        self.assertEqual(self.comment.created_at, datetime(2012, 5, 22, 18, 49, 34, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.comment.commit_id, "6945921c529be14c3a8f566dd1e483674516d46d"
+        )
+        self.assertEqual(
+            self.comment.created_at,
+            datetime(2012, 5, 22, 18, 49, 34, tzinfo=timezone.utc),
+        )
         self.assertEqual(
             self.comment.html_url,
             "https://github.com/PyGithub/PyGithub/commit/6945921c529be14c3a8f566dd1e483674516d46d#commitcomment-1362000",
@@ -59,7 +64,9 @@ class CommitComment(Framework.TestCase):
         self.assertEqual(self.comment.id, 1362000)
         self.assertEqual(self.comment.line, 26)
         self.assertEqual(self.comment.node_id, "MDEzOkNvbW1pdENvbW1lbnQxMzYyMDAw")
-        self.assertEqual(self.comment.path, "codegen/templates/GithubObject.MethodBody.UseResult.py")
+        self.assertEqual(
+            self.comment.path, "codegen/templates/GithubObject.MethodBody.UseResult.py"
+        )
         self.assertEqual(self.comment.position, None)
         self.assertEqual(
             self.comment.reactions,
@@ -76,10 +83,19 @@ class CommitComment(Framework.TestCase):
                 "eyes": 0,
             },
         )
-        self.assertEqual(self.comment.updated_at, datetime(2012, 5, 22, 18, 49, 34, tzinfo=timezone.utc))
-        self.assertEqual(self.comment.url, "https://api.github.com/repos/PyGithub/PyGithub/comments/1362000")
+        self.assertEqual(
+            self.comment.updated_at,
+            datetime(2012, 5, 22, 18, 49, 34, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.comment.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/comments/1362000",
+        )
         self.assertEqual(self.comment.user.login, "jacquev6")
-        self.assertEqual(repr(self.comment), 'CommitComment(user=NamedUser(login="jacquev6"), id=1362000)')
+        self.assertEqual(
+            repr(self.comment),
+            'CommitComment(user=NamedUser(login="jacquev6"), id=1362000)',
+        )
 
     def testLazyAttributes(self):
         comment = self.g.withLazy(True).get_repo("lazy/repo").get_comment(42)

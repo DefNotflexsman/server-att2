@@ -51,8 +51,7 @@ if TYPE_CHECKING:
 
 
 class StatsContributor(NonCompletableGithubObject):
-    """
-    This class represents StatsContributors.
+    """This class represents StatsContributors.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-all-contributor-commit-activity
@@ -60,17 +59,14 @@ class StatsContributor(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/contributor-activity
-
     """
 
     class Week(NonCompletableGithubObject):
-        """
-        This class represents weekly statistics of a contributor.
+        """This class represents weekly statistics of a contributor.
 
         The OpenAPI schema can be found at
 
         - /components/schemas/contributor-activity/properties/weeks/items
-
         """
 
         def _initAttributes(self) -> None:
@@ -134,4 +130,6 @@ class StatsContributor(NonCompletableGithubObject):
         if "total" in attributes:  # pragma no branch
             self._total = self._makeIntAttribute(attributes["total"])
         if "weeks" in attributes:  # pragma no branch
-            self._weeks = self._makeListOfClassesAttribute(self.Week, attributes["weeks"])
+            self._weeks = self._makeListOfClassesAttribute(
+                self.Week, attributes["weeks"]
+            )

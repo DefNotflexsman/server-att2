@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class UserKey(CompletableGithubObject):
-    """
-    This class represents UserKeys.
+    """This class represents UserKeys.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/users#keys
@@ -58,7 +57,6 @@ class UserKey(CompletableGithubObject):
 
     - /components/schemas/key
     - /components/schemas/key-simple
-
     """
 
     def _initAttributes(self) -> None:

@@ -47,7 +47,10 @@ class CommitStatus(Framework.TestCase):
     def setUp(self):
         super().setUp()
         self.statuses = list(
-            self.g.get_user().get_repo("PyGithub").get_commit("1292bf0e22c796e91cc3d6e24b544aece8c21f2a").get_statuses()
+            self.g.get_user()
+            .get_repo("PyGithub")
+            .get_commit("1292bf0e22c796e91cc3d6e24b544aece8c21f2a")
+            .get_statuses()
         )
         self.status = self.statuses[0]
 
@@ -59,18 +62,24 @@ class CommitStatus(Framework.TestCase):
             datetime(2012, 9, 8, 11, 30, 56, tzinfo=timezone.utc),
         )
         self.assertEqual(self.status.creator.login, "jacquev6")
-        self.assertEqual(self.status.description, "Status successfully created by PyGithub")
+        self.assertEqual(
+            self.status.description, "Status successfully created by PyGithub"
+        )
         self.assertEqual(self.status.id, 277040)
         self.assertIsNone(self.status.node_id)
         self.assertIsNone(self.status.required)
         self.assertEqual(self.status.state, "success")
-        self.assertEqual(self.status.target_url, "https://github.com/jacquev6/PyGithub/issues/67")
+        self.assertEqual(
+            self.status.target_url, "https://github.com/jacquev6/PyGithub/issues/67"
+        )
         self.assertEqual(
             self.status.updated_at,
             datetime(2012, 9, 8, 11, 30, 56, tzinfo=timezone.utc),
         )
         self.assertEqual(self.status.creator.login, "jacquev6")
-        self.assertEqual(self.status.description, "Status successfully created by PyGithub")
+        self.assertEqual(
+            self.status.description, "Status successfully created by PyGithub"
+        )
         self.assertEqual(self.statuses[1].description, None)
         self.assertEqual(self.status.id, 277040)
         self.assertEqual(self.status.state, "success")
@@ -85,4 +94,7 @@ class CommitStatus(Framework.TestCase):
             repr(self.status),
             'CommitStatus(state="success", id=277040, context="build")',
         )
-        self.assertEqual(self.status.url, "https://api.github.com/repos/jacquev6/PyGithub/statuses/277040")
+        self.assertEqual(
+            self.status.url,
+            "https://api.github.com/repos/jacquev6/PyGithub/statuses/277040",
+        )

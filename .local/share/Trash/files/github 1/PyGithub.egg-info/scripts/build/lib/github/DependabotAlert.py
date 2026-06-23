@@ -45,8 +45,7 @@ if TYPE_CHECKING:
 
 
 class DependabotAlert(NonCompletableGithubObject):
-    """
-    This class represents a DependabotAlert.
+    """This class represents a DependabotAlert.
 
     The reference can be found here
     https://docs.github.com/en/rest/dependabot/alerts
@@ -54,7 +53,6 @@ class DependabotAlert(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/dependabot-alert
-
     """
 
     def _initAttributes(self) -> None:
@@ -75,7 +73,9 @@ class DependabotAlert(NonCompletableGithubObject):
         self._url: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self.number, "ghsa_id": self.security_advisory.ghsa_id})
+        return self.get__repr__(
+            {"number": self.number, "ghsa_id": self.security_advisory.ghsa_id}
+        )
 
     @property
     def auto_dismissed_at(self) -> datetime:
@@ -139,12 +139,15 @@ class DependabotAlert(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "auto_dismissed_at" in attributes:  # pragma no branch
-            self._auto_dismissed_at = self._makeDatetimeAttribute(attributes["auto_dismissed_at"])
+            self._auto_dismissed_at = self._makeDatetimeAttribute(
+                attributes["auto_dismissed_at"]
+            )
         if "created_at" in attributes:
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "dependency" in attributes:
             self._dependency = self._makeClassAttribute(
-                github.DependabotAlertDependency.DependabotAlertDependency, attributes["dependency"]
+                github.DependabotAlertDependency.DependabotAlertDependency,
+                attributes["dependency"],
             )
         if "dismissed_at" in attributes:
             self._dismissed_at = self._makeDatetimeAttribute(attributes["dismissed_at"])
@@ -157,9 +160,13 @@ class DependabotAlert(NonCompletableGithubObject):
                 (github.Organization.Organization, "Organization"),
             )  # type: ignore
         if "dismissed_comment" in attributes:
-            self._dismissed_comment = self._makeStringAttribute(attributes["dismissed_comment"])
+            self._dismissed_comment = self._makeStringAttribute(
+                attributes["dismissed_comment"]
+            )
         if "dismissed_reason" in attributes:
-            self._dismissed_reason = self._makeStringAttribute(attributes["dismissed_reason"])
+            self._dismissed_reason = self._makeStringAttribute(
+                attributes["dismissed_reason"]
+            )
         if "fixed_at" in attributes:
             self._fixed_at = self._makeStringAttribute(attributes["fixed_at"])
         if "html_url" in attributes:
@@ -168,11 +175,13 @@ class DependabotAlert(NonCompletableGithubObject):
             self._number = self._makeIntAttribute(attributes["number"])
         if "security_advisory" in attributes:
             self._security_advisory = self._makeClassAttribute(
-                github.DependabotAlertAdvisory.DependabotAlertAdvisory, attributes["security_advisory"]
+                github.DependabotAlertAdvisory.DependabotAlertAdvisory,
+                attributes["security_advisory"],
             )
         if "security_vulnerability" in attributes:
             self._security_vulnerability = self._makeClassAttribute(
-                github.DependabotAlertVulnerability.DependabotAlertVulnerability, attributes["security_vulnerability"]
+                github.DependabotAlertVulnerability.DependabotAlertVulnerability,
+                attributes["security_vulnerability"],
             )
         if "state" in attributes:
             self._state = self._makeStringAttribute(attributes["state"])

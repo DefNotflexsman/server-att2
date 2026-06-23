@@ -175,13 +175,18 @@ class Authentication(Framework.BasicTestCase):
             seconds_between_writes=1000,
         )
 
-        self.assert_requester_args(gi.get_github_for_installation(29782936), gi._GithubIntegration__requester)
+        self.assert_requester_args(
+            gi.get_github_for_installation(29782936), gi._GithubIntegration__requester
+        )
 
     def testAppInstallationAuthAuthentication(self):
         # test data copied from testAppAuthentication to test parity
         installation_auth = github.Auth.AppInstallationAuth(self.app_auth, 29782936)
         g = github.Github(
-            auth=installation_auth, lazy=False, seconds_between_requests=None, seconds_between_writes=None
+            auth=installation_auth,
+            lazy=False,
+            seconds_between_requests=None,
+            seconds_between_writes=None,
         )
 
         # token expires 2024-11-25 01:00:02
@@ -195,11 +200,15 @@ class Authentication(Framework.BasicTestCase):
         # control the current time used by _is_expired
         with mock.patch("github.Auth.datetime") as dt:
             # just before expiry
-            dt.now = mock.Mock(return_value=datetime(2024, 11, 25, 0, 59, 3, tzinfo=timezone.utc))
+            dt.now = mock.Mock(
+                return_value=datetime(2024, 11, 25, 0, 59, 3, tzinfo=timezone.utc)
+            )
             self.assertFalse(installation_auth._is_expired)
 
             # just after expiry
-            dt.now = mock.Mock(return_value=datetime(2024, 11, 25, 1, 0, 3, tzinfo=timezone.utc))
+            dt.now = mock.Mock(
+                return_value=datetime(2024, 11, 25, 1, 0, 3, tzinfo=timezone.utc)
+            )
             self.assertTrue(installation_auth._is_expired)
 
             # expect refreshing the token
@@ -213,7 +222,9 @@ class Authentication(Framework.BasicTestCase):
 
             # use the token
             self.assertEqual(g.get_user("ammarmallik").name, "Ammar Akbar")
-            self.assertEqual(g.get_repo("PyGithub/PyGithub").full_name, "PyGithub/PyGithub")
+            self.assertEqual(
+                g.get_repo("PyGithub/PyGithub").full_name, "PyGithub/PyGithub"
+            )
 
     def testAppInstallationAuthAuthenticationRequesterArgs(self):
         installation_auth = github.Auth.AppInstallationAuth(self.app_auth, 29782936)
@@ -229,7 +240,9 @@ class Authentication(Framework.BasicTestCase):
         g = github.Github()
         app = g.get_oauth_application(client_id, client_secret)
         with mock.patch("github.AccessToken.datetime") as dt:
-            dt.now = mock.Mock(return_value=datetime(2023, 6, 7, 12, 0, 0, 123, tzinfo=timezone.utc))
+            dt.now = mock.Mock(
+                return_value=datetime(2023, 6, 7, 12, 0, 0, 123, tzinfo=timezone.utc)
+            )
             token = app.refresh_access_token(refresh_token)
         self.assertEqual(token.token, "fresh access token")
         self.assertEqual(token.type, "bearer")
@@ -248,7 +261,9 @@ class Authentication(Framework.BasicTestCase):
 
         auth = app.get_app_user_auth(token)
         with mock.patch("github.Auth.datetime") as dt:
-            dt.now = mock.Mock(return_value=datetime(2023, 6, 7, 20, 0, 0, 123, tzinfo=timezone.utc))
+            dt.now = mock.Mock(
+                return_value=datetime(2023, 6, 7, 20, 0, 0, 123, tzinfo=timezone.utc)
+            )
             self.assertEqual(auth._is_expired, False)
             self.assertEqual(auth.token, "fresh access token")
         self.assertEqual(auth.token_type, "bearer")
@@ -256,7 +271,9 @@ class Authentication(Framework.BasicTestCase):
 
         # expire auth token
         with mock.patch("github.Auth.datetime") as dt:
-            dt.now = mock.Mock(return_value=datetime(2023, 6, 7, 20, 0, 1, 123, tzinfo=timezone.utc))
+            dt.now = mock.Mock(
+                return_value=datetime(2023, 6, 7, 20, 0, 1, 123, tzinfo=timezone.utc)
+            )
             self.assertEqual(auth._is_expired, True)
             self.assertEqual(auth.token, "another access token")
             self.assertEqual(auth._is_expired, False)
@@ -292,7 +309,10 @@ class Authentication(Framework.BasicTestCase):
             with mock.patch.dict(os.environ, {"NETRC": tmp.name}):
                 with self.assertRaises(RuntimeError) as exc:
                     github.Github(auth=auth)
-                self.assertEqual(exc.exception.args, ("Could not get credentials from netrc for host api.github.com",))
+                self.assertEqual(
+                    exc.exception.args,
+                    ("Could not get credentials from netrc for host api.github.com",),
+                )
 
     def testCreateJWT(self):
         auth = github.Auth.AppAuth(APP_ID, PRIVATE_KEY)
@@ -308,10 +328,14 @@ class Authentication(Framework.BasicTestCase):
             options={"verify_exp": False},
             issuer=str(APP_ID),
         )
-        self.assertDictEqual(payload, {"iat": 1550055271, "exp": 1550055631, "iss": str(APP_ID)})
+        self.assertDictEqual(
+            payload, {"iat": 1550055271, "exp": 1550055631, "iss": str(APP_ID)}
+        )
 
     def testCreateJWTWithExpiration(self):
-        auth = github.Auth.AppAuth(APP_ID, PRIVATE_KEY, jwt_expiry=120, jwt_issued_at=-30)
+        auth = github.Auth.AppAuth(
+            APP_ID, PRIVATE_KEY, jwt_expiry=120, jwt_issued_at=-30
+        )
 
         with mock.patch("github.Auth.time") as t:
             t.time = mock.Mock(return_value=1550055331.7435968)
@@ -324,7 +348,9 @@ class Authentication(Framework.BasicTestCase):
             options={"verify_exp": False},
             issuer=str(APP_ID),
         )
-        self.assertDictEqual(payload, {"iat": 1550055301, "exp": 1550055391, "iss": str(APP_ID)})
+        self.assertDictEqual(
+            payload, {"iat": 1550055301, "exp": 1550055391, "iss": str(APP_ID)}
+        )
 
     def testUserAgent(self):
         g = github.Github(user_agent="PyGithubTester")
@@ -345,13 +371,23 @@ class Authentication(Framework.BasicTestCase):
     def testAddingCustomHeaders(self):
         requester = github.Github(auth=CustomAuth())._Github__requester
 
-        def requestRaw(cnx, verb, url, requestHeaders, encoded_input, stream=False, follow_302_redirect=False):
+        def requestRaw(
+            cnx,
+            verb,
+            url,
+            requestHeaders,
+            encoded_input,
+            stream=False,
+            follow_302_redirect=False,
+        ):
             self.modifiedHeaders = requestHeaders
             return Mock(), {}, Mock()
 
         requester._Requester__requestRaw = requestRaw
         requestHeaders = {"Custom key": "secret"}
-        requester._Requester__requestEncode(None, "GET", "http://github.com", None, requestHeaders, None, Mock())
+        requester._Requester__requestEncode(
+            None, "GET", "http://github.com", None, requestHeaders, None, Mock()
+        )
 
         self.assertEqual("Custom token", self.modifiedHeaders["Custom key"])
 

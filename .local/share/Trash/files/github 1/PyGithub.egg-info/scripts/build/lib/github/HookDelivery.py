@@ -35,13 +35,11 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class HookDeliverySummary(NonCompletableGithubObject):
-    """
-    This class represents a Summary of HookDeliveries.
+    """This class represents a Summary of HookDeliveries.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/hook-delivery-item
-
     """
 
     def _initAttributes(self) -> None:
@@ -128,7 +126,9 @@ class HookDeliverySummary(NonCompletableGithubObject):
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "installation_id" in attributes:  # pragma no branch
-            self._installation_id = self._makeIntAttribute(attributes["installation_id"])
+            self._installation_id = self._makeIntAttribute(
+                attributes["installation_id"]
+            )
         if "redelivery" in attributes:  # pragma no branch
             self._redelivery = self._makeBoolAttribute(attributes["redelivery"])
         if "repository_id" in attributes:  # pragma no branch
@@ -144,13 +144,11 @@ class HookDeliverySummary(NonCompletableGithubObject):
 
 
 class HookDeliveryRequest(NonCompletableGithubObject):
-    """
-    This class represents a HookDeliveryRequest.
+    """This class represents a HookDeliveryRequest.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/hook-delivery/properties/request
-
     """
 
     def _initAttributes(self) -> None:
@@ -176,13 +174,11 @@ class HookDeliveryRequest(NonCompletableGithubObject):
 
 
 class HookDeliveryResponse(NonCompletableGithubObject):
-    """
-    This class represents a HookDeliveryResponse.
+    """This class represents a HookDeliveryResponse.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/hook-delivery/properties/response
-
     """
 
     def _initAttributes(self) -> None:
@@ -208,13 +204,11 @@ class HookDeliveryResponse(NonCompletableGithubObject):
 
 
 class HookDelivery(HookDeliverySummary):
-    """
-    This class represents a HookDelivery.
+    """This class represents a HookDelivery.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/hook-delivery
-
     """
 
     def _initAttributes(self) -> None:
@@ -236,7 +230,11 @@ class HookDelivery(HookDeliverySummary):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         super()._useAttributes(attributes)
         if "request" in attributes:  # pragma no branch
-            self._request = self._makeClassAttribute(HookDeliveryRequest, attributes["request"])
+            self._request = self._makeClassAttribute(
+                HookDeliveryRequest, attributes["request"]
+            )
         if "response" in attributes:  # pragma no branch
-            self._response = self._makeClassAttribute(HookDeliveryResponse, attributes["response"])
+            self._response = self._makeClassAttribute(
+                HookDeliveryResponse, attributes["response"]
+            )
             # self._response = self._makeDictAttribute(attributes["response"])

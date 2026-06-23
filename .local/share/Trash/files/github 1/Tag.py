@@ -52,8 +52,7 @@ if TYPE_CHECKING:
 
 
 class Tag(NonCompletableGithubObject):
-    """
-    This class represents Tags.
+    """This class represents Tags.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#list-repository-tags
@@ -61,7 +60,6 @@ class Tag(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/tag
-
     """
 
     def _initAttributes(self) -> None:
@@ -72,7 +70,9 @@ class Tag(NonCompletableGithubObject):
         self._zipball_url: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"name": self._name.value, "commit": self._commit.value})
+        return self.get__repr__(
+            {"name": self._name.value, "commit": self._commit.value}
+        )
 
     @property
     def commit(self) -> Commit:
@@ -96,7 +96,9 @@ class Tag(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "commit" in attributes:  # pragma no branch
-            self._commit = self._makeClassAttribute(github.Commit.Commit, attributes["commit"])
+            self._commit = self._makeClassAttribute(
+                github.Commit.Commit, attributes["commit"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "node_id" in attributes:  # pragma no branch

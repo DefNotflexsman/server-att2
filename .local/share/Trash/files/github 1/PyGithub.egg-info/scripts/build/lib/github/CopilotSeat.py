@@ -29,7 +29,12 @@ from typing import TYPE_CHECKING, Any
 import github.NamedUser
 import github.Organization
 import github.Team
-from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet, _NotSetType
+from github.GithubObject import (
+    Attribute,
+    NonCompletableGithubObject,
+    NotSet,
+    _NotSetType,
+)
 
 if TYPE_CHECKING:
     from github.NamedUser import NamedUser
@@ -38,8 +43,7 @@ if TYPE_CHECKING:
 
 
 class CopilotSeat(NonCompletableGithubObject):
-    """
-    This class represents CopilotSeat.
+    """This class represents CopilotSeat.
 
     The reference can be found here
     https://docs.github.com/en/rest/copilot/copilot-user-management
@@ -47,7 +51,6 @@ class CopilotSeat(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/copilot-seat-details
-
     """
 
     def _initAttributes(self) -> None:
@@ -107,21 +110,35 @@ class CopilotSeat(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "assignee" in attributes:
-            self._assignee = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["assignee"])
+            self._assignee = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["assignee"]
+            )
         if "assigning_team" in attributes:
-            self._assigning_team = self._makeClassAttribute(github.Team.Team, attributes["assigning_team"])
+            self._assigning_team = self._makeClassAttribute(
+                github.Team.Team, attributes["assigning_team"]
+            )
         if "created_at" in attributes:
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "last_activity_at" in attributes:
-            self._last_activity_at = self._makeDatetimeAttribute(attributes["last_activity_at"])
+            self._last_activity_at = self._makeDatetimeAttribute(
+                attributes["last_activity_at"]
+            )
         if "last_activity_editor" in attributes:
-            self._last_activity_editor = self._makeStringAttribute(attributes["last_activity_editor"])
+            self._last_activity_editor = self._makeStringAttribute(
+                attributes["last_activity_editor"]
+            )
         if "last_authenticated_at" in attributes:  # pragma no branch
-            self._last_authenticated_at = self._makeDatetimeAttribute(attributes["last_authenticated_at"])
+            self._last_authenticated_at = self._makeDatetimeAttribute(
+                attributes["last_authenticated_at"]
+            )
         if "organization" in attributes:  # pragma no branch
-            self._organization = self._makeClassAttribute(github.Organization.Organization, attributes["organization"])
+            self._organization = self._makeClassAttribute(
+                github.Organization.Organization, attributes["organization"]
+            )
         if "pending_cancellation_date" in attributes:
-            self._pending_cancellation_date = self._makeDatetimeAttribute(attributes["pending_cancellation_date"])
+            self._pending_cancellation_date = self._makeDatetimeAttribute(
+                attributes["pending_cancellation_date"]
+            )
         if "plan_type" in attributes:
             self._plan_type = self._makeStringAttribute(attributes["plan_type"])
         if "updated_at" in attributes:

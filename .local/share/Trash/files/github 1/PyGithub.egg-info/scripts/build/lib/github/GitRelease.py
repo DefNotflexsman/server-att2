@@ -68,7 +68,13 @@ from typing_extensions import deprecated
 
 import github.GitReleaseAsset
 import github.NamedUser
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_optional
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_optional,
+)
 from github.PaginatedList import PaginatedList
 
 from . import Consts
@@ -79,8 +85,7 @@ if TYPE_CHECKING:
 
 
 class GitRelease(CompletableGithubObject):
-    """
-    This class represents GitReleases.
+    """This class represents GitReleases.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#releases
@@ -88,7 +93,6 @@ class GitRelease(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/release
-
     """
 
     def _initAttributes(self) -> None:
@@ -296,7 +300,9 @@ class GitRelease(CompletableGithubObject):
         assert isinstance(draft, bool), draft
         assert isinstance(prerelease, bool), prerelease
         assert is_optional(tag_name, str), "tag_name must be a str/unicode object"
-        assert is_optional(target_commitish, str), "target_commitish must be a str/unicode object"
+        assert is_optional(
+            target_commitish, str
+        ), "target_commitish must be a str/unicode object"
         assert make_latest in ["true", "false", "legacy", NotSet], make_latest
         assert is_optional(discussion_category_name, str), discussion_category_name
         # default tag_name with instance attribute if not given to the method
@@ -317,11 +323,19 @@ class GitRelease(CompletableGithubObject):
             post_parameters["make_latest"] = make_latest
         if discussion_category_name is not NotSet:
             post_parameters["discussion_category_name"] = discussion_category_name
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
-        return github.GitRelease.GitRelease(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
+        return github.GitRelease.GitRelease(
+            self._requester, headers, data, completed=True
+        )
 
     def upload_asset(
-        self, path: str, label: str = "", content_type: Opt[str] = NotSet, name: Opt[str] = NotSet
+        self,
+        path: str,
+        label: str = "",
+        content_type: Opt[str] = NotSet,
+        name: Opt[str] = NotSet,
     ) -> GitReleaseAsset:
         """
         :calls: `POST /repos/{owner}/{repo}/releases/{release_id}/assets <https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-assett>`__
@@ -345,7 +359,9 @@ class GitRelease(CompletableGithubObject):
             headers=headers,
             input=path,
         )
-        return github.GitReleaseAsset.GitReleaseAsset(self._requester, resp_headers, data, completed=True)
+        return github.GitReleaseAsset.GitReleaseAsset(
+            self._requester, resp_headers, data, completed=True
+        )
 
     def upload_asset_from_memory(
         self,
@@ -355,22 +371,22 @@ class GitRelease(CompletableGithubObject):
         content_type: Opt[str] = NotSet,
         label: str = "",
     ) -> GitReleaseAsset:
-        """
-        Uploads an asset.
+        """Uploads an asset.
 
         Unlike ``upload_asset()`` this method allows you to pass in a file-like object to upload.
         Note that this method is more strict and requires you to specify the ``name``, since there's no file name to infer these from.
         :calls: `POST /repos/{owner}/{repo}/releases/{release_id}/assets <https://docs.github.com/en/rest/reference/repos#upload-a-release-asset>`__
         :param file_like: binary file-like object, such as those returned by ``open("file_name", "rb")``. At the very minimum, this object must implement ``read()``.
         :param file_size: int, size in bytes of ``file_like``
-
         """
         assert isinstance(name, str), name
         assert isinstance(file_size, int), file_size
         assert isinstance(label, str), label
 
         post_parameters = {"label": label, "name": name}
-        content_type = content_type if content_type is not NotSet else Consts.defaultMediaType
+        content_type = (
+            content_type if content_type is not NotSet else Consts.defaultMediaType
+        )
         headers = {"Content-Type": content_type, "Content-Length": str(file_size)}
 
         resp_headers, data = self._requester.requestMemoryBlobAndCheck(
@@ -380,7 +396,9 @@ class GitRelease(CompletableGithubObject):
             headers=headers,
             file_like=file_like,
         )
-        return github.GitReleaseAsset.GitReleaseAsset(self._requester, resp_headers, data, completed=True)
+        return github.GitReleaseAsset.GitReleaseAsset(
+            self._requester, resp_headers, data, completed=True
+        )
 
     def get_assets(self) -> PaginatedList[GitReleaseAsset]:
         """
@@ -401,7 +419,9 @@ class GitRelease(CompletableGithubObject):
         if "assets_url" in attributes:  # pragma no branch
             self._assets_url = self._makeStringAttribute(attributes["assets_url"])
         if "author" in attributes:
-            self._author = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["author"]
+            )
         if "body" in attributes:
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -411,13 +431,19 @@ class GitRelease(CompletableGithubObject):
         if "created_at" in attributes:
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "discussion_url" in attributes:  # pragma no branch
-            self._discussion_url = self._makeStringAttribute(attributes["discussion_url"])
+            self._discussion_url = self._makeStringAttribute(
+                attributes["discussion_url"]
+            )
         if "documentation_url" in attributes:  # pragma no branch
-            self._documentation_url = self._makeStringAttribute(attributes["documentation_url"])
+            self._documentation_url = self._makeStringAttribute(
+                attributes["documentation_url"]
+            )
         if "draft" in attributes:
             self._draft = self._makeBoolAttribute(attributes["draft"])
         if "generate_release_notes" in attributes:
-            self._generate_release_notes = self._makeBoolAttribute(attributes["generate_release_notes"])
+            self._generate_release_notes = self._makeBoolAttribute(
+                attributes["generate_release_notes"]
+            )
         if "html_url" in attributes:
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:
@@ -446,14 +472,20 @@ class GitRelease(CompletableGithubObject):
             self._status = self._makeStringAttribute(attributes["status"])
         if "tag_name" in attributes:
             self._tag_name = self._makeStringAttribute(attributes["tag_name"])
-        elif "url" in attributes and attributes["url"] and isinstance(attributes["url"], str):
+        elif (
+            "url" in attributes
+            and attributes["url"]
+            and isinstance(attributes["url"], str)
+        ):
             quoted_tag_name = attributes["url"].split("/")[-1]
             tag_name = urllib.parse.unquote(quoted_tag_name)
             self._tag_name = self._makeStringAttribute(tag_name)
         if "tarball_url" in attributes:
             self._tarball_url = self._makeStringAttribute(attributes["tarball_url"])
         if "target_commitish" in attributes:
-            self._target_commitish = self._makeStringAttribute(attributes["target_commitish"])
+            self._target_commitish = self._makeStringAttribute(
+                attributes["target_commitish"]
+            )
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "upload_url" in attributes:

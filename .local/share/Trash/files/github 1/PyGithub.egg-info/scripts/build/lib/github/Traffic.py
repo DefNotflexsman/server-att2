@@ -47,8 +47,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class Traffic(NonCompletableGithubObject):
-    """
-    This class represents traffic information at a specific point in time.
+    """This class represents traffic information at a specific point in time.
 
     The reference can be found here
     https://docs.github.com/en/rest/metrics/traffic
@@ -56,7 +55,6 @@ class Traffic(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/traffic
-
     """
 
     def _initAttributes(self) -> None:

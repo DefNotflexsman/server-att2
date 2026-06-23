@@ -115,8 +115,7 @@ if TYPE_CHECKING:
 
 
 class Issue(CompletableGithubObject):
-    """
-    This class represents Issues.
+    """This class represents Issues.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues
@@ -125,7 +124,6 @@ class Issue(CompletableGithubObject):
 
     - /components/schemas/issue
     - /components/schemas/nullable-issue
-
     """
 
     def _initAttributes(self) -> None:
@@ -170,7 +168,9 @@ class Issue(CompletableGithubObject):
         self._user: Attribute[NamedUser] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value})
+        return self.get__repr__(
+            {"number": self._number.value, "title": self._title.value}
+        )
 
     @property
     def _identity(self) -> int:
@@ -319,7 +319,9 @@ class Issue(CompletableGithubObject):
             # The repository was not set automatically, so it must be looked up by url.
             repo_url = "/".join(self.url.split("/")[:-2])
             self._repository = github.GithubObject._ValuedAttribute(
-                github.Repository.Repository(self._requester, self._headers, {"url": repo_url}, completed=False)
+                github.Repository.Repository(
+                    self._requester, self._headers, {"url": repo_url}, completed=False
+                )
             )
         return self._repository.value
 
@@ -389,14 +391,21 @@ class Issue(CompletableGithubObject):
         """
         :calls: `POST /repos/{owner}/{repo}/issues/{issue_number}/assignees <https://docs.github.com/en/rest/reference/issues#assignees>`_
         """
-        assert all(isinstance(element, (github.NamedUser.NamedUser, str)) for element in assignees), assignees
+        assert all(
+            isinstance(element, (github.NamedUser.NamedUser, str))
+            for element in assignees
+        ), assignees
         post_parameters = {
             "assignees": [
-                assignee.login if isinstance(assignee, github.NamedUser.NamedUser) else assignee
+                assignee.login
+                if isinstance(assignee, github.NamedUser.NamedUser)
+                else assignee
                 for assignee in assignees
             ]
         }
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/assignees", input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/assignees", input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -404,9 +413,16 @@ class Issue(CompletableGithubObject):
         """
         :calls: `POST /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        assert all(isinstance(element, (github.Label.Label, str)) for element in labels), labels
-        post_parameters = [label.name if isinstance(label, github.Label.Label) else label for label in labels]
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/labels", input=post_parameters)
+        assert all(
+            isinstance(element, (github.Label.Label, str)) for element in labels
+        ), labels
+        post_parameters = [
+            label.name if isinstance(label, github.Label.Label) else label
+            for label in labels
+        ]
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/labels", input=post_parameters
+        )
 
     def create_comment(self, body: str) -> IssueComment:
         """
@@ -416,14 +432,20 @@ class Issue(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/comments", input=post_parameters)
-        return github.IssueComment.IssueComment(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/comments", input=post_parameters
+        )
+        return github.IssueComment.IssueComment(
+            self._requester, headers, data, completed=True
+        )
 
     def delete_labels(self) -> None:
         """
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/labels")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/labels"
+        )
 
     # breaking change: remove deprecated assignee
     def edit(
@@ -444,10 +466,14 @@ class Issue(CompletableGithubObject):
         """
         assert is_optional(title, str), title
         assert is_optional(body, str), body
-        assert assignee is None or is_optional(assignee, (github.NamedUser.NamedUser, str)), assignee
+        assert assignee is None or is_optional(
+            assignee, (github.NamedUser.NamedUser, str)
+        ), assignee
         assert is_optional_list(assignees, (github.NamedUser.NamedUser, str)), assignees
         assert is_optional(state, str), state
-        assert milestone is None or is_optional(milestone, github.Milestone.Milestone), milestone
+        assert milestone is None or is_optional(
+            milestone, github.Milestone.Milestone
+        ), milestone
         assert is_optional_list(labels, str), labels
 
         if assignee is None or is_defined(assignee):
@@ -459,7 +485,9 @@ class Issue(CompletableGithubObject):
                 assignees = [assignee] if assignee is not None else []  # type: ignore
         if is_defined(assignees):
             assignees = [
-                element._identity if isinstance(element, github.NamedUser.NamedUser) else element
+                element._identity
+                if isinstance(element, github.NamedUser.NamedUser)
+                else element
                 for element in assignees
             ]
 
@@ -477,7 +505,9 @@ class Issue(CompletableGithubObject):
             }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -498,7 +528,9 @@ class Issue(CompletableGithubObject):
         """
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock <https://docs.github.com/en/rest/reference/issues>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/lock")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/lock"
+        )
 
     def get_comment(self, id: int) -> IssueComment:
         """
@@ -508,7 +540,9 @@ class Issue(CompletableGithubObject):
         url = f"{self._parentUrl(self.url)}/comments/{id}"
         return github.IssueComment.IssueComment(self._requester, url=url)
 
-    def get_comments(self, since: Opt[datetime] = NotSet) -> PaginatedList[IssueComment]:
+    def get_comments(
+        self, since: Opt[datetime] = NotSet
+    ) -> PaginatedList[IssueComment]:
         """
         :calls: `GET /repos/{owner}/{repo}/issues/{issue_number}/comments <https://docs.github.com/en/rest/reference/issues#comments>`_
         """
@@ -540,20 +574,29 @@ class Issue(CompletableGithubObject):
         """
         :calls: `GET /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        return PaginatedList(github.Label.Label, self._requester, f"{self.url}/labels", None)
+        return PaginatedList(
+            github.Label.Label, self._requester, f"{self.url}/labels", None
+        )
 
     def remove_from_assignees(self, *assignees: NamedUser | str) -> None:
         """
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees <https://docs.github.com/en/rest/reference/issues#assignees>`_
         """
-        assert all(isinstance(element, (github.NamedUser.NamedUser, str)) for element in assignees), assignees
+        assert all(
+            isinstance(element, (github.NamedUser.NamedUser, str))
+            for element in assignees
+        ), assignees
         post_parameters = {
             "assignees": [
-                assignee.login if isinstance(assignee, github.NamedUser.NamedUser) else assignee
+                assignee.login
+                if isinstance(assignee, github.NamedUser.NamedUser)
+                else assignee
                 for assignee in assignees
             ]
         }
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/assignees", input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/assignees", input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -566,15 +609,24 @@ class Issue(CompletableGithubObject):
             label = label._identity
         else:
             label = urllib.parse.quote(label)
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/labels/{label}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/labels/{label}"
+        )
 
     def set_labels(self, *labels: Label | str) -> None:
         """
         :calls: `PUT /repos/{owner}/{repo}/issues/{issue_number}/labels <https://docs.github.com/en/rest/reference/issues#labels>`_
         """
-        assert all(isinstance(element, (github.Label.Label, str)) for element in labels), labels
-        post_parameters = [label.name if isinstance(label, github.Label.Label) else label for label in labels]
-        headers, data = self._requester.requestJsonAndCheck("PUT", f"{self.url}/labels", input=post_parameters)
+        assert all(
+            isinstance(element, (github.Label.Label, str)) for element in labels
+        ), labels
+        post_parameters = [
+            label.name if isinstance(label, github.Label.Label) else label
+            for label in labels
+        ]
+        headers, data = self._requester.requestJsonAndCheck(
+            "PUT", f"{self.url}/labels", input=post_parameters
+        )
 
     def get_reactions(self) -> PaginatedList[Reaction]:
         """
@@ -647,7 +699,9 @@ class Issue(CompletableGithubObject):
         )
         return SubIssue(self._requester, headers, data, completed=True)
 
-    def prioritize_sub_issue(self, sub_issue: int | Issue, after_sub_issue: int | Issue | None) -> SubIssue:
+    def prioritize_sub_issue(
+        self, sub_issue: int | Issue, after_sub_issue: int | Issue | None
+    ) -> SubIssue:
         """
         :calls: `PATCH /repos/{owner}/{repo}/issues/{issue_number}/sub_issues/priority <https://docs.github.com/en/rest/issues/sub-issues>`_
         :param sub_issue: int (sub-issue ID) or Issue object. Note: Use sub_issue.id, not sub_issue.number
@@ -655,7 +709,9 @@ class Issue(CompletableGithubObject):
         :rtype: :class:`github.Issue.SubIssue`
         """
         assert isinstance(sub_issue, (int, Issue)), sub_issue
-        assert after_sub_issue is None or isinstance(after_sub_issue, (int, Issue)), after_sub_issue
+        assert after_sub_issue is None or isinstance(
+            after_sub_issue, (int, Issue)
+        ), after_sub_issue
 
         sub_issue_id = sub_issue
         if isinstance(sub_issue, Issue):
@@ -664,7 +720,10 @@ class Issue(CompletableGithubObject):
         if isinstance(after_sub_issue, Issue):
             after_sub_issue_id = after_sub_issue.id
 
-        patch_parameters = {"sub_issue_id": sub_issue_id, "after_id": after_sub_issue_id}
+        patch_parameters = {
+            "sub_issue_id": sub_issue_id,
+            "after_id": after_sub_issue_id,
+        }
         headers, data = self._requester.requestJsonAndCheck(
             "PATCH",
             f"{self.url}/sub_issues/priority",
@@ -756,24 +815,38 @@ class Issue(CompletableGithubObject):
         :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by/{issue_id} <https://docs.github.com/en/rest/issues/issue-dependencies#remove-dependency-an-issue-is-blocked-by>`_
         """
         assert isinstance(issue, github.Issue.Issue)
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/dependencies/blocked_by/{issue.id}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/dependencies/blocked_by/{issue.id}"
+        )
         self._useAttributes(data)
         self._set_complete()
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "active_lock_reason" in attributes:  # pragma no branch
-            self._active_lock_reason = self._makeStringAttribute(attributes["active_lock_reason"])
+            self._active_lock_reason = self._makeStringAttribute(
+                attributes["active_lock_reason"]
+            )
         if "assignee" in attributes:  # pragma no branch
-            self._assignee = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["assignee"])
+            self._assignee = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["assignee"]
+            )
         if "assignees" in attributes:  # pragma no branch
-            self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, attributes["assignees"])
+            self._assignees = self._makeListOfClassesAttribute(
+                github.NamedUser.NamedUser, attributes["assignees"]
+            )
         elif "assignee" in attributes:
             if attributes["assignee"] is not None:
-                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [attributes["assignee"]])
+                self._assignees = self._makeListOfClassesAttribute(
+                    github.NamedUser.NamedUser, [attributes["assignee"]]
+                )
             else:
-                self._assignees = self._makeListOfClassesAttribute(github.NamedUser.NamedUser, [])
+                self._assignees = self._makeListOfClassesAttribute(
+                    github.NamedUser.NamedUser, []
+                )
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -783,7 +856,9 @@ class Issue(CompletableGithubObject):
         if "closed_at" in attributes:  # pragma no branch
             self._closed_at = self._makeDatetimeAttribute(attributes["closed_at"])
         if "closed_by" in attributes:  # pragma no branch
-            self._closed_by = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["closed_by"])
+            self._closed_by = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["closed_by"]
+            )
         if "comments" in attributes:  # pragma no branch
             self._comments = self._makeIntAttribute(attributes["comments"])
         if "comments_url" in attributes:  # pragma no branch
@@ -800,16 +875,21 @@ class Issue(CompletableGithubObject):
             self._id = self._makeIntAttribute(attributes["id"])
         if "issue_dependencies_summary" in attributes:  # pragma no branch
             self._issue_dependencies_summary = self._makeClassAttribute(
-                github.IssueDependenciesSummary.IssueDependenciesSummary, attributes["issue_dependencies_summary"]
+                github.IssueDependenciesSummary.IssueDependenciesSummary,
+                attributes["issue_dependencies_summary"],
             )
         if "labels" in attributes:  # pragma no branch
-            self._labels = self._makeListOfClassesAttribute(github.Label.Label, attributes["labels"])
+            self._labels = self._makeListOfClassesAttribute(
+                github.Label.Label, attributes["labels"]
+            )
         if "labels_url" in attributes:  # pragma no branch
             self._labels_url = self._makeStringAttribute(attributes["labels_url"])
         if "locked" in attributes:  # pragma no branch
             self._locked = self._makeBoolAttribute(attributes["locked"])
         if "milestone" in attributes:  # pragma no branch
-            self._milestone = self._makeClassAttribute(github.Milestone.Milestone, attributes["milestone"])
+            self._milestone = self._makeClassAttribute(
+                github.Milestone.Milestone, attributes["milestone"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "number" in attributes:  # pragma no branch
@@ -819,7 +899,9 @@ class Issue(CompletableGithubObject):
             if number.isnumeric():
                 self._number = self._makeIntAttribute(int(number))
         if "parent_issue_url" in attributes:  # pragma no branch
-            self._parent_issue_url = self._makeStringAttribute(attributes["parent_issue_url"])
+            self._parent_issue_url = self._makeStringAttribute(
+                attributes["parent_issue_url"]
+            )
         if "performed_via_github_app" in attributes:  # pragma no branch
             self._performed_via_github_app = self._makeClassAttribute(
                 github.GithubApp.GithubApp, attributes["performed_via_github_app"]
@@ -831,9 +913,13 @@ class Issue(CompletableGithubObject):
         if "reactions" in attributes:
             self._reactions = self._makeDictAttribute(attributes["reactions"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "repository_url" in attributes:  # pragma no branch
-            self._repository_url = self._makeStringAttribute(attributes["repository_url"])
+            self._repository_url = self._makeStringAttribute(
+                attributes["repository_url"]
+            )
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "state_reason" in attributes:  # pragma no branch
@@ -849,18 +935,21 @@ class Issue(CompletableGithubObject):
         if "title" in attributes:  # pragma no branch
             self._title = self._makeStringAttribute(attributes["title"])
         if "type" in attributes:  # pragma no branch
-            self._type = self._makeClassAttribute(github.IssueType.IssueType, attributes["type"])
+            self._type = self._makeClassAttribute(
+                github.IssueType.IssueType, attributes["type"]
+            )
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )
 
 
 class IssueSearchResult(Issue):
-    """
-    This class represents IssueSearchResult.
+    """This class represents IssueSearchResult.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/search#search-issues-and-pull-requests
@@ -868,7 +957,6 @@ class IssueSearchResult(Issue):
     The OpenAPI schema can be found at
 
     - /components/schemas/issue-search-result-item
-
     """
 
     def _initAttributes(self) -> None:
@@ -877,7 +965,13 @@ class IssueSearchResult(Issue):
         self._score: Attribute[float] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value, "score": self._score.value})
+        return self.get__repr__(
+            {
+                "number": self._number.value,
+                "title": self._title.value,
+                "score": self._score.value,
+            }
+        )
 
     @property
     def score(self) -> float:
@@ -892,11 +986,10 @@ class IssueSearchResult(Issue):
 
 
 class SubIssue(Issue):
-    """
-    This class represents a Sub-issue in GitHub's REST API. Sub-issues are issues that are linked to a parent issue.
+    """This class represents a Sub-issue in GitHub's REST API. Sub-issues are
+    issues that are linked to a parent issue.
 
     See https://docs.github.com/en/rest/issues/sub-issues for more details.
-
     """
 
     def _initAttributes(self) -> None:
@@ -906,7 +999,9 @@ class SubIssue(Issue):
         self._priority_position: Attribute[int] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value})
+        return self.get__repr__(
+            {"number": self._number.value, "title": self._title.value}
+        )
 
     @property
     def parent_issue(self) -> Issue:
@@ -928,6 +1023,10 @@ class SubIssue(Issue):
         super()._useAttributes(attributes)
         # Process sub-issue specific attributes
         if "parent_issue" in attributes:
-            self._parent_issue = self._makeClassAttribute(Issue, attributes["parent_issue"])
+            self._parent_issue = self._makeClassAttribute(
+                Issue, attributes["parent_issue"]
+            )
         if "priority_position" in attributes:
-            self._priority_position = self._makeIntAttribute(attributes["priority_position"])
+            self._priority_position = self._makeIntAttribute(
+                attributes["priority_position"]
+            )

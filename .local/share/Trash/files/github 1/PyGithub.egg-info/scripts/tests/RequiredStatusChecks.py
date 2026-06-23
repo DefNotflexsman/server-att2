@@ -44,12 +44,17 @@ class RequiredStatusChecks(Framework.TestCase):
     def setUp(self):
         super().setUp()
         self.required_status_checks = (
-            self.g.get_repo("jacquev6/PyGithub", lazy=True).get_branch("integrations").get_required_status_checks()
+            self.g.get_repo("jacquev6/PyGithub", lazy=True)
+            .get_branch("integrations")
+            .get_required_status_checks()
         )
 
     def testAttributes(self):
         self.assertEqual(len(self.required_status_checks.checks), 1)
-        self.assertEqual(self.required_status_checks.checks[0].context, "continuous-integration/travis-ci")
+        self.assertEqual(
+            self.required_status_checks.checks[0].context,
+            "continuous-integration/travis-ci",
+        )
         self.assertEqual(self.required_status_checks.checks[0].app_id, 123)
         self.assertEqual(
             self.required_status_checks.contexts_url,

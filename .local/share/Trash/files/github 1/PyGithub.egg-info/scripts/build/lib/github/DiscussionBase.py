@@ -70,7 +70,9 @@ class DiscussionBase(CompletableGithubObject):
         self._url: Attribute[str] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"number": self._number.value, "title": self._title.value})
+        return self.get__repr__(
+            {"number": self._number.value, "title": self._title.value}
+        )
 
     @property
     def author(self) -> NamedUser | None:
@@ -119,7 +121,9 @@ class DiscussionBase(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author" in attributes:  # pragma no branch
-            self._author = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["author"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "body_html" in attributes:  # pragma no branch
@@ -127,7 +131,9 @@ class DiscussionBase(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "last_edited_at" in attributes:  # pragma no branch
-            self._last_edited_at = self._makeDatetimeAttribute(attributes["last_edited_at"])
+            self._last_edited_at = self._makeDatetimeAttribute(
+                attributes["last_edited_at"]
+            )
         if "number" in attributes:  # pragma no branch
             self._number = self._makeIntAttribute(attributes["number"])
         if "title" in attributes:

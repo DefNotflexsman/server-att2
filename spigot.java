@@ -40,7 +40,7 @@ public class ReportPlugin extends JavaPlugin implements CommandExecutor {
         String reporter = sender.getName();
 
         sender.sendMessage("§aSubmitting report...");
-        
+
         // Handle network operations asynchronously to prevent server lag
         CompletableFuture.runAsync(() -> sendReportToBackend(reporter, target, reason));
 
@@ -49,7 +49,7 @@ public class ReportPlugin extends JavaPlugin implements CommandExecutor {
 
     private void sendReportToBackend(String reporter, String target, String reason) {
         try {
-            String json = String.format("{\"reporter\":\"%s\",\"target\":\"%s\",\"reason\":\"%s\"}", 
+            String json = String.format("{\"reporter\":\"%s\",\"target\":\"%s\",\"reason\":\"%s\"}",
                 reporter, target, reason);
 
             HttpClient client = HttpClient.newHttpClient();
@@ -60,7 +60,7 @@ public class ReportPlugin extends JavaPlugin implements CommandExecutor {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200) {
                 getLogger().info("Successfully synced report for " + target + " to backend.");
             }

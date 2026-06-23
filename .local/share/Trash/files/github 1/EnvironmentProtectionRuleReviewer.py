@@ -53,12 +53,10 @@ if TYPE_CHECKING:
 
 
 class EnvironmentProtectionRuleReviewer(NonCompletableGithubObject):
-    """
-    This class represents a reviewer for an EnvironmentProtectionRule.
+    """This class represents a reviewer for an EnvironmentProtectionRule.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/deployments#environments
-
     """
 
     def _initAttributes(self) -> None:
@@ -79,16 +77,20 @@ class EnvironmentProtectionRuleReviewer(NonCompletableGithubObject):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "reviewer" in attributes:  # pragma no branch
             self._reviewer = self._makeUnionClassAttributeFromTypeKeyAndValueKey(
-                "type", "reviewer", None, attributes, (github.NamedUser.NamedUser, "User"), (github.Team.Team, "Team")
+                "type",
+                "reviewer",
+                None,
+                attributes,
+                (github.NamedUser.NamedUser, "User"),
+                (github.Team.Team, "Team"),
             )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
 
 
 class ReviewerParams:
-    """
-    This class presents reviewers as can be configured for an Environment.
-    """
+    """This class presents reviewers as can be configured for an
+    Environment."""
 
     def __init__(self, type_: str, id_: int):
         assert isinstance(type_, str) and type_ in ("User", "Team")

@@ -65,8 +65,7 @@ if TYPE_CHECKING:
 
 
 class Migration(CompletableGithubObject):
-    """
-    This class represents Migrations.
+    """This class represents Migrations.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/migrations
@@ -74,7 +73,6 @@ class Migration(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/migration
-
     """
 
     def _initAttributes(self) -> None:
@@ -240,25 +238,39 @@ class Migration(CompletableGithubObject):
         if "exclude" in attributes:  # pragma no branch
             self._exclude = self._makeListOfStringsAttribute(attributes["exclude"])
         if "exclude_attachments" in attributes:
-            self._exclude_attachments = self._makeBoolAttribute(attributes["exclude_attachments"])
+            self._exclude_attachments = self._makeBoolAttribute(
+                attributes["exclude_attachments"]
+            )
         if "exclude_git_data" in attributes:  # pragma no branch
-            self._exclude_git_data = self._makeBoolAttribute(attributes["exclude_git_data"])
+            self._exclude_git_data = self._makeBoolAttribute(
+                attributes["exclude_git_data"]
+            )
         if "exclude_metadata" in attributes:  # pragma no branch
-            self._exclude_metadata = self._makeBoolAttribute(attributes["exclude_metadata"])
+            self._exclude_metadata = self._makeBoolAttribute(
+                attributes["exclude_metadata"]
+            )
         if "exclude_owner_projects" in attributes:  # pragma no branch
-            self._exclude_owner_projects = self._makeBoolAttribute(attributes["exclude_owner_projects"])
+            self._exclude_owner_projects = self._makeBoolAttribute(
+                attributes["exclude_owner_projects"]
+            )
         if "exclude_releases" in attributes:  # pragma no branch
-            self._exclude_releases = self._makeBoolAttribute(attributes["exclude_releases"])
+            self._exclude_releases = self._makeBoolAttribute(
+                attributes["exclude_releases"]
+            )
         if "guid" in attributes:
             self._guid = self._makeStringAttribute(attributes["guid"])
         if "id" in attributes:
             self._id = self._makeIntAttribute(attributes["id"])
         if "lock_repositories" in attributes:
-            self._lock_repositories = self._makeBoolAttribute(attributes["lock_repositories"])
+            self._lock_repositories = self._makeBoolAttribute(
+                attributes["lock_repositories"]
+            )
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "org_metadata_only" in attributes:  # pragma no branch
-            self._org_metadata_only = self._makeBoolAttribute(attributes["org_metadata_only"])
+            self._org_metadata_only = self._makeBoolAttribute(
+                attributes["org_metadata_only"]
+            )
         if "owner" in attributes:
             self._owner = self._makeUnionClassAttributeFromTypeKey(
                 "type",

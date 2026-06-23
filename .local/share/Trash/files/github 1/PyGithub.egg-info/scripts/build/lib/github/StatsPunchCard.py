@@ -47,8 +47,7 @@ import github.NamedUser  # TODO remove unused
 
 
 class StatsPunchCard(github.GithubObject.NonCompletableGithubObject):
-    """
-    This class represents StatsPunchCards.
+    """This class represents StatsPunchCards.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#get-the-hourly-commit-count-for-each-day
@@ -56,7 +55,6 @@ class StatsPunchCard(github.GithubObject.NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-frequency-stat
-
     """
 
     _dict: dict[tuple[int, int], int]
@@ -65,9 +63,7 @@ class StatsPunchCard(github.GithubObject.NonCompletableGithubObject):
         self._dict = {}
 
     def get(self, day: int, hour: int) -> int:
-        """
-        Get a specific element.
-        """
+        """Get a specific element."""
         return self._dict[(day, hour)]
 
     def _useAttributes(self, attributes: Any) -> None:

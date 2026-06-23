@@ -52,8 +52,7 @@ from github.GithubObject import Attribute, NotSet
 
 
 class TeamDiscussion(DiscussionBase):
-    """
-    This class represents TeamDiscussions.
+    """This class represents TeamDiscussions.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/teams#discussions
@@ -61,7 +60,6 @@ class TeamDiscussion(DiscussionBase):
     The OpenAPI schema can be found at
 
     - /components/schemas/team-discussion
-
     """
 
     def _initAttributes(self) -> None:

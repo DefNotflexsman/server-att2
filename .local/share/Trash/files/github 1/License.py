@@ -50,8 +50,7 @@ from github.GithubObject import Attribute, CompletableGithubObject, NotSet
 
 
 class License(CompletableGithubObject):
-    """
-    This class represents Licenses.
+    """This class represents Licenses.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/licenses
@@ -61,7 +60,6 @@ class License(CompletableGithubObject):
     - /components/schemas/license-simple
     - /components/schemas/minimal-repository/properties/license
     - /components/schemas/nullable-license-simple
-
     """
 
     def _initAttributes(self) -> None:
@@ -145,23 +143,31 @@ class License(CompletableGithubObject):
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "conditions" in attributes:  # pragma no branch
-            self._conditions = self._makeListOfStringsAttribute(attributes["conditions"])
+            self._conditions = self._makeListOfStringsAttribute(
+                attributes["conditions"]
+            )
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "implementation" in attributes:  # pragma no branch
-            self._implementation = self._makeStringAttribute(attributes["implementation"])
+            self._implementation = self._makeStringAttribute(
+                attributes["implementation"]
+            )
         if "key" in attributes:  # pragma no branch
             self._key = self._makeStringAttribute(attributes["key"])
         if "limitations" in attributes:  # pragma no branch
-            self._limitations = self._makeListOfStringsAttribute(attributes["limitations"])
+            self._limitations = self._makeListOfStringsAttribute(
+                attributes["limitations"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "permissions" in attributes:  # pragma no branch
-            self._permissions = self._makeListOfStringsAttribute(attributes["permissions"])
+            self._permissions = self._makeListOfStringsAttribute(
+                attributes["permissions"]
+            )
         if "spdx_id" in attributes:  # pragma no branch
             self._spdx_id = self._makeStringAttribute(attributes["spdx_id"])
         if "url" in attributes:  # pragma no branch

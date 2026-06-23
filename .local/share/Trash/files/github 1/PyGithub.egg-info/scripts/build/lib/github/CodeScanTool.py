@@ -46,8 +46,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class CodeScanTool(NonCompletableGithubObject):
-    """
-    This class represents code scanning tools.
+    """This class represents code scanning tools.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/code-scanning.
@@ -55,7 +54,6 @@ class CodeScanTool(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-scanning-analysis-tool
-
     """
 
     def _initAttributes(self) -> None:

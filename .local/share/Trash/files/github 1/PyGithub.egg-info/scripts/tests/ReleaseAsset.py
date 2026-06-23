@@ -106,7 +106,10 @@ class PublicReleaseAsset(Framework.TestCase):
         self.assertEqual(self.asset.content_type, "application/wasm")
         self.assertEqual(self.asset.state, "uploaded")
         self.assertEqual(self.asset.size, 4945)
-        self.assertEqual(self.asset.digest, "sha256:2e4ca075988921c6c8bf01cc9e7bd4530830898f47346f1945cad930b7dfdf4d")
+        self.assertEqual(
+            self.asset.digest,
+            "sha256:2e4ca075988921c6c8bf01cc9e7bd4530830898f47346f1945cad930b7dfdf4d",
+        )
         self.assertEqual(
             self.asset.created_at,
             datetime(2025, 6, 6, 14, 43, 29, tzinfo=timezone.utc),

@@ -41,8 +41,7 @@ if TYPE_CHECKING:
 
 
 class OrganizationSecret(Secret):
-    """
-    This class represents a org level GitHub secret.
+    """This class represents a org level GitHub secret.
 
     The reference can be found here
     https://docs.github.com/en/rest/actions/secrets
@@ -50,7 +49,6 @@ class OrganizationSecret(Secret):
     The OpenAPI schema can be found at
 
     - /components/schemas/organization-actions-secret
-
     """
 
     def _initAttributes(self) -> None:
@@ -102,7 +100,10 @@ class OrganizationSecret(Secret):
         """
         assert isinstance(value, str), value
         assert isinstance(visibility, str), visibility
-        assert secret_type in ["actions", "dependabot"], "secret_type should be actions or dependabot"
+        assert secret_type in [
+            "actions",
+            "dependabot",
+        ], "secret_type should be actions or dependabot"
 
         patch_parameters: dict[str, Any] = {
             "name": self.name,
@@ -125,7 +126,9 @@ class OrganizationSecret(Secret):
         """
         if self.visibility != "selected":
             return False
-        self._requester.requestJsonAndCheck("PUT", f"{self._selected_repositories_url.value}/{repo.id}")
+        self._requester.requestJsonAndCheck(
+            "PUT", f"{self._selected_repositories_url.value}/{repo.id}"
+        )
         return True
 
     def remove_repo(self, repo: Repository) -> bool:
@@ -136,7 +139,9 @@ class OrganizationSecret(Secret):
         """
         if self.visibility != "selected":
             return False
-        self._requester.requestJsonAndCheck("DELETE", f"{self._selected_repositories_url.value}/{repo.id}")
+        self._requester.requestJsonAndCheck(
+            "DELETE", f"{self._selected_repositories_url.value}/{repo.id}"
+        )
         return True
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
@@ -149,7 +154,9 @@ class OrganizationSecret(Secret):
             name = urllib.parse.unquote(quoted_name)
             self._name = self._makeStringAttribute(name)
         if "selected_repositories_url" in attributes:
-            self._selected_repositories_url = self._makeStringAttribute(attributes["selected_repositories_url"])
+            self._selected_repositories_url = self._makeStringAttribute(
+                attributes["selected_repositories_url"]
+            )
         if "updated_at" in attributes:
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:

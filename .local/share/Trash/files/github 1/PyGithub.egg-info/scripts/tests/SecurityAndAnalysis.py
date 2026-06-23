@@ -51,17 +51,35 @@ class SecurityAndAnalysis(Framework.TestCase):
         security_and_analysis = self.repo.security_and_analysis
         self.assertIsNone(security_and_analysis.advanced_security)
         self.assertEqual(security_and_analysis.code_security.status, "enabled")
-        self.assertEqual(security_and_analysis.dependabot_security_updates.status, "enabled")
+        self.assertEqual(
+            security_and_analysis.dependabot_security_updates.status, "enabled"
+        )
         self.assertEqual(security_and_analysis.secret_scanning.status, "disabled")
-        self.assertEqual(security_and_analysis.secret_scanning_ai_detection.status, "enabled")
-        self.assertEqual(security_and_analysis.secret_scanning_delegated_alert_dismissal.status, "disabled")
-        self.assertEqual(security_and_analysis.secret_scanning_delegated_bypass.status, "enabled")
+        self.assertEqual(
+            security_and_analysis.secret_scanning_ai_detection.status, "enabled"
+        )
+        self.assertEqual(
+            security_and_analysis.secret_scanning_delegated_alert_dismissal.status,
+            "disabled",
+        )
+        self.assertEqual(
+            security_and_analysis.secret_scanning_delegated_bypass.status, "enabled"
+        )
         self.assertEqual(
             security_and_analysis.secret_scanning_delegated_bypass_options,
-            {"reviewers": [{"reviewer_id": 123, "reviewer_type": "TEAM", "mode": "ALWAYS"}]},
+            {
+                "reviewers": [
+                    {"reviewer_id": 123, "reviewer_type": "TEAM", "mode": "ALWAYS"}
+                ]
+            },
         )
-        self.assertEqual(security_and_analysis.secret_scanning_push_protection.status, "disabled")
-        self.assertEqual(security_and_analysis.secret_scanning_non_provider_patterns.status, "disabled")
+        self.assertEqual(
+            security_and_analysis.secret_scanning_push_protection.status, "disabled"
+        )
+        self.assertEqual(
+            security_and_analysis.secret_scanning_non_provider_patterns.status,
+            "disabled",
+        )
         # secret_scanning_validity_checks is deprecated and no longer part of the GitHub API
         with self.assertWarns(DeprecationWarning) as warning:
             self.assertIsNone(security_and_analysis.secret_scanning_validity_checks)

@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class Rate(NonCompletableGithubObject):
-    """
-    This class represents Rates.
+    """This class represents Rates.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/rate-limit
@@ -57,7 +56,6 @@ class Rate(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/rate-limit
-
     """
 
     def _initAttributes(self) -> None:

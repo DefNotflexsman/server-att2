@@ -76,7 +76,9 @@ class RecordingMockConnection(Framework.RecordingConnection):
     list(tuple(itertools.chain(*p)) for p in PARAMETERS),
 )
 @responses.activate
-def testRecordAndReplay(replaying_connection_class, protocol, response_body, expected_recording):
+def testRecordAndReplay(
+    replaying_connection_class, protocol, response_body, expected_recording
+):
     file = StringIO()
     host = "api.github.com"
     verb = "GET"
@@ -94,7 +96,9 @@ def testRecordAndReplay(replaying_connection_class, protocol, response_body, exp
     # write mock response to buffer
     rdf = Framework.ReplayDataFile("string", file)
     RecordingMockConnection.setOpenFile(lambda mode: rdf)
-    recording_connection = RecordingMockConnection(protocol, host, None, lambda *args, **kwds: connection)
+    recording_connection = RecordingMockConnection(
+        protocol, host, None, lambda *args, **kwds: connection
+    )
     recording_connection.request(verb, url, None, headers)
     recording_connection.getresponse()
     recording_connection.close()

@@ -46,7 +46,8 @@ class Migration(Framework.TestCase):
     def testAttributes(self):
         self.assertIsNone(self.migration.archive_url)
         self.assertEqual(
-            self.migration.created_at, datetime(2018, 9, 14, 1, 35, 35, tzinfo=timezone(timedelta(seconds=19800)))
+            self.migration.created_at,
+            datetime(2018, 9, 14, 1, 35, 35, tzinfo=timezone(timedelta(seconds=19800))),
         )
         self.assertEqual(self.migration.exclude, ["repositories"])
         self.assertEqual(self.migration.exclude_attachments, False)
@@ -61,16 +62,21 @@ class Migration(Framework.TestCase):
         self.assertEqual(self.migration.org_metadata_only, False)
         self.assertEqual(self.migration.owner.login, "singh811")
         self.assertEqual(self.migration.guid, "608bceae-b790-11e8-8b43-4e3cb0dd56cc")
-        self.assertEqual(self.migration.repositories[0].full_name, "singh811/sample-repo")
+        self.assertEqual(
+            self.migration.repositories[0].full_name, "singh811/sample-repo"
+        )
         self.assertEqual(self.migration.state, "exported")
         self.assertEqual(self.migration.lock_repositories, False)
         self.assertEqual(self.migration.exclude_attachments, False)
         self.assertEqual(len(self.migration.repositories), 1)
         self.assertEqual(self.migration.repositories[0].name, "sample-repo")
         self.assertEqual(
-            self.migration.updated_at, datetime(2018, 9, 14, 1, 35, 46, tzinfo=timezone(timedelta(seconds=19800)))
+            self.migration.updated_at,
+            datetime(2018, 9, 14, 1, 35, 46, tzinfo=timezone(timedelta(seconds=19800))),
         )
-        self.assertEqual(self.migration.url, "https://api.github.com/user/migrations/25320")
+        self.assertEqual(
+            self.migration.url, "https://api.github.com/user/migrations/25320"
+        )
         self.assertEqual(
             self.migration.created_at,
             datetime(2018, 9, 14, 1, 35, 35, tzinfo=timezone(timedelta(seconds=19800))),
@@ -85,7 +91,9 @@ class Migration(Framework.TestCase):
         )
 
     def testGetArchiveUrlWhenNotExported(self):
-        self.assertRaises(github.UnknownObjectException, lambda: self.migration.get_archive_url())
+        self.assertRaises(
+            github.UnknownObjectException, lambda: self.migration.get_archive_url()
+        )
 
     def testGetStatus(self):
         self.assertEqual(self.migration.get_status(), "exported")
@@ -100,7 +108,9 @@ class Migration(Framework.TestCase):
         self.assertEqual(self.migration.delete(), None)
 
     def testGetArchiveUrlWhenDeleted(self):
-        self.assertRaises(github.UnknownObjectException, lambda: self.migration.get_archive_url())
+        self.assertRaises(
+            github.UnknownObjectException, lambda: self.migration.get_archive_url()
+        )
 
     def testUnlockRepo(self):
         self.assertEqual(self.migration.unlock_repo("sample-repo"), None)

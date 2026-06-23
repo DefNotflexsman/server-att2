@@ -37,8 +37,7 @@ if TYPE_CHECKING:
 
 
 class OrganizationCodeScanAlert(CodeScanAlert):
-    """
-    This class represents a Code Scan Alerts for an organization.
+    """This class represents a Code Scan Alerts for an organization.
 
     The reference can be found here
     https://docs.github.com/en/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-an-organization
@@ -46,7 +45,6 @@ class OrganizationCodeScanAlert(CodeScanAlert):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-scanning-organization-alert-items
-
     """
 
     def _initAttributes(self) -> None:
@@ -60,4 +58,6 @@ class OrganizationCodeScanAlert(CodeScanAlert):
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         super()._useAttributes(attributes)
         if "repository" in attributes:
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )

@@ -59,30 +59,50 @@ class WorkflowRun(Framework.TestCase):
             "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/cancel",
         )
         self.assertEqual(self.workflow_run.check_suite_id, 10279069747)
-        self.assertEqual(self.workflow_run.check_suite_node_id, "CS_kwDOADYVqs8AAAACZK4oMw")
         self.assertEqual(
-            self.workflow_run.check_suite_url, "https://api.github.com/repos/PyGithub/PyGithub/check-suites/10279069747"
+            self.workflow_run.check_suite_node_id, "CS_kwDOADYVqs8AAAACZK4oMw"
+        )
+        self.assertEqual(
+            self.workflow_run.check_suite_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/check-suites/10279069747",
         )
         self.assertEqual(self.workflow_run.conclusion, "success")
-        self.assertEqual(self.workflow_run.created_at, datetime(2023, 1, 10, 8, 24, 19, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.workflow_run.created_at,
+            datetime(2023, 1, 10, 8, 24, 19, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.workflow_run.display_title, "TEST PR")
         self.assertEqual(self.workflow_run.event, "pull_request")
         self.assertEqual(self.workflow_run.head_branch, "feat/workflow-run")
-        self.assertEqual(self.workflow_run.head_commit.sha, "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98")
-        self.assertEqual(self.workflow_run.head_repository.full_name, "nuang-ee/PyGithub")
-        self.assertIsNone(self.workflow_run.head_repository_id)
-        self.assertEqual(self.workflow_run.head_sha, "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98")
-        self.assertEqual(self.workflow_run.html_url, "https://github.com/PyGithub/PyGithub/actions/runs/3881497935")
-        self.assertEqual(self.workflow_run.id, 3881497935)
         self.assertEqual(
-            self.workflow_run.jobs_url, "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/jobs"
+            self.workflow_run.head_commit.sha,
+            "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98",
         )
         self.assertEqual(
-            self.workflow_run.logs_url, "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/logs"
+            self.workflow_run.head_repository.full_name, "nuang-ee/PyGithub"
+        )
+        self.assertIsNone(self.workflow_run.head_repository_id)
+        self.assertEqual(
+            self.workflow_run.head_sha, "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98"
+        )
+        self.assertEqual(
+            self.workflow_run.html_url,
+            "https://github.com/PyGithub/PyGithub/actions/runs/3881497935",
+        )
+        self.assertEqual(self.workflow_run.id, 3881497935)
+        self.assertEqual(
+            self.workflow_run.jobs_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/jobs",
+        )
+        self.assertEqual(
+            self.workflow_run.logs_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/logs",
         )
         self.assertEqual(self.workflow_run.name, "CI")
         self.assertEqual(self.workflow_run.head_branch, "feat/workflow-run")
-        self.assertEqual(self.workflow_run.head_sha, "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98")
+        self.assertEqual(
+            self.workflow_run.head_sha, "c6e5cac67a58a4eb11f1f28567a77a6e2cc8ee98"
+        )
         self.assertEqual(self.workflow_run.node_id, "WFR_kwLOADYVqs7nWvVP")
         self.assertEqual(self.workflow_run.path, ".github/workflows/ci.yml")
         self.assertEqual(self.workflow_run.display_title, "TEST PR")
@@ -92,25 +112,37 @@ class WorkflowRun(Framework.TestCase):
         self.assertEqual(self.workflow_run.repository.full_name, "PyGithub/PyGithub")
         self.assertIsNone(self.workflow_run.repository_id)
         self.assertEqual(
-            self.workflow_run.rerun_url, "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/rerun"
+            self.workflow_run.rerun_url,
+            "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935/rerun",
         )
         self.assertEqual(self.workflow_run.run_attempt, 1)
         self.assertEqual(self.workflow_run.run_number, 930)
         self.assertEqual(self.workflow_run.run_attempt, 1)
-        self.assertEqual(self.workflow_run.run_started_at, datetime(2023, 1, 10, 8, 24, 19, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.workflow_run.run_started_at,
+            datetime(2023, 1, 10, 8, 24, 19, tzinfo=timezone.utc),
+        )
         self.assertEqual(self.workflow_run.event, "pull_request")
         self.assertEqual(self.workflow_run.status, "completed")
         self.assertEqual(self.workflow_run.conclusion, "success")
         self.assertEqual(self.workflow_run.triggering_actor.login, "nuang-ee")
-        self.assertEqual(self.workflow_run.updated_at, datetime(2023, 1, 10, 8, 28, 20, tzinfo=timezone.utc))
         self.assertEqual(
-            self.workflow_run.url, "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935"
+            self.workflow_run.updated_at,
+            datetime(2023, 1, 10, 8, 28, 20, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.workflow_run.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935",
         )
         self.assertEqual(self.workflow_run.workflow_id, 1903133)
         self.assertEqual(
-            self.workflow_run.url, "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935"
+            self.workflow_run.url,
+            "https://api.github.com/repos/PyGithub/PyGithub/actions/runs/3881497935",
         )
-        self.assertEqual(self.workflow_run.html_url, "https://github.com/PyGithub/PyGithub/actions/runs/3881497935")
+        self.assertEqual(
+            self.workflow_run.html_url,
+            "https://github.com/PyGithub/PyGithub/actions/runs/3881497935",
+        )
         self.assertEqual(self.workflow_run.pull_requests, [])
         created_at = datetime(2023, 1, 10, 8, 24, 19, tzinfo=timezone.utc)
         self.assertEqual(self.workflow_run.created_at, created_at)
@@ -144,8 +176,13 @@ class WorkflowRun(Framework.TestCase):
             self.workflow_run.workflow_url,
             "https://api.github.com/repos/PyGithub/PyGithub/actions/workflows/1903133",
         )
-        self.assertEqual(self.workflow_run.head_commit.message, "add attribute 'name' on WorkflowRun")
-        self.assertEqual(self.workflow_run.head_commit.tree.sha, "3ce398f9ee2571549b7fea545bfa5bf28e3ca0f5")
+        self.assertEqual(
+            self.workflow_run.head_commit.message, "add attribute 'name' on WorkflowRun"
+        )
+        self.assertEqual(
+            self.workflow_run.head_commit.tree.sha,
+            "3ce398f9ee2571549b7fea545bfa5bf28e3ca0f5",
+        )
         self.assertEqual(self.workflow_run.repository.name, "PyGithub")
         self.assertEqual(self.workflow_run.head_repository.name, "PyGithub")
 
@@ -202,7 +239,9 @@ class WorkflowRun(Framework.TestCase):
         )
 
     def testGetAttempt(self):
-        workflow_run = self.g.get_repo("EnricoMi/PyGithub").get_workflow_run(26365060973)
+        workflow_run = self.g.get_repo("EnricoMi/PyGithub").get_workflow_run(
+            26365060973
+        )
         workflow_attempt = workflow_run.get_attempt(2)
         self.assertEqual(workflow_attempt.id, 26365060973)
         self.assertEqual(workflow_attempt.name, "CodeQL Advanced")

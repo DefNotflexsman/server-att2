@@ -46,8 +46,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class Path(NonCompletableGithubObject):
-    """
-    This class represents a popular Path for a GitHub repository.
+    """This class represents a popular Path for a GitHub repository.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#traffic
@@ -55,7 +54,6 @@ class Path(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/content-traffic
-
     """
 
     def _initAttributes(self) -> None:

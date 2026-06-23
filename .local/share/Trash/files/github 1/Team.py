@@ -79,7 +79,13 @@ import github.Repository
 import github.TeamDiscussion
 from github import Consts
 from github.GithubException import UnknownObjectException
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, method_returns
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    method_returns,
+)
 
 if TYPE_CHECKING:
     from github.Membership import Membership
@@ -92,8 +98,7 @@ if TYPE_CHECKING:
 
 
 class Team(CompletableGithubObject):
-    """
-    This class represents Teams.
+    """This class represents Teams.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/teams
@@ -105,7 +110,6 @@ class Team(CompletableGithubObject):
     - /components/schemas/team
     - /components/schemas/team-full
     - /components/schemas/team-simple
-
     """
 
     def _initAttributes(self) -> None:
@@ -288,7 +292,9 @@ class Team(CompletableGithubObject):
         :calls: `PUT /teams/{team_id}/members/{username} <https://docs.github.com/en/rest/reference/teams>`_
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        headers, data = self._requester.requestJsonAndCheck("PUT", f"{self.url}/members/{member._identity}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "PUT", f"{self.url}/members/{member._identity}"
+        )
 
     def add_membership(self, member: NamedUser, role: Opt[str] = NotSet) -> None:
         """
@@ -313,13 +319,19 @@ class Team(CompletableGithubObject):
         """
         :calls: `GET /orgs/{org}/teams/{team_slug}/memberships/{username} <https://docs.github.com/en/rest/reference/teams#get-team-membership-for-a-user>`_
         """
-        assert isinstance(member, str) or isinstance(member, github.NamedUser.NamedUser), member
+        assert isinstance(member, str) or isinstance(
+            member, github.NamedUser.NamedUser
+        ), member
         if isinstance(member, github.NamedUser.NamedUser):
             member = member._identity
         else:
             member = urllib.parse.quote(member, safe="")
-        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.url}/memberships/{member}")
-        return github.Membership.Membership(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"{self.url}/memberships/{member}"
+        )
+        return github.Membership.Membership(
+            self._requester, headers, data, completed=True
+        )
 
     def add_to_repos(self, repo: str | Repository) -> None:
         """
@@ -342,7 +354,9 @@ class Team(CompletableGithubObject):
                 f"{self.url}/repos/{github.Repository.Repository.as_url_param(repo)}",
                 headers={"Accept": Consts.teamRepositoryPermissions},
             )
-            return github.Permissions.Permissions(self._requester, headers, data["permissions"])
+            return github.Permissions.Permissions(
+                self._requester, headers, data["permissions"]
+            )
         except UnknownObjectException:
             return None
 
@@ -363,7 +377,9 @@ class Team(CompletableGithubObject):
             "permission": permission,
         }
         headers, data = self._requester.requestJsonAndCheck(
-            "PUT", f"{self.url}/repos/{github.Repository.Repository.as_url_param(repo)}", input=put_parameters
+            "PUT",
+            f"{self.url}/repos/{github.Repository.Repository.as_url_param(repo)}",
+            input=put_parameters,
         )
 
     def update_team_repository(self, repo: str | Repository, permission: str) -> bool:
@@ -404,8 +420,14 @@ class Team(CompletableGithubObject):
         assert description is NotSet or isinstance(description, str), description
         assert permission is NotSet or isinstance(permission, str), permission
         assert privacy is NotSet or isinstance(privacy, str), privacy
-        assert parent_team_id is NotSet or isinstance(parent_team_id, (int, type(None))), parent_team_id
-        assert notification_setting in ["notifications_enabled", "notifications_disabled", NotSet], notification_setting
+        assert parent_team_id is NotSet or isinstance(
+            parent_team_id, (int, type(None))
+        ), parent_team_id
+        assert notification_setting in [
+            "notifications_enabled",
+            "notifications_disabled",
+            NotSet,
+        ], notification_setting
         post_parameters = NotSet.remove_unset_items(
             {
                 "name": name,
@@ -417,7 +439,9 @@ class Team(CompletableGithubObject):
             }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -485,7 +509,9 @@ class Team(CompletableGithubObject):
         :calls: `GET /teams/{team_id}/members/{username} <https://docs.github.com/en/rest/reference/teams>`_
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        status, headers, data = self._requester.requestJson("GET", f"{self.url}/members/{member._identity}")
+        status, headers, data = self._requester.requestJson(
+            "GET", f"{self.url}/members/{member._identity}"
+        )
         return status == 204
 
     def has_in_repos(self, repo: str | Repository) -> bool:
@@ -503,7 +529,9 @@ class Team(CompletableGithubObject):
         :calls: `DELETE /teams/{team_id}/memberships/{username} <https://docs.github.com/en/rest/reference/teams#remove-team-membership-for-a-user>`_
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/memberships/{member._identity}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/memberships/{member._identity}"
+        )
 
     @deprecated("Use remove_membership instead")
     def remove_from_members(self, member: NamedUser) -> None:
@@ -514,7 +542,9 @@ class Team(CompletableGithubObject):
         :calls: `DELETE /teams/{team_id}/members/{username} <https://docs.github.com/en/rest/reference/teams>`_
         """
         assert isinstance(member, github.NamedUser.NamedUser), member
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/members/{member._identity}")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/members/{member._identity}"
+        )
 
     def remove_from_repos(self, repo: str | Repository) -> None:
         """
@@ -522,7 +552,8 @@ class Team(CompletableGithubObject):
         """
         assert isinstance(repo, (str, github.Repository.Repository)), repo
         headers, data = self._requester.requestJsonAndCheck(
-            "DELETE", f"{self.url}/repos/{github.Repository.Repository.as_url_param(repo)}"
+            "DELETE",
+            f"{self.url}/repos/{github.Repository.Repository.as_url_param(repo)}",
         )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
@@ -555,29 +586,45 @@ class Team(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "notification_setting" in attributes:  # pragma no branch
-            self._notification_setting = self._makeStringAttribute(attributes["notification_setting"])
+            self._notification_setting = self._makeStringAttribute(
+                attributes["notification_setting"]
+            )
         if "organization" in attributes:  # pragma no branch
-            self._organization = self._makeClassAttribute(github.Organization.Organization, attributes["organization"])
+            self._organization = self._makeClassAttribute(
+                github.Organization.Organization, attributes["organization"]
+            )
         if "organization_id" in attributes:  # pragma no branch
-            self._organization_id = self._makeIntAttribute(attributes["organization_id"])
+            self._organization_id = self._makeIntAttribute(
+                attributes["organization_id"]
+            )
         if "organization_selection_type" in attributes:  # pragma no branch
-            self._organization_selection_type = self._makeStringAttribute(attributes["organization_selection_type"])
+            self._organization_selection_type = self._makeStringAttribute(
+                attributes["organization_selection_type"]
+            )
         if "parent" in attributes:  # pragma no branch
-            self._parent = self._makeClassAttribute(github.Team.Team, attributes["parent"])
+            self._parent = self._makeClassAttribute(
+                github.Team.Team, attributes["parent"]
+            )
         if "permission" in attributes:  # pragma no branch
             self._permission = self._makeStringAttribute(attributes["permission"])
         if "permissions" in attributes:  # pragma no branch
-            self._permissions = self._makeClassAttribute(github.Permissions.Permissions, attributes["permissions"])
+            self._permissions = self._makeClassAttribute(
+                github.Permissions.Permissions, attributes["permissions"]
+            )
         if "privacy" in attributes:  # pragma no branch
             self._privacy = self._makeStringAttribute(attributes["privacy"])
         if "repos_count" in attributes:  # pragma no branch
             self._repos_count = self._makeIntAttribute(attributes["repos_count"])
         if "repositories_url" in attributes:  # pragma no branch
-            self._repositories_url = self._makeStringAttribute(attributes["repositories_url"])
+            self._repositories_url = self._makeStringAttribute(
+                attributes["repositories_url"]
+            )
         if "slug" in attributes:  # pragma no branch
             self._slug = self._makeStringAttribute(attributes["slug"])
         if "sync_to_organizations" in attributes:  # pragma no branch
-            self._sync_to_organizations = self._makeStringAttribute(attributes["sync_to_organizations"])
+            self._sync_to_organizations = self._makeStringAttribute(
+                attributes["sync_to_organizations"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "updated_at" in attributes:  # pragma no branch

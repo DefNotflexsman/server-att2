@@ -206,7 +206,11 @@ class Github(Framework.TestCase):
 
     def testGetGlobalAdvisoriesManyFilters(self):
         cases = [
-            {"cwes": [200, 900], "affects": ["directus", "made_up"], "modified": ">2023-07-01"},
+            {
+                "cwes": [200, 900],
+                "affects": ["directus", "made_up"],
+                "modified": ">2023-07-01",
+            },
             {"cwes": ["200", "900"], "affects": ["directus"], "updated": ">2023-07-01"},
             {"cwes": "200,900", "affects": "directus", "published": ">2023-07-01"},
         ]
@@ -252,7 +256,9 @@ class Github(Framework.TestCase):
     def testGetEmojis(self):
         emojis = self.g.get_emojis()
         first = emojis.get("+1")
-        self.assertEqual(first, "https://github.global.ssl.fastly.net/images/icons/emoji/+1.png?v5")
+        self.assertEqual(
+            first, "https://github.global.ssl.fastly.net/images/icons/emoji/+1.png?v5"
+        )
 
     def testGetHook(self):
         hook = self.g.get_hook("activecollab")
@@ -283,7 +289,9 @@ class Github(Framework.TestCase):
         self.assertEqual(delivery.duration, 0.27)
         self.assertEqual(delivery.status, "OK")
         self.assertEqual(delivery.status_code, 200)
-        self.assertEqual(delivery.throttled_at, datetime(2024, 1, 2, 12, 34, 56, tzinfo=timezone.utc))
+        self.assertEqual(
+            delivery.throttled_at, datetime(2024, 1, 2, 12, 34, 56, tzinfo=timezone.utc)
+        )
         self.assertEqual(delivery.event, "issues")
         self.assertEqual(delivery.action, "opened")
         self.assertEqual(delivery.installation_id, 123)
@@ -292,8 +300,12 @@ class Github(Framework.TestCase):
         self.assertIsInstance(delivery.request, github.HookDelivery.HookDeliveryRequest)
         self.assertEqual(delivery.request.headers, {"content-type": "application/json"})
         self.assertEqual(delivery.request.payload, {"action": "opened"})
-        self.assertIsInstance(delivery.response, github.HookDelivery.HookDeliveryResponse)
-        self.assertEqual(delivery.response.headers, {"content-type": "text/html;charset=utf-8"})
+        self.assertIsInstance(
+            delivery.response, github.HookDelivery.HookDeliveryResponse
+        )
+        self.assertEqual(
+            delivery.response.headers, {"content-type": "text/html;charset=utf-8"}
+        )
         self.assertEqual(delivery.response.payload, "ok")
 
     def testGetHookDeliveries(self):
@@ -309,7 +321,10 @@ class Github(Framework.TestCase):
         self.assertEqual(deliveries[0].duration, 0.27)
         self.assertEqual(deliveries[0].status, "OK")
         self.assertEqual(deliveries[0].status_code, 200)
-        self.assertEqual(deliveries[0].throttled_at, datetime(2024, 1, 2, 12, 34, 56, tzinfo=timezone.utc))
+        self.assertEqual(
+            deliveries[0].throttled_at,
+            datetime(2024, 1, 2, 12, 34, 56, tzinfo=timezone.utc),
+        )
         self.assertEqual(deliveries[0].event, "issues")
         self.assertEqual(deliveries[0].action, "opened")
         self.assertEqual(deliveries[0].installation_id, 123)
@@ -543,7 +558,9 @@ class Github(Framework.TestCase):
         )
 
     def testGetUsersSince(self):
-        self.assertListKeyBegin(self.g.get_users(since=1000), lambda u: u.login, ["sbecker"])
+        self.assertListKeyBegin(
+            self.g.get_users(since=1000), lambda u: u.login, ["sbecker"]
+        )
 
     def testGetOrganizations(self):
         self.assertListKeyBegin(

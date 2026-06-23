@@ -52,7 +52,12 @@ import github.GitCommit
 import github.GithubObject
 import github.License
 import github.Repository
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, _ValuedAttribute
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    _ValuedAttribute,
+)
 
 if TYPE_CHECKING:
     from github.GitCommit import GitCommit
@@ -61,8 +66,7 @@ if TYPE_CHECKING:
 
 
 class ContentFile(CompletableGithubObject):
-    """
-    This class represents ContentFiles.
+    """This class represents ContentFiles.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#contents
@@ -75,7 +79,6 @@ class ContentFile(CompletableGithubObject):
     - /components/schemas/content-symlink
     - /components/schemas/file-commit
     - /components/schemas/license-content
-
     """
 
     def _initAttributes(self) -> None:
@@ -184,9 +187,13 @@ class ContentFile(CompletableGithubObject):
     def repository(self) -> Repository:
         if self._repository is NotSet:
             # The repository was not set automatically, so it must be looked up by url.
-            repo_url = "/".join(self.url.split("/")[:6])  # pragma no cover (Should be covered)
+            repo_url = "/".join(
+                self.url.split("/")[:6]
+            )  # pragma no cover (Should be covered)
             self._repository = _ValuedAttribute(
-                github.Repository.Repository(self._requester, self._headers, {"url": repo_url}, completed=False)
+                github.Repository.Repository(
+                    self._requester, self._headers, {"url": repo_url}, completed=False
+                )
             )  # pragma no cover (Should be covered)
         return self._repository.value
 
@@ -229,7 +236,9 @@ class ContentFile(CompletableGithubObject):
         if "_links" in attributes:  # pragma no branch
             self.__links = self._makeDictAttribute(attributes["_links"])
         if "commit" in attributes:  # pragma no branch
-            self._commit = self._makeClassAttribute(github.GitCommit.GitCommit, attributes["commit"])
+            self._commit = self._makeClassAttribute(
+                github.GitCommit.GitCommit, attributes["commit"]
+            )
         if "content" in attributes:  # pragma no branch
             self._content = self._makeStringAttribute(attributes["content"])
         if "download_url" in attributes:  # pragma no branch
@@ -245,27 +254,39 @@ class ContentFile(CompletableGithubObject):
         if "language" in attributes:  # pragma no branch
             self._language = self._makeStringAttribute(attributes["language"])
         if "last_modified_at" in attributes:  # pragma no branch
-            self._last_modified_at = self._makeDatetimeAttribute(attributes["last_modified_at"])
+            self._last_modified_at = self._makeDatetimeAttribute(
+                attributes["last_modified_at"]
+            )
         if "license" in attributes:  # pragma no branch
-            self._license = self._makeClassAttribute(github.License.License, attributes["license"])
+            self._license = self._makeClassAttribute(
+                github.License.License, attributes["license"]
+            )
         if "line_numbers" in attributes:  # pragma no branch
-            self._line_numbers = self._makeListOfStringsAttribute(attributes["line_numbers"])
+            self._line_numbers = self._makeListOfStringsAttribute(
+                attributes["line_numbers"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "path" in attributes:  # pragma no branch
             self._path = self._makeStringAttribute(attributes["path"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "size" in attributes:  # pragma no branch
             self._size = self._makeIntAttribute(attributes["size"])
         if "submodule_git_url" in attributes:  # pragma no branch
-            self._submodule_git_url = self._makeStringAttribute(attributes["submodule_git_url"])
+            self._submodule_git_url = self._makeStringAttribute(
+                attributes["submodule_git_url"]
+            )
         if "target" in attributes:  # pragma no branch
             self._target = self._makeStringAttribute(attributes["target"])
         if "text_matches" in attributes:  # pragma no branch
-            self._text_matches = self._makeListOfDictsAttribute(attributes["text_matches"])
+            self._text_matches = self._makeListOfDictsAttribute(
+                attributes["text_matches"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "url" in attributes:  # pragma no branch
@@ -273,8 +294,7 @@ class ContentFile(CompletableGithubObject):
 
 
 class ContentFileSearchResult(ContentFile):
-    """
-    This class represents ContentFileSearchResult.
+    """This class represents ContentFileSearchResult.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/search#search-code
@@ -282,7 +302,6 @@ class ContentFileSearchResult(ContentFile):
     The OpenAPI schema can be found at
 
     - /components/schemas/code-search-result-item
-
     """
 
     def _initAttributes(self) -> None:

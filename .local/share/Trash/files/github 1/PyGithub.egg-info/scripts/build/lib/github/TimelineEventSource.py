@@ -50,12 +50,10 @@ if TYPE_CHECKING:
 
 
 class TimelineEventSource(NonCompletableGithubObject):
-    """
-    This class represents IssueTimelineEventSource.
+    """This class represents IssueTimelineEventSource.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/issues#timeline
-
     """
 
     def _initAttributes(self) -> None:
@@ -75,6 +73,8 @@ class TimelineEventSource(NonCompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "issue" in attributes:  # pragma no branch
-            self._issue = self._makeClassAttribute(github.Issue.Issue, attributes["issue"])
+            self._issue = self._makeClassAttribute(
+                github.Issue.Issue, attributes["issue"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])

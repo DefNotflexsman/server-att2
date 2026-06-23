@@ -60,14 +60,22 @@ class Hook(Framework.TestCase):
         self.assertEqual(self.hook.last_response.message, "OK")
         self.assertEqual(self.hook.last_response.code, 200)
         self.assertEqual(self.hook.name, "web")
-        self.assertEqual(self.hook.ping_url, "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993/pings")
-        self.assertEqual(self.hook.test_url, "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993/tests")
+        self.assertEqual(
+            self.hook.ping_url,
+            "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993/pings",
+        )
+        self.assertEqual(
+            self.hook.test_url,
+            "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993/tests",
+        )
         self.assertIsNone(self.hook.type)
         self.assertEqual(
             self.hook.updated_at,
             datetime(2012, 5, 29, 18, 49, 47, tzinfo=timezone.utc),
         )
-        self.assertEqual(self.hook.url, "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993")
+        self.assertEqual(
+            self.hook.url, "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993"
+        )
         self.assertEqual(
             self.hook.test_url,
             "https://api.github.com/repos/jacquev6/PyGithub/hooks/257993/tests",

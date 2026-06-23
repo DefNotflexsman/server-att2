@@ -43,7 +43,11 @@ from typing import TYPE_CHECKING, Any
 
 import github.Commit
 import github.File
-from github.GithubObject import Attribute, CompletableGithubObjectWithPaginatedProperty, NotSet
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObjectWithPaginatedProperty,
+    NotSet,
+)
 from github.PaginatedList import PaginatedList
 
 if TYPE_CHECKING:
@@ -52,8 +56,7 @@ if TYPE_CHECKING:
 
 
 class Comparison(CompletableGithubObjectWithPaginatedProperty):
-    """
-    This class represents Comparisons.
+    """This class represents Comparisons.
 
     The reference can be found here
     https://docs.github.com/en/rest/commits/commits#compare-two-commits
@@ -64,7 +67,6 @@ class Comparison(CompletableGithubObjectWithPaginatedProperty):
     The OpenAPI schema can be found at
 
     - /components/schemas/commit-comparison
-
     """
 
     def _initAttributes(self) -> None:
@@ -131,9 +133,7 @@ class Comparison(CompletableGithubObjectWithPaginatedProperty):
 
     @property
     def files(self) -> list[File]:
-        """
-        Only the first 300 changed files.
-        """
+        """Only the first 300 changed files."""
         self._completeIfNotSet(self._files)
         return self._files.value
 
@@ -167,7 +167,9 @@ class Comparison(CompletableGithubObjectWithPaginatedProperty):
         self._completeIfNotSet(self._total_commits)
         return self._total_commits.value
 
-    def get_commits(self, *, comparison_commits_per_page: int | None = None) -> PaginatedList[Commit]:
+    def get_commits(
+        self, *, comparison_commits_per_page: int | None = None
+    ) -> PaginatedList[Commit]:
         """
         :calls: `GET /repos/{owner}/{repo}/compare/{base...:head} <https://docs.github.com/en/rest/commits/commits#compare-two-commits>`_
 
@@ -183,7 +185,9 @@ class Comparison(CompletableGithubObjectWithPaginatedProperty):
             github.Commit.Commit,
             self._requester,
             self.url,
-            self._pagination_parameters_with(page=1, per_page=comparison_commits_per_page),
+            self._pagination_parameters_with(
+                page=1, per_page=comparison_commits_per_page
+            ),
             headers=None,
             list_item="commits",
         )
@@ -193,19 +197,27 @@ class Comparison(CompletableGithubObjectWithPaginatedProperty):
         if "ahead_by" in attributes:  # pragma no branch
             self._ahead_by = self._makeIntAttribute(attributes["ahead_by"])
         if "base_commit" in attributes:  # pragma no branch
-            self._base_commit = self._makeClassAttribute(github.Commit.Commit, attributes["base_commit"])
+            self._base_commit = self._makeClassAttribute(
+                github.Commit.Commit, attributes["base_commit"]
+            )
         if "behind_by" in attributes:  # pragma no branch
             self._behind_by = self._makeIntAttribute(attributes["behind_by"])
         if "commits" in attributes:  # pragma no branch
-            self._commits = self._makeListOfClassesAttribute(github.Commit.Commit, attributes["commits"])
+            self._commits = self._makeListOfClassesAttribute(
+                github.Commit.Commit, attributes["commits"]
+            )
         if "diff_url" in attributes:  # pragma no branch
             self._diff_url = self._makeStringAttribute(attributes["diff_url"])
         if "files" in attributes:  # pragma no branch
-            self._files = self._makeListOfClassesAttribute(github.File.File, attributes["files"])
+            self._files = self._makeListOfClassesAttribute(
+                github.File.File, attributes["files"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "merge_base_commit" in attributes:  # pragma no branch
-            self._merge_base_commit = self._makeClassAttribute(github.Commit.Commit, attributes["merge_base_commit"])
+            self._merge_base_commit = self._makeClassAttribute(
+                github.Commit.Commit, attributes["merge_base_commit"]
+            )
         if "patch_url" in attributes:  # pragma no branch
             self._patch_url = self._makeStringAttribute(attributes["patch_url"])
         if "permalink_url" in attributes:  # pragma no branch

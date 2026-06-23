@@ -32,15 +32,13 @@ class SubIssue(Framework.TestCase):
         self.issue = self.repo.get_issue(5)
 
     def testListSubIssues(self):
-        """
-        Test listing sub-issues of an issue.
-        """
-        self.assertListKeyEqual(self.issue.get_sub_issues(), lambda s: s.number, [34, 35])
+        """Test listing sub-issues of an issue."""
+        self.assertListKeyEqual(
+            self.issue.get_sub_issues(), lambda s: s.number, [34, 35]
+        )
 
     def testAddSubIssue(self):
-        """
-        Test adding a sub-issue to an issue.
-        """
+        """Test adding a sub-issue to an issue."""
         initial_sub_issues = list(self.issue.get_sub_issues())
         self.assertListKeyEqual(initial_sub_issues, lambda s: s.number, [34, 35, 38])
 
@@ -48,14 +46,16 @@ class SubIssue(Framework.TestCase):
         self.issue.add_sub_issue(sub_issue)
 
         updated_sub_issues = list(self.issue.get_sub_issues())
-        self.assertListKeyEqual(updated_sub_issues, lambda s: s.number, [34, 35, 38, 39])
+        self.assertListKeyEqual(
+            updated_sub_issues, lambda s: s.number, [34, 35, 38, 39]
+        )
 
     def testRemoveSubIssue(self):
-        """
-        Test removing a sub-issue from an issue.
-        """
+        """Test removing a sub-issue from an issue."""
         initial_sub_issues = list(self.issue.get_sub_issues())
-        self.assertListKeyEqual(initial_sub_issues, lambda s: s.number, [34, 35, 38, 39])
+        self.assertListKeyEqual(
+            initial_sub_issues, lambda s: s.number, [34, 35, 38, 39]
+        )
 
         sub_issue = self.repo.get_issue(39)
         self.issue.remove_sub_issue(sub_issue)
@@ -64,9 +64,7 @@ class SubIssue(Framework.TestCase):
         self.assertListKeyEqual(updated_sub_issues, lambda s: s.number, [34, 35, 38])
 
     def testPrioritizeSubIssue(self):
-        """
-        Test changing the priority of a sub-issue.
-        """
+        """Test changing the priority of a sub-issue."""
         initial_sub_issues = list(self.issue.get_sub_issues())
         self.assertListKeyEqual(initial_sub_issues, lambda s: s.number, [34, 35, 38])
 

@@ -57,7 +57,15 @@ import github.GithubObject
 import github.NamedUser
 import github.Organization
 import github.PaginatedList
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, _NotSetType, is_defined, is_optional
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    _NotSetType,
+    is_defined,
+    is_optional,
+)
 from github.PaginatedList import PaginatedList
 
 if TYPE_CHECKING:
@@ -69,8 +77,7 @@ if TYPE_CHECKING:
 
 
 class Gist(CompletableGithubObject):
-    """
-    This class represents Gists.
+    """This class represents Gists.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/gists
@@ -81,7 +88,6 @@ class Gist(CompletableGithubObject):
     - /components/schemas/gist-simple
     - /components/schemas/gist-simple/properties/fork_of
     - /components/schemas/gist-simple/properties/forks/items
-
     """
 
     def _initAttributes(self) -> None:
@@ -229,8 +235,12 @@ class Gist(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/comments", input=post_parameters)
-        return github.GistComment.GistComment(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "POST", f"{self.url}/comments", input=post_parameters
+        )
+        return github.GistComment.GistComment(
+            self._requester, headers, data, completed=True
+        )
 
     def create_fork(self) -> Gist:
         """
@@ -245,21 +255,31 @@ class Gist(CompletableGithubObject):
         """
         headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
-    def edit(self, description: Opt[str] = NotSet, files: Opt[dict[str, InputFileContent | None]] = NotSet) -> None:
+    def edit(
+        self,
+        description: Opt[str] = NotSet,
+        files: Opt[dict[str, InputFileContent | None]] = NotSet,
+    ) -> None:
         """
         :calls: `PATCH /gists/{gist_id} <https://docs.github.com/en/rest/reference/gists>`_
         """
         assert is_optional(description, str), description
         # limitation of `TypeGuard`
         assert isinstance(files, _NotSetType) or all(
-            element is None or isinstance(element, github.InputFileContent) for element in files.values()
+            element is None or isinstance(element, github.InputFileContent)
+            for element in files.values()
         ), files
         post_parameters: dict[str, Any] = {}
         if is_defined(description):
             post_parameters["description"] = description
         if is_defined(files):
-            post_parameters["files"] = {key: None if value is None else value._identity for key, value in files.items()}
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+            post_parameters["files"] = {
+                key: None if value is None else value._identity
+                for key, value in files.items()
+            }
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
 
         self._useAttributes(data)
         self._set_complete()
@@ -294,7 +314,9 @@ class Gist(CompletableGithubObject):
         """
         :calls: `DELETE /gists/{gist_id}/star <https://docs.github.com/en/rest/reference/gists>`_
         """
-        headers, data = self._requester.requestJsonAndCheck("DELETE", f"{self.url}/star")
+        headers, data = self._requester.requestJsonAndCheck(
+            "DELETE", f"{self.url}/star"
+        )
 
     def set_starred(self) -> None:
         """
@@ -306,7 +328,9 @@ class Gist(CompletableGithubObject):
         if "comments" in attributes:  # pragma no branch
             self._comments = self._makeIntAttribute(attributes["comments"])
         if "comments_enabled" in attributes:  # pragma no branch
-            self._comments_enabled = self._makeBoolAttribute(attributes["comments_enabled"])
+            self._comments_enabled = self._makeBoolAttribute(
+                attributes["comments_enabled"]
+            )
         if "comments_url" in attributes:  # pragma no branch
             self._comments_url = self._makeStringAttribute(attributes["comments_url"])
         if "commits_url" in attributes:  # pragma no branch
@@ -316,7 +340,9 @@ class Gist(CompletableGithubObject):
         if "description" in attributes:  # pragma no branch
             self._description = self._makeStringAttribute(attributes["description"])
         if "files" in attributes:  # pragma no branch
-            self._files = self._makeDictOfStringsToClassesAttribute(github.GistFile.GistFile, attributes["files"])
+            self._files = self._makeDictOfStringsToClassesAttribute(
+                github.GistFile.GistFile, attributes["files"]
+            )
         if "fork_of" in attributes:  # pragma no branch
             self._fork_of = self._makeClassAttribute(Gist, attributes["fork_of"])
         if "forks" in attributes:  # pragma no branch
@@ -342,7 +368,9 @@ class Gist(CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "owner" in attributes:  # pragma no branch
-            self._owner = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["owner"])
+            self._owner = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["owner"]
+            )
         if "public" in attributes:  # pragma no branch
             self._public = self._makeBoolAttribute(attributes["public"])
         if "truncated" in attributes:  # pragma no branch
@@ -352,4 +380,6 @@ class Gist(CompletableGithubObject):
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "user" in attributes:  # pragma no branch
-            self._user = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["user"])
+            self._user = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["user"]
+            )

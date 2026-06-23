@@ -38,7 +38,9 @@ class License(Framework.TestCase):
         self.license = self.g.get_license("mit")
 
     def testAttributes(self):
-        self.assertEqual(self.license.html_url, "http://choosealicense.com/licenses/mit/")
+        self.assertEqual(
+            self.license.html_url, "http://choosealicense.com/licenses/mit/"
+        )
         self.assertEqual(self.license.key, "mit")
         self.assertEqual(self.license.name, "MIT License")
         self.assertEqual(
@@ -58,7 +60,9 @@ class License(Framework.TestCase):
         self.assertEqual(self.license.conditions, ["include-copyright"])
         self.assertEqual(self.license.limitations, ["liability", "warranty"])
         self.assertEqual(self.license.url, "https://api.github.com/licenses/mit")
-        self.assertEqual(self.license.html_url, "http://choosealicense.com/licenses/mit/")
+        self.assertEqual(
+            self.license.html_url, "http://choosealicense.com/licenses/mit/"
+        )
         self.assertEqual(
             self.license.implementation,
             """Create a text file (typically named LICENSE or LICENSE.txt) in the root of your source code and copy the text of the license into the file. Replace [year] with the current year and [fullname] with the name (or names) of the copyright holders.""",

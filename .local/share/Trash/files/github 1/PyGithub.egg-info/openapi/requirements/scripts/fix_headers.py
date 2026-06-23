@@ -68,7 +68,15 @@ def generateLicenseSection(filename):
 def listContributors(filename):
     contributors = set()
     result = subprocess.check_output(
-        ["git", "log", "--follow", "--format=format:%ad %an <%ae>", "--date=short", "--", filename],
+        [
+            "git",
+            "log",
+            "--follow",
+            "--format=format:%ad %an <%ae>",
+            "--date=short",
+            "--",
+            filename,
+        ],
         text=True,
     )
     for line in result.split("\n"):
@@ -113,7 +121,11 @@ class PythonHeader:
 
         if len(bodyLines) > 0 and bodyLines[0] != "":
             newLines.append("")
-            if "import " not in bodyLines[0] and bodyLines[0] != '"""' and not bodyLines[0].startswith("##########"):
+            if (
+                "import " not in bodyLines[0]
+                and bodyLines[0] != '"""'
+                and not bodyLines[0].startswith("##########")
+            ):
                 newLines.append("")
         newLines += bodyLines
 
@@ -141,7 +153,14 @@ def findHeadersAndFiles():
         for dir in list(dirs):
             if dir.startswith("."):
                 dirs.remove(dir)
-        for excluded in ["developer.github.com", "build", "venv", "PyGithub.egg-info", "requirements", "pre-commit"]:
+        for excluded in [
+            "developer.github.com",
+            "build",
+            "venv",
+            "PyGithub.egg-info",
+            "requirements",
+            "pre-commit",
+        ]:
             if excluded in dirs:
                 dirs.remove(excluded)
 

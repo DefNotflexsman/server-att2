@@ -56,11 +56,17 @@ class GlobalAdvisory(Framework.TestCase):
         self.assertEqual(self.advisory.cve_id, "CVE-2023-37271")
         self.assertEqual(self.advisory.cvss.version, Decimal("3.1"))
         self.assertEqual(self.advisory.cvss.score, Decimal("8.4"))
-        self.assertEqual(self.advisory.cvss.vector_string, "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:H/I:H/A:L")
+        self.assertEqual(
+            self.advisory.cvss.vector_string,
+            "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:H/I:H/A:L",
+        )
         self.assertEqual(
             self.advisory.cvss_severities,
             {
-                "cvss_v3": {"vector_string": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:H/I:H/A:L", "score": 8.4},
+                "cvss_v3": {
+                    "vector_string": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:H/I:H/A:L",
+                    "score": 8.4,
+                },
                 "cvss_v4": {"vector_string": None, "score": 0.0},
             },
         )
@@ -75,18 +81,29 @@ class GlobalAdvisory(Framework.TestCase):
             self.advisory.description[:100],
             "### Impact\n\nRestrictedPython does not check access to stack frames and their attributes. Stack frame",
         )
-        self.assertEqual(self.advisory.epss, {"percentage": 0.00156, "percentile": 0.52841})
+        self.assertEqual(
+            self.advisory.epss, {"percentage": 0.00156, "percentile": 0.52841}
+        )
         self.assertEqual(self.advisory.ghsa_id, "GHSA-wqc8-x2pr-7jqh")
-        self.assertEqual(self.advisory.github_reviewed_at, datetime(2023, 7, 10, 21, 53, 22, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.advisory.github_reviewed_at,
+            datetime(2023, 7, 10, 21, 53, 22, tzinfo=timezone.utc),
+        )
         self.assertEqual(
             self.advisory.html_url,
             "https://github.com/advisories/GHSA-wqc8-x2pr-7jqh",
         )
         self.assertListEqual(
             self.advisory.identifiers,
-            [{"type": "GHSA", "value": "GHSA-wqc8-x2pr-7jqh"}, {"type": "CVE", "value": "CVE-2023-37271"}],
+            [
+                {"type": "GHSA", "value": "GHSA-wqc8-x2pr-7jqh"},
+                {"type": "CVE", "value": "CVE-2023-37271"},
+            ],
         )
-        self.assertEqual(self.advisory.nvd_published_at, datetime(2023, 7, 11, 18, 15, 20, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.advisory.nvd_published_at,
+            datetime(2023, 7, 11, 18, 15, 20, tzinfo=timezone.utc),
+        )
         self.assertEqual(
             self.advisory.published_at,
             datetime(2023, 7, 10, 21, 53, 22, tzinfo=timezone.utc),
@@ -118,8 +135,13 @@ class GlobalAdvisory(Framework.TestCase):
             self.advisory.type,
             "reviewed",
         )
-        self.assertEqual(self.advisory.updated_at, datetime(2023, 11, 7, 5, 5, 13, tzinfo=timezone.utc))
-        self.assertEqual(self.advisory.url, "https://api.github.com/advisories/GHSA-wqc8-x2pr-7jqh")
+        self.assertEqual(
+            self.advisory.updated_at,
+            datetime(2023, 11, 7, 5, 5, 13, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            self.advisory.url, "https://api.github.com/advisories/GHSA-wqc8-x2pr-7jqh"
+        )
         self.assertListKeyEqual(
             self.advisory.vulnerabilities,
             lambda e: (
@@ -137,9 +159,8 @@ class GlobalAdvisory(Framework.TestCase):
         self.assertEqual(self.advisory.withdrawn_at, None)
 
     def testNewlyReleased(self):
-        """
-        Test an advisory that was freshly released and does not have values for all fields.
-        """
+        """Test an advisory that was freshly released and does not have values
+        for all fields."""
         self.advisory = self.g.get_global_advisory("GHSA-cx3j-qqxj-9597")
         self.assertListKeyEqual(
             self.advisory.credits,
@@ -154,12 +175,16 @@ class GlobalAdvisory(Framework.TestCase):
             self.advisory.cwes,
             lambda e: (e.cwe_id, e.name),
             [
-                ("CWE-80", "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"),
+                (
+                    "CWE-80",
+                    "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
+                ),
                 ("CWE-116", "Improper Encoding or Escaping of Output"),
             ],
         )
         self.assertEqual(
-            self.advisory.description, "### Impact\nCritters version 0.0.17-0.0.19 have an issue when parsing..."
+            self.advisory.description,
+            "### Impact\nCritters version 0.0.17-0.0.19 have an issue when parsing...",
         )
         self.assertEqual(self.advisory.ghsa_id, "GHSA-cx3j-qqxj-9597")
         self.assertEqual(
@@ -172,7 +197,10 @@ class GlobalAdvisory(Framework.TestCase):
         )
         self.assertListEqual(
             self.advisory.identifiers,
-            [{"type": "GHSA", "value": "GHSA-cx3j-qqxj-9597"}, {"type": "CVE", "value": "CVE-2023-3481"}],
+            [
+                {"type": "GHSA", "value": "GHSA-cx3j-qqxj-9597"},
+                {"type": "CVE", "value": "CVE-2023-3481"},
+            ],
         )
         self.assertEqual(self.advisory.nvd_published_at, None)
         self.assertEqual(

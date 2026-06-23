@@ -84,8 +84,7 @@ if TYPE_CHECKING:
 
 
 class NamedUser(github.GithubObject.CompletableGithubObject):
-    """
-    This class represents NamedUsers.
+    """This class represents NamedUsers.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/users#get-a-user
@@ -99,7 +98,6 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
     - /components/schemas/private-user
     - /components/schemas/public-user
     - /components/schemas/simple-user
-
     """
 
     def _initAttributes(self) -> None:
@@ -159,7 +157,11 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         self._user_view_type: Attribute[str] = NotSet
 
     def __eq__(self, other: Any) -> bool:
-        return isinstance(other, type(self)) and self.login == other.login and self.id == other.id
+        return (
+            isinstance(other, type(self))
+            and self.login == other.login
+            and self.id == other.id
+        )
 
     def __hash__(self) -> int:
         return hash((self.id, self.login))
@@ -436,19 +438,25 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         """
         :calls: `GET /users/{username}/events <https://docs.github.com/en/rest/reference/activity#events>`_
         """
-        return github.PaginatedList.PaginatedList(github.Event.Event, self._requester, f"{self.url}/events", None)
+        return github.PaginatedList.PaginatedList(
+            github.Event.Event, self._requester, f"{self.url}/events", None
+        )
 
     def get_followers(self) -> PaginatedList[NamedUser]:
         """
         :calls: `GET /users/{username}/followers <https://docs.github.com/en/rest/reference/users#followers>`_
         """
-        return github.PaginatedList.PaginatedList(NamedUser, self._requester, f"{self.url}/followers", None)
+        return github.PaginatedList.PaginatedList(
+            NamedUser, self._requester, f"{self.url}/followers", None
+        )
 
     def get_following(self) -> PaginatedList[NamedUser]:
         """
         :calls: `GET /users/{username}/following <https://docs.github.com/en/rest/reference/users#followers>`_
         """
-        return github.PaginatedList.PaginatedList(NamedUser, self._requester, f"{self.url}/following", None)
+        return github.PaginatedList.PaginatedList(
+            NamedUser, self._requester, f"{self.url}/following", None
+        )
 
     def get_gists(self, since: Opt[datetime] = NotSet) -> PaginatedList[Gist]:
         """
@@ -466,7 +474,9 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         """
         :calls: `GET /users/{username}/keys <https://docs.github.com/en/rest/reference/users#create-a-public-ssh-key-for-the-authenticated-user>`_
         """
-        return github.PaginatedList.PaginatedList(github.UserKey.UserKey, self._requester, f"{self.url}/keys", None)
+        return github.PaginatedList.PaginatedList(
+            github.UserKey.UserKey, self._requester, f"{self.url}/keys", None
+        )
 
     def get_orgs(self) -> PaginatedList[Organization]:
         """
@@ -583,19 +593,27 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :calls: `GET /users/{username}/following/{target_user} <https://docs.github.com/en/rest/reference/users#check-if-a-user-follows-another-user>`_
         """
         assert isinstance(following, github.NamedUser.NamedUser), following
-        status, headers, data = self._requester.requestJson("GET", f"{self.url}/following/{following._identity}")
+        status, headers, data = self._requester.requestJson(
+            "GET", f"{self.url}/following/{following._identity}"
+        )
         return status == 204
 
     def get_organization_membership(self, org: str | Organization) -> Membership:
         """
         :calls: `GET /orgs/{org}/memberships/{username} <https://docs.github.com/en/rest/reference/orgs#check-organization-membership-for-a-user>`_
         """
-        assert isinstance(org, str) or isinstance(org, github.Organization.Organization), org
+        assert isinstance(org, str) or isinstance(
+            org, github.Organization.Organization
+        ), org
         if isinstance(org, github.Organization.Organization):
             org = org.login  # type: ignore
         org = urllib.parse.quote(org, safe="")
-        headers, data = self._requester.requestJsonAndCheck("GET", f"/orgs/{org}/memberships/{self.login}")
-        return github.Membership.Membership(self._requester, headers, data, completed=True)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", f"/orgs/{org}/memberships/{self.login}"
+        )
+        return github.Membership.Membership(
+            self._requester, headers, data, completed=True
+        )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "avatar_url" in attributes:  # pragma no branch
@@ -647,9 +665,13 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             if id.isnumeric() and attributes["url"].endswith(f"/user/{id}"):
                 self._id = self._makeIntAttribute(int(id))
         if "invitation_teams_url" in attributes:  # pragma no branch
-            self._invitation_teams_url = self._makeStringAttribute(attributes["invitation_teams_url"])
+            self._invitation_teams_url = self._makeStringAttribute(
+                attributes["invitation_teams_url"]
+            )
         if "inviter" in attributes:  # pragma no branch
-            self._inviter = self._makeClassAttribute(github.NamedUser.NamedUser, attributes["inviter"])
+            self._inviter = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["inviter"]
+            )
         if "ldap_dn" in attributes:  # pragma no branch
             self._ldap_dn = self._makeStringAttribute(attributes["ldap_dn"])
         if "location" in attributes:  # pragma no branch
@@ -667,13 +689,21 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         if "node_id" in attributes:  # pragma no branch
             self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "notification_email" in attributes:  # pragma no branch
-            self._notification_email = self._makeStringAttribute(attributes["notification_email"])
+            self._notification_email = self._makeStringAttribute(
+                attributes["notification_email"]
+            )
         if "organizations_url" in attributes:  # pragma no branch
-            self._organizations_url = self._makeStringAttribute(attributes["organizations_url"])
+            self._organizations_url = self._makeStringAttribute(
+                attributes["organizations_url"]
+            )
         if "owned_private_repos" in attributes:  # pragma no branch
-            self._owned_private_repos = self._makeIntAttribute(attributes["owned_private_repos"])
+            self._owned_private_repos = self._makeIntAttribute(
+                attributes["owned_private_repos"]
+            )
         if "permissions" in attributes:  # pragma no branch
-            self._permissions = self._makeClassAttribute(github.Permissions.Permissions, attributes["permissions"])
+            self._permissions = self._makeClassAttribute(
+                github.Permissions.Permissions, attributes["permissions"]
+            )
         if "plan" in attributes:  # pragma no branch
             self._plan = self._makeClassAttribute(github.Plan.Plan, attributes["plan"])
         if "private_gists" in attributes:  # pragma no branch
@@ -683,7 +713,9 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         if "public_repos" in attributes:  # pragma no branch
             self._public_repos = self._makeIntAttribute(attributes["public_repos"])
         if "received_events_url" in attributes:  # pragma no branch
-            self._received_events_url = self._makeStringAttribute(attributes["received_events_url"])
+            self._received_events_url = self._makeStringAttribute(
+                attributes["received_events_url"]
+            )
         if "repos_url" in attributes:  # pragma no branch
             self._repos_url = self._makeStringAttribute(attributes["repos_url"])
         if "role" in attributes:  # pragma no branch
@@ -697,7 +729,9 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         if "starred_url" in attributes:  # pragma no branch
             self._starred_url = self._makeStringAttribute(attributes["starred_url"])
         if "subscriptions_url" in attributes:  # pragma no branch
-            self._subscriptions_url = self._makeStringAttribute(attributes["subscriptions_url"])
+            self._subscriptions_url = self._makeStringAttribute(
+                attributes["subscriptions_url"]
+            )
         if "suspended_at" in attributes:  # pragma no branch
             self._suspended_at = self._makeDatetimeAttribute(attributes["suspended_at"])
         if "team_count" in attributes:
@@ -705,11 +739,17 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         if "text_matches" in attributes:  # pragma no branch
             self._text_matches = self._makeDictAttribute(attributes["text_matches"])
         if "total_private_repos" in attributes:  # pragma no branch
-            self._total_private_repos = self._makeIntAttribute(attributes["total_private_repos"])
+            self._total_private_repos = self._makeIntAttribute(
+                attributes["total_private_repos"]
+            )
         if "twitter_username" in attributes:  # pragma no branch
-            self._twitter_username = self._makeStringAttribute(attributes["twitter_username"])
+            self._twitter_username = self._makeStringAttribute(
+                attributes["twitter_username"]
+            )
         if "two_factor_authentication" in attributes:  # pragma no branch
-            self._two_factor_authentication = self._makeBoolAttribute(attributes["two_factor_authentication"])
+            self._two_factor_authentication = self._makeBoolAttribute(
+                attributes["two_factor_authentication"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "updated_at" in attributes:  # pragma no branch
@@ -723,12 +763,13 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             elif "id" in attributes and attributes["id"]:
                 self._url = self._makeStringAttribute(f"/user/{attributes['id']}")
         if "user_view_type" in attributes:  # pragma no branch
-            self._user_view_type = self._makeStringAttribute(attributes["user_view_type"])
+            self._user_view_type = self._makeStringAttribute(
+                attributes["user_view_type"]
+            )
 
 
 class NamedUserSearchResult(NamedUser):
-    """
-    This class represents NamedUserSearchResult.
+    """This class represents NamedUserSearchResult.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/search#search-users
@@ -736,7 +777,6 @@ class NamedUserSearchResult(NamedUser):
     The OpenAPI schema can be found at
 
     - /components/schemas/user-search-result-item
-
     """
 
     def _initAttributes(self) -> None:
@@ -744,7 +784,9 @@ class NamedUserSearchResult(NamedUser):
         self._score: Attribute[float] = NotSet
 
     def __repr__(self) -> str:
-        return self.get__repr__({"login": self._login.value, "score": self._score.value})
+        return self.get__repr__(
+            {"login": self._login.value, "score": self._score.value}
+        )
 
     @property
     def score(self) -> float:
@@ -759,8 +801,7 @@ class NamedUserSearchResult(NamedUser):
 # A better place would be github.OrganizationInvitation.OrganizationInvitation
 # but that causes an import cycle. This is a specialization of NamedUser any way.
 class OrganizationInvitation(NamedUser):
-    """
-    This class represents OrganizationInvitation.
+    """This class represents OrganizationInvitation.
 
     The reference can be found here
     https://docs.github.com/en/rest/orgs/members
@@ -768,7 +809,6 @@ class OrganizationInvitation(NamedUser):
     The OpenAPI schema can be found at
 
     - /components/schemas/organization-invitation
-
     """
 
     def _initAttributes(self) -> None:
@@ -807,7 +847,11 @@ class OrganizationInvitation(NamedUser):
         if "failed_reason" in attributes:  # pragma no branch
             self._failed_reason = self._makeStringAttribute(attributes["failed_reason"])
         if "invitation_source" in attributes:  # pragma no branch
-            self._invitation_source = self._makeStringAttribute(attributes["invitation_source"])
-        if "invitation_teams_url" in attributes and is_undefined(self._url):  # pragma no branch
+            self._invitation_source = self._makeStringAttribute(
+                attributes["invitation_source"]
+            )
+        if "invitation_teams_url" in attributes and is_undefined(
+            self._url
+        ):  # pragma no branch
             url = "/".join(attributes["invitation_teams_url"].split("/")[:-1])
             self._url = self._makeStringAttribute(url)

@@ -32,14 +32,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from unittest import mock
 
-import pytest  # type: ignore
-
 import github
 import github.EnvironmentDeploymentBranchPolicy
 import github.EnvironmentProtectionRule
 import github.EnvironmentProtectionRuleReviewer
 import github.NamedUser
 import github.Team
+import pytest  # type: ignore
 
 from . import Framework
 
@@ -54,7 +53,9 @@ class Environment(Framework.TestCase):
         self.assertEqual(self.environment.name, "dev")
         self.assertEqual(self.environment.id, 464814513)
         self.assertEqual(self.environment.node_id, "EN_kwDOHKhL9c4btIGx")
-        self.assertListKeyEqual(self.environment.protection_rules, lambda r: r.id, [216323, 216324, 216325])
+        self.assertListKeyEqual(
+            self.environment.protection_rules, lambda r: r.id, [216323, 216324, 216325]
+        )
         self.assertEqual(
             self.environment.url,
             "https://api.github.com/repos/alson/PyGithub/environments/dev",
@@ -72,7 +73,9 @@ class Environment(Framework.TestCase):
             datetime(2022, 4, 13, 15, 6, 32, tzinfo=timezone.utc),
         )
         self.assertTrue(self.environment.deployment_branch_policy.protected_branches)
-        self.assertFalse(self.environment.deployment_branch_policy.custom_branch_policies)
+        self.assertFalse(
+            self.environment.deployment_branch_policy.custom_branch_policies
+        )
 
     def testLazyAttributes(self):
         env = self.g.withLazy(True).get_repo("lazy/repo").get_environment("the env")
@@ -151,7 +154,11 @@ class Environment(Framework.TestCase):
         environment = self.repo.create_environment(
             "test/env",
             wait_timer=42,
-            reviewers=[github.EnvironmentProtectionRuleReviewer.ReviewerParams(type_="User", id_=19245)],
+            reviewers=[
+                github.EnvironmentProtectionRuleReviewer.ReviewerParams(
+                    type_="User", id_=19245
+                )
+            ],
             prevent_self_review=True,
             deployment_branch_policy=github.EnvironmentDeploymentBranchPolicy.EnvironmentDeploymentBranchPolicyParams(
                 protected_branches=True, custom_branch_policies=False
@@ -181,7 +188,9 @@ class Environment(Framework.TestCase):
         self.assertTrue(environment.protection_rules[0].prevent_self_review)
         self.assertEqual(len(environment.protection_rules[0].reviewers), 1)
         self.assertEqual(environment.protection_rules[0].reviewers[0].type, "User")
-        self.assertEqual(environment.protection_rules[0].reviewers[0].reviewer.id, 19245)
+        self.assertEqual(
+            environment.protection_rules[0].reviewers[0].reviewer.id, 19245
+        )
         self.assertEqual(environment.protection_rules[1].type, "wait_timer")
         self.assertEqual(environment.protection_rules[1].wait_timer, 42)
         self.assertEqual(environment.protection_rules[2].type, "branch_policy")
@@ -203,7 +212,10 @@ class Environment(Framework.TestCase):
 
     def testEnvironmentVariables(self):
         # GitHub will always capitalize the variable name
-        variables = (("VARIABLE_NAME_ONE", "variable-value-one"), ("VARIABLE_NAME_TWO", "variable-value-two"))
+        variables = (
+            ("VARIABLE_NAME_ONE", "variable-value-one"),
+            ("VARIABLE_NAME_TWO", "variable-value-two"),
+        )
         repo = self.g.get_repo("AndrewJDawes/PyGithub")
         environment = repo.create_environment("test")
         for variable in variables:
@@ -214,7 +226,10 @@ class Environment(Framework.TestCase):
         for variable in variables:
             for environment_variable in environment_variables:
                 # GitHub will always capitalize the variable name, may be best to uppercase test data for comparison
-                if environment_variable.name == variable[0].upper() and environment_variable.value == variable[1]:
+                if (
+                    environment_variable.name == variable[0].upper()
+                    and environment_variable.value == variable[1]
+                ):
                     matched_environment_variables.append(environment_variable)
                     break
         self.assertEqual(len(matched_environment_variables), len(variables))
@@ -240,7 +255,10 @@ class Environment(Framework.TestCase):
         # encrypt returns a non-deterministic value, we need to mock it so the replay data matches
         encrypt.return_value = "M+5Fm/BqTfB90h3nC7F3BoZuu3nXs+/KtpXwxm9gG211tbRo0F5UiN0OIfYT83CKcx9oKES9Va4E96/b"
         # GitHub will always capitalize the secret name
-        secrets = (("SECRET_NAME_ONE", "secret-value-one"), ("SECRET_NAME_TWO", "secret-value-two"))
+        secrets = (
+            ("SECRET_NAME_ONE", "secret-value-one"),
+            ("SECRET_NAME_TWO", "secret-value-two"),
+        )
         repo = self.g.get_repo("AndrewJDawes/PyGithub")
         environment = repo.create_environment("test")
         for secret in secrets:

@@ -129,20 +129,27 @@ class GitRelease(Framework.TestCase):
     def testAttributes(self):
         release = self.release
         self.assertEqual(
-            release.assets[0].url, "https://api.github.com/repos/rickrickston123/RepoTest/releases/assets/22848494"
+            release.assets[0].url,
+            "https://api.github.com/repos/rickrickston123/RepoTest/releases/assets/22848494",
         )
         self.assertEqual(
-            release.assets_url, "https://api.github.com/repos/rickrickston123/RepoTest/releases/28524234/assets"
+            release.assets_url,
+            "https://api.github.com/repos/rickrickston123/RepoTest/releases/28524234/assets",
         )
         self.assertEqual(release.author.login, "rickrickston123")
         self.assertEqual(release.body, "Body")
         self.assertIsNone(release.body_html)
         self.assertIsNone(release.body_text)
-        self.assertEqual(release.created_at, datetime(2020, 7, 12, 7, 34, 42, tzinfo=timezone.utc))
+        self.assertEqual(
+            release.created_at, datetime(2020, 7, 12, 7, 34, 42, tzinfo=timezone.utc)
+        )
         self.assertIsNone(release.discussion_url)
         self.assertIsNone(release.documentation_url)
         self.assertEqual(release.draft, False)
-        self.assertEqual(release.html_url, "https://github.com/rickrickston123/RepoTest/releases/tag/v1.0")
+        self.assertEqual(
+            release.html_url,
+            "https://github.com/rickrickston123/RepoTest/releases/tag/v1.0",
+        )
         self.assertEqual(release.id, release_id)
         self.assertIsNone(release.immutable)
         self.assertIsNone(release.mentions_count)
@@ -150,11 +157,16 @@ class GitRelease(Framework.TestCase):
         self.assertEqual(release.name, "Test")
         self.assertEqual(release.node_id, "MDc6UmVsZWFzZTI4NTI0MjM0")
         self.assertEqual(release.prerelease, False)
-        self.assertEqual(release.published_at, datetime(2020, 7, 14, 0, 58, 20, tzinfo=timezone.utc))
+        self.assertEqual(
+            release.published_at, datetime(2020, 7, 14, 0, 58, 20, tzinfo=timezone.utc)
+        )
         self.assertIsNone(release.reactions)
         self.assertIsNone(release.status)
         self.assertEqual(release.tag_name, tag)
-        self.assertEqual(release.tarball_url, "https://api.github.com/repos/rickrickston123/RepoTest/tarball/v1.0")
+        self.assertEqual(
+            release.tarball_url,
+            "https://api.github.com/repos/rickrickston123/RepoTest/tarball/v1.0",
+        )
         self.assertEqual(release.target_commitish, "master")
         self.assertIsNone(release.updated_at)
         self.assertEqual(
@@ -213,7 +225,9 @@ class GitRelease(Framework.TestCase):
         self.assertEqual(assets[1].name, "asset2.gz")
 
     def testGetLazyReleaseByTag(self):
-        release = self.g.withLazy(True).get_repo("EnricoMi/PyGithub").get_release("v1.55")
+        release = (
+            self.g.withLazy(True).get_repo("EnricoMi/PyGithub").get_release("v1.55")
+        )
         assets = list(release.get_assets())
         self.assertEqual(len(assets), 2)
         self.assertEqual(assets[0].name, "asset1.md")
@@ -255,13 +269,17 @@ class GitRelease(Framework.TestCase):
         release = self.new_release
         self.assertEqual(release.id, self.new_release_id)
 
-        release.upload_asset(self.artifact_path, "unit test artifact", "application/zip")
+        release.upload_asset(
+            self.artifact_path, "unit test artifact", "application/zip"
+        )
         self.tearDownNewRelease()
 
     def testUploadAssetWithName(self):
         self.setUpNewRelease()
         release = self.new_release
-        r = release.upload_asset(self.artifact_path, name="foobar.zip", content_type="application/zip")
+        r = release.upload_asset(
+            self.artifact_path, name="foobar.zip", content_type="application/zip"
+        )
         self.assertEqual(r.name, "foobar.zip")
         self.tearDownNewRelease()
 

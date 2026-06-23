@@ -52,45 +52,39 @@ DictSignFunction = Callable[[dict], Union[str, bytes]]
 
 # For App authentication, time remaining before token expiration to request a new one
 ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS = 20
-TOKEN_REFRESH_THRESHOLD_TIMEDELTA = timedelta(seconds=ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS)
+TOKEN_REFRESH_THRESHOLD_TIMEDELTA = timedelta(
+    seconds=ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS
+)
 
 
 # add new implementations of github.Auth.Auth to docs/utilities.rst
 class Auth(abc.ABC):
-    """
-    This class is the base class of all authentication methods for Requester.
-    """
+    """This class is the base class of all authentication methods for
+    Requester."""
 
     @property
     @abc.abstractmethod
     def token_type(self) -> str:
-        """
-        The type of the auth token as used in the HTTP Authorization header, e.g. Bearer or Basic.
+        """The type of the auth token as used in the HTTP Authorization header,
+        e.g. Bearer or Basic.
 
         :return: token type
-
         """
 
     @property
     @abc.abstractmethod
     def token(self) -> str:
-        """
-        The auth token as used in the HTTP Authorization header.
+        """The auth token as used in the HTTP Authorization header.
 
         :return: token
-
         """
 
     def authentication(self, headers: dict) -> None:
-        """
-        Add authorization to the headers.
-        """
+        """Add authorization to the headers."""
         headers["Authorization"] = f"{self.token_type} {self.token}"
 
     def mask_authentication(self, headers: dict) -> None:
-        """
-        Mask header, e.g. for logging.
-        """
+        """Mask header, e.g. for logging."""
         headers["Authorization"] = self._masked_token
 
     @property
@@ -102,16 +96,12 @@ class HTTPBasicAuth(Auth, abc.ABC):
     @property
     @abc.abstractmethod
     def username(self) -> str:
-        """
-        The username.
-        """
+        """The username."""
 
     @property
     @abc.abstractmethod
     def password(self) -> str:
-        """
-        The password.
-        """
+        """The password."""
 
     @property
     def token_type(self) -> str:
@@ -119,7 +109,11 @@ class HTTPBasicAuth(Auth, abc.ABC):
 
     @property
     def token(self) -> str:
-        return base64.b64encode(f"{self.username}:{self.password}".encode()).decode("utf-8").replace("\n", "")
+        return (
+            base64.b64encode(f"{self.username}:{self.password}".encode())
+            .decode("utf-8")
+            .replace("\n", "")
+        )
 
     @property
     def _masked_token(self) -> str:
@@ -127,9 +121,7 @@ class HTTPBasicAuth(Auth, abc.ABC):
 
 
 class Login(HTTPBasicAuth):
-    """
-    This class is used to authenticate with login and password.
-    """
+    """This class is used to authenticate with login and password."""
 
     def __init__(self, login: str, password: str):
         assert isinstance(login, str)
@@ -154,9 +146,7 @@ class Login(HTTPBasicAuth):
 
 
 class Token(Auth):
-    """
-    This class is used to authenticate with a single constant token.
-    """
+    """This class is used to authenticate with a single constant token."""
 
     def __init__(self, token: str):
         assert isinstance(token, str)
@@ -177,11 +167,10 @@ class Token(Auth):
 
 
 class JWT(Auth, ABC):
-    """
-    This class is the base class to authenticate with a JSON Web Token (JWT).
+    """This class is the base class to authenticate with a JSON Web Token
+    (JWT).
 
     https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
-
     """
 
     @property
@@ -190,7 +179,9 @@ class JWT(Auth, ABC):
 
 
 class JwtSigner:
-    def __init__(self, private_key_or_func: str | PrivateKeyGenerator, jwt_algorithm: str):
+    def __init__(
+        self, private_key_or_func: str | PrivateKeyGenerator, jwt_algorithm: str
+    ):
         self._private_key_or_func = private_key_or_func
         self._jwt_algorithm = jwt_algorithm
 
@@ -203,15 +194,15 @@ class JwtSigner:
 
 
 class AppAuth(JWT):
-    """
-    This class is used to authenticate as a GitHub App.
+    """This class is used to authenticate as a GitHub App.
 
     https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app
-
     """
 
     @staticmethod
-    def create_jwt_sign(private_key_or_func: str | PrivateKeyGenerator, jwt_algorithm: str) -> DictSignFunction:
+    def create_jwt_sign(
+        private_key_or_func: str | PrivateKeyGenerator, jwt_algorithm: str
+    ) -> DictSignFunction:
         return JwtSigner(private_key_or_func, jwt_algorithm).jwt_sign
 
     # v3: move * above private_key
@@ -227,13 +218,19 @@ class AppAuth(JWT):
         assert isinstance(app_id, (int, str)), app_id
         if isinstance(app_id, str):
             assert len(app_id) > 0, "app_id must not be empty"
-        assert private_key is not None or sign_func is not None, "either private_key or sign_func must be given"
-        assert private_key is None or sign_func is None, "private_key or sign_func cannot both be given"
+        assert (
+            private_key is not None or sign_func is not None
+        ), "either private_key or sign_func must be given"
+        assert (
+            private_key is None or sign_func is None
+        ), "private_key or sign_func cannot both be given"
         if private_key is not None:
             assert isinstance(private_key, str) or callable(private_key)
             if isinstance(private_key, str):
                 assert len(private_key) > 0, "private_key must not be empty"
-            sign_func = AppAuth.create_jwt_sign(private_key, Consts.DEFAULT_JWT_ALGORITHM)
+            sign_func = AppAuth.create_jwt_sign(
+                private_key, Consts.DEFAULT_JWT_ALGORITHM
+            )
         assert isinstance(jwt_expiry, int), jwt_expiry
         assert Consts.MIN_JWT_EXPIRY <= jwt_expiry <= Consts.MAX_JWT_EXPIRY, jwt_expiry
 
@@ -256,14 +253,13 @@ class AppAuth(JWT):
         token_permissions: dict[str, str] | None = None,
         requester: Requester | None = None,
     ) -> AppInstallationAuth:
-        """
-        Creates a github.Auth.AppInstallationAuth instance for an installation.
+        """Creates a github.Auth.AppInstallationAuth instance for an
+        installation.
 
         :param installation_id: installation id
         :param token_permissions: optional permissions
         :param requester: optional requester with app authentication
         :return:
-
         """
         return AppInstallationAuth(self, installation_id, token_permissions, requester)
 
@@ -276,7 +272,9 @@ class AppAuth(JWT):
         """
         if expiration is not None:
             assert isinstance(expiration, int), expiration
-            assert Consts.MIN_JWT_EXPIRY <= expiration <= Consts.MAX_JWT_EXPIRY, expiration
+            assert (
+                Consts.MIN_JWT_EXPIRY <= expiration <= Consts.MAX_JWT_EXPIRY
+            ), expiration
 
         now = int(time.time())
         payload = {
@@ -293,11 +291,10 @@ class AppAuth(JWT):
 
 
 class AppAuthToken(JWT):
-    """
-    This class is used to authenticate as a GitHub App with a single constant JWT.
+    """This class is used to authenticate as a GitHub App with a single
+    constant JWT.
 
     https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app
-
     """
 
     def __init__(self, token: str):
@@ -311,11 +308,9 @@ class AppAuthToken(JWT):
 
 
 class AppInstallationAuth(Auth, WithRequester["AppInstallationAuth"]):
-    """
-    This class is used to authenticate as a GitHub App Installation.
+    """This class is used to authenticate as a GitHub App Installation.
 
     https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
-
     """
 
     # used to fetch live access token when calling self.token
@@ -333,7 +328,9 @@ class AppInstallationAuth(Auth, WithRequester["AppInstallationAuth"]):
 
         assert isinstance(app_auth, AppAuth), app_auth
         assert isinstance(installation_id, int), installation_id
-        assert token_permissions is None or isinstance(token_permissions, dict), token_permissions
+        assert token_permissions is None or isinstance(
+            token_permissions, dict
+        ), token_permissions
         assert requester is None or isinstance(requester, Requester), requester
 
         self._app_auth = app_auth
@@ -379,11 +376,16 @@ class AppInstallationAuth(Auth, WithRequester["AppInstallationAuth"]):
     @property
     def _is_expired(self) -> bool:
         assert self.__installation_authorization is not None
-        token_expires_at = self.__installation_authorization.expires_at - TOKEN_REFRESH_THRESHOLD_TIMEDELTA
+        token_expires_at = (
+            self.__installation_authorization.expires_at
+            - TOKEN_REFRESH_THRESHOLD_TIMEDELTA
+        )
         return token_expires_at < datetime.now(timezone.utc)
 
     def _get_installation_authorization(self) -> InstallationAuthorization:
-        assert self.__integration is not None, "Method withRequester(Requester) must be called first"
+        assert (
+            self.__integration is not None
+        ), "Method withRequester(Requester) must be called first"
         return self.__integration.get_access_token(
             self._installation_id,
             permissions=self._token_permissions,
@@ -395,11 +397,9 @@ class AppInstallationAuth(Auth, WithRequester["AppInstallationAuth"]):
 
 
 class AppUserAuth(Auth, WithRequester["AppUserAuth"]):
-    """
-    This class is used to authenticate as a GitHub App on behalf of a user.
+    """This class is used to authenticate as a GitHub App on behalf of a user.
 
     https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-with-a-github-app-on-behalf-of-a-user
-
     """
 
     _client_id: str
@@ -432,10 +432,18 @@ class AppUserAuth(Auth, WithRequester["AppUserAuth"]):
         assert isinstance(client_id, str) and len(client_id) > 0
         assert isinstance(client_secret, str) and len(client_secret) > 0
         assert isinstance(token, str) and len(token) > 0
-        assert token_type is None or isinstance(token_type, str) and len(token_type) > 0, token_type
+        assert (
+            token_type is None or isinstance(token_type, str) and len(token_type) > 0
+        ), token_type
         assert expires_at is None or isinstance(expires_at, datetime), expires_at
-        assert refresh_token is None or isinstance(refresh_token, str) and len(refresh_token) > 0
-        assert refresh_expires_at is None or isinstance(refresh_expires_at, datetime), refresh_expires_at
+        assert (
+            refresh_token is None
+            or isinstance(refresh_token, str)
+            and len(refresh_token) > 0
+        )
+        assert refresh_expires_at is None or isinstance(
+            refresh_expires_at, datetime
+        ), refresh_expires_at
         assert requester is None or isinstance(requester, Requester), requester
 
         self._client_id = client_id
@@ -480,13 +488,22 @@ class AppUserAuth(Auth, WithRequester["AppUserAuth"]):
 
     @property
     def _is_expired(self) -> bool:
-        return self._expires_at is not None and self._expires_at < datetime.now(timezone.utc)
+        return self._expires_at is not None and self._expires_at < datetime.now(
+            timezone.utc
+        )
 
     def _refresh(self) -> None:
         if self._refresh_token is None:
-            raise RuntimeError("Cannot refresh expired token because no refresh token has been provided")
-        if self._refresh_expires_at is not None and self._refresh_expires_at < datetime.now(timezone.utc):
-            raise RuntimeError("Cannot refresh expired token because refresh token also expired")
+            raise RuntimeError(
+                "Cannot refresh expired token because no refresh token has been provided"
+            )
+        if (
+            self._refresh_expires_at is not None
+            and self._refresh_expires_at < datetime.now(timezone.utc)
+        ):
+            raise RuntimeError(
+                "Cannot refresh expired token because refresh token also expired"
+            )
 
         # refresh token
         token = self.__app.refresh_access_token(self._refresh_token)
@@ -517,9 +534,7 @@ class AppUserAuth(Auth, WithRequester["AppUserAuth"]):
 
 
 class NetrcAuth(HTTPBasicAuth, WithRequester["NetrcAuth"]):
-    """
-    This class is used to authenticate via .netrc.
-    """
+    """This class is used to authenticate via .netrc."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -533,12 +548,16 @@ class NetrcAuth(HTTPBasicAuth, WithRequester["NetrcAuth"]):
 
     @property
     def login(self) -> str:
-        assert self._login is not None, "Method withRequester(Requester) must be called first"
+        assert (
+            self._login is not None
+        ), "Method withRequester(Requester) must be called first"
         return self._login
 
     @property
     def password(self) -> str:
-        assert self._password is not None, "Method withRequester(Requester) must be called first"
+        assert (
+            self._password is not None
+        ), "Method withRequester(Requester) must be called first"
         return self._password
 
     def withRequester(self, requester: Requester) -> NetrcAuth:
@@ -547,7 +566,9 @@ class NetrcAuth(HTTPBasicAuth, WithRequester["NetrcAuth"]):
 
         auth = utils.get_netrc_auth(requester.base_url, raise_errors=True)
         if auth is None:
-            raise RuntimeError(f"Could not get credentials from netrc for host {requester.hostname}")
+            raise RuntimeError(
+                f"Could not get credentials from netrc for host {requester.hostname}"
+            )
 
         self._login, self._password = auth
 

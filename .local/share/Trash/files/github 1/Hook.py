@@ -47,15 +47,21 @@ from typing import TYPE_CHECKING, Any
 
 import github.GithubObject
 import github.HookResponse
-from github.GithubObject import Attribute, CompletableGithubObject, NotSet, Opt, is_optional, is_optional_list
+from github.GithubObject import (
+    Attribute,
+    CompletableGithubObject,
+    NotSet,
+    Opt,
+    is_optional,
+    is_optional_list,
+)
 
 if TYPE_CHECKING:
     from github.HookResponse import HookResponse
 
 
 class Hook(CompletableGithubObject):
-    """
-    This class represents Hooks.
+    """This class represents Hooks.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#webhooks
@@ -64,7 +70,6 @@ class Hook(CompletableGithubObject):
 
     - /components/schemas/hook
     - /components/schemas/org-hook
-
     """
 
     def _initAttributes(self) -> None:
@@ -185,7 +190,9 @@ class Hook(CompletableGithubObject):
             }
         )
 
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -209,7 +216,9 @@ class Hook(CompletableGithubObject):
         if "created_at" in attributes:  # pragma no branch
             self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "deliveries_url" in attributes:  # pragma no branch
-            self._deliveries_url = self._makeStringAttribute(attributes["deliveries_url"])
+            self._deliveries_url = self._makeStringAttribute(
+                attributes["deliveries_url"]
+            )
         if "events" in attributes:  # pragma no branch
             self._events = self._makeListOfStringsAttribute(attributes["events"])
         if "id" in attributes:  # pragma no branch

@@ -98,7 +98,9 @@ class Enterprise(Framework.BasicTestCase):
         self.assertEqual(raisedexp.exception.args[0], "Unknown URL scheme")
 
     def testLongUrl(self):
-        g = github.Github(auth=self.oauth_token, base_url="http://my.enterprise.com/path/to/github")
+        g = github.Github(
+            auth=self.oauth_token, base_url="http://my.enterprise.com/path/to/github"
+        )
         repos = g.get_user().get_repos()
         self.assertListKeyEqual(
             repos,
@@ -125,7 +127,9 @@ class Enterprise(Framework.BasicTestCase):
         self.assertEqual(repos[0].owner.name, "Vincent Jacques")
 
     def testSpecificPort(self):
-        g = github.Github(auth=self.oauth_token, base_url="http://my.enterprise.com:8080")
+        g = github.Github(
+            auth=self.oauth_token, base_url="http://my.enterprise.com:8080"
+        )
         self.assertListKeyEqual(
             g.get_user().get_repos(),
             lambda r: r.name,

@@ -30,7 +30,16 @@ import sys
 from abc import ABC
 
 import github
-from github.Auth import AppAuth, AppAuthToken, AppInstallationAuth, AppUserAuth, Auth, Login, NetrcAuth, Token
+from github.Auth import (
+    AppAuth,
+    AppAuthToken,
+    AppInstallationAuth,
+    AppUserAuth,
+    Auth,
+    Login,
+    NetrcAuth,
+    Token,
+)
 from github.PaginatedList import PaginatedList
 from github.Repository import Repository
 

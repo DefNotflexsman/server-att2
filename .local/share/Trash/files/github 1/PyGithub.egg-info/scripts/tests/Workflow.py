@@ -58,11 +58,18 @@ class Workflow(Framework.TestCase):
             repr(self.workflow),
             'Workflow(url="https://api.github.com/repos/PyGithub/PyGithub/actions/workflows/1026390", name="check")',
         )
-        self.assertEqual(self.workflow.badge_url, "https://github.com/PyGithub/PyGithub/workflows/check/badge.svg")
-        self.assertEqual(self.workflow.created_at, datetime(2020, 4, 15, 0, 48, 32, tzinfo=timezone.utc))
+        self.assertEqual(
+            self.workflow.badge_url,
+            "https://github.com/PyGithub/PyGithub/workflows/check/badge.svg",
+        )
+        self.assertEqual(
+            self.workflow.created_at,
+            datetime(2020, 4, 15, 0, 48, 32, tzinfo=timezone.utc),
+        )
         self.assertIsNone(self.workflow.deleted_at)
         self.assertEqual(
-            self.workflow.html_url, "https://github.com/PyGithub/PyGithub/blob/master/.github/workflows/check.yml"
+            self.workflow.html_url,
+            "https://github.com/PyGithub/PyGithub/blob/master/.github/workflows/check.yml",
         )
         self.assertEqual(self.workflow.id, 1026390)
         self.assertEqual(self.workflow.name, "check")
@@ -86,14 +93,24 @@ class Workflow(Framework.TestCase):
         )
 
     def testLazyAttributes(self):
-        workflow = self.g.withLazy(True).get_repo("PyGithub/PyGithub").get_workflow("check.yml")
-        self.assertEqual(
-            str(workflow), 'Workflow(url="/repos/PyGithub/PyGithub/actions/workflows/check.yml", name=None)'
+        workflow = (
+            self.g.withLazy(True)
+            .get_repo("PyGithub/PyGithub")
+            .get_workflow("check.yml")
         )
-        self.assertEqual(workflow.url, "/repos/PyGithub/PyGithub/actions/workflows/check.yml")
+        self.assertEqual(
+            str(workflow),
+            'Workflow(url="/repos/PyGithub/PyGithub/actions/workflows/check.yml", name=None)',
+        )
+        self.assertEqual(
+            workflow.url, "/repos/PyGithub/PyGithub/actions/workflows/check.yml"
+        )
 
         workflow = self.g.withLazy(True).get_repo("PyGithub/PyGithub").get_workflow(42)
-        self.assertEqual(str(workflow), 'Workflow(url="/repos/PyGithub/PyGithub/actions/workflows/42", name=None)')
+        self.assertEqual(
+            str(workflow),
+            'Workflow(url="/repos/PyGithub/PyGithub/actions/workflows/42", name=None)',
+        )
         self.assertEqual(workflow.id, 42)
         self.assertEqual(workflow.url, "/repos/PyGithub/PyGithub/actions/workflows/42")
 
@@ -108,7 +125,9 @@ class Workflow(Framework.TestCase):
         sfdye = self.g.get_user("sfdye")
         master = self.g.get_repo("PyGithub/PyGithub").get_branch("master")
         self.assertListKeyEqual(
-            self.workflow.get_runs(actor=sfdye, branch=master, event="push", status="completed"),
+            self.workflow.get_runs(
+                actor=sfdye, branch=master, event="push", status="completed"
+            ),
             lambda r: r.id,
             [100957683, 94845611, 93946842, 92714488],
         )
@@ -136,20 +155,28 @@ class Workflow(Framework.TestCase):
 
     def testCreateDispatchWithBranch(self):
         dispatch_inputs = {"logLevel": "Warning", "message": "Log Message"}
-        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow("manual_dispatch.yml")
-        branch = self.g.get_repo("wrecker/PyGithub").get_branch("workflow_dispatch_branch")
+        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow(
+            "manual_dispatch.yml"
+        )
+        branch = self.g.get_repo("wrecker/PyGithub").get_branch(
+            "workflow_dispatch_branch"
+        )
         self.assertTrue(workflow.create_dispatch(branch, dispatch_inputs))
 
     def testCreateDispatchWithTag(self):
         dispatch_inputs = {"logLevel": "Warning", "message": "Log Message"}
-        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow("manual_dispatch.yml")
+        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow(
+            "manual_dispatch.yml"
+        )
         tags = self.g.get_repo("wrecker/PyGithub").get_tags()
         tag = [t for t in tags if t.name == "workflow_dispatch_tag"].pop()
         self.assertTrue(workflow.create_dispatch(tag, dispatch_inputs))
 
     def testCreateDispatchWithString(self):
         dispatch_inputs = {"logLevel": "Warning", "message": "Log Message"}
-        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow("manual_dispatch.yml")
+        workflow = self.g.get_repo("wrecker/PyGithub").get_workflow(
+            "manual_dispatch.yml"
+        )
         ref_str = "main"
         self.assertTrue(workflow.create_dispatch(ref_str, dispatch_inputs))
 
@@ -158,11 +185,16 @@ class Workflow(Framework.TestCase):
         self.assertFalse(workflow.create_dispatch("main"))
 
     def testCreateDispatchException(self):
-        workflow = self.g.get_repo("test-org/test-repo").get_workflow("workflow-with-params.yaml")
+        workflow = self.g.get_repo("test-org/test-repo").get_workflow(
+            "workflow-with-params.yaml"
+        )
         with self.assertRaises(GithubException) as raisedexp:
             workflow.create_dispatch("main", throw=True)
         self.assertEqual(raisedexp.exception.status, 422)
-        self.assertEqual(raisedexp.exception.data["message"], "Required input 'mandatory-parameter' not provided")
+        self.assertEqual(
+            raisedexp.exception.data["message"],
+            "Required input 'mandatory-parameter' not provided",
+        )
 
     def testDisable(self):
         workflow = self.g.get_repo("nickrmcclorey/PyGithub").get_workflow("ci.yml")

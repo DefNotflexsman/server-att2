@@ -44,13 +44,11 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class GitTreeElement(NonCompletableGithubObject):
-    """
-    This class represents GitTreeElements.
+    """This class represents GitTreeElements.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/git-tree/properties/tree/items
-
     """
 
     def _initAttributes(self) -> None:

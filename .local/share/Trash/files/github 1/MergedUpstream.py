@@ -32,13 +32,11 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class MergedUpstream(NonCompletableGithubObject):
-    """
-    This class represents a result of merge-upstream call.
+    """This class represents a result of merge-upstream call.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/merged-upstream
-
     """
 
     def _initAttributes(self) -> None:

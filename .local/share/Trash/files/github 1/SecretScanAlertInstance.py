@@ -36,12 +36,10 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class SecretScanAlertInstance(NonCompletableGithubObject):
-    """
-    This class represents secret scanning alert instances.
+    """This class represents secret scanning alert instances.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/secret-scanning.
-
     """
 
     def _initAttributes(self) -> None:

@@ -44,14 +44,12 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class GitObject(NonCompletableGithubObject):
-    """
-    This class represents GitObjects.
+    """This class represents GitObjects.
 
     The OpenAPI schema can be found at
 
     - /components/schemas/git-ref/properties/object
     - /components/schemas/git-tag/properties/object
-
     """
 
     def _initAttributes(self) -> None:

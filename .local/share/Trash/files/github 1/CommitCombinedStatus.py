@@ -53,8 +53,7 @@ if TYPE_CHECKING:
 
 
 class CommitCombinedStatus(NonCompletableGithubObject):
-    """
-    This class represents CommitCombinedStatuses.
+    """This class represents CommitCombinedStatuses.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#statuses
@@ -62,7 +61,6 @@ class CommitCombinedStatus(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/combined-commit-status
-
     """
 
     def _initAttributes(self) -> None:
@@ -109,13 +107,17 @@ class CommitCombinedStatus(NonCompletableGithubObject):
         if "commit_url" in attributes:  # pragma no branch
             self._commit_url = self._makeStringAttribute(attributes["commit_url"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "state" in attributes:  # pragma no branch
             self._state = self._makeStringAttribute(attributes["state"])
         if "statuses" in attributes:  # pragma no branch
-            self._statuses = self._makeListOfClassesAttribute(github.CommitStatus.CommitStatus, attributes["statuses"])
+            self._statuses = self._makeListOfClassesAttribute(
+                github.CommitStatus.CommitStatus, attributes["statuses"]
+            )
         if "total_count" in attributes:  # pragma no branch
             self._total_count = self._makeIntAttribute(attributes["total_count"])
         if "url" in attributes:  # pragma no branch

@@ -48,7 +48,13 @@ from typing_extensions import deprecated
 
 import github.EnterpriseConsumedLicenses
 import github.Requester
-from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet, is_defined, is_undefined
+from github.GithubObject import (
+    Attribute,
+    NonCompletableGithubObject,
+    NotSet,
+    is_defined,
+    is_undefined,
+)
 
 if TYPE_CHECKING:
     from github.EnterpriseConsumedLicenses import EnterpriseConsumedLicenses
@@ -56,8 +62,7 @@ if TYPE_CHECKING:
 
 
 class Enterprise(NonCompletableGithubObject):
-    """
-    This class represents Enterprises.
+    """This class represents Enterprises.
 
     The reference can be found here
     https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin
@@ -65,7 +70,6 @@ class Enterprise(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/enterprise
-
     """
 
     def _initAttributes(self) -> None:
@@ -140,14 +144,18 @@ class Enterprise(NonCompletableGithubObject):
     def from_slug(requester: Requester, slug: str) -> Enterprise:
         return github.Enterprise.Enterprise(requester, {}, {"slug": slug})
 
-    def get_consumed_licenses(self, *, licence_users_per_page: int | None = None) -> EnterpriseConsumedLicenses:
+    def get_consumed_licenses(
+        self, *, licence_users_per_page: int | None = None
+    ) -> EnterpriseConsumedLicenses:
         """
         :calls: `GET /enterprises/{enterprise}/consumed-licenses <https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin/license#list-enterprise-consumed-licenses>`_
         :param licence_users_per_page: int Number of users retrieved with the licences. Iterating over users property will fetch pages of this size. The default page size is 30, the maximum is 100.
         """
         # licence_users_per_page asserted in EnterpriseConsumedLicenses(CompletableGithubObjectWithPaginatedProperty)
         return github.EnterpriseConsumedLicenses.EnterpriseConsumedLicenses(
-            self._requester, url=self.url + "/consumed-licenses", per_page=licence_users_per_page
+            self._requester,
+            url=self.url + "/consumed-licenses",
+            per_page=licence_users_per_page,
         )
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:

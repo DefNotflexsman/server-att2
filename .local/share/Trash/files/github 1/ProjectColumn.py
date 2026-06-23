@@ -65,8 +65,7 @@ if TYPE_CHECKING:
 
 
 class ProjectColumn(NonCompletableGithubObject):
-    """
-    This class represents Project Columns.
+    """This class represents Project Columns.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/projects#columns
@@ -74,7 +73,6 @@ class ProjectColumn(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/project-column
-
     """
 
     def _initAttributes(self) -> None:
@@ -122,11 +120,15 @@ class ProjectColumn(NonCompletableGithubObject):
     def url(self) -> str:
         return self._url.value
 
-    def get_cards(self, archived_state: Opt[str] = NotSet) -> PaginatedList[ProjectCard]:
+    def get_cards(
+        self, archived_state: Opt[str] = NotSet
+    ) -> PaginatedList[ProjectCard]:
         """
         :calls: `GET /projects/columns/{column_id}/cards <https://docs.github.com/en/rest/reference/projects#list-project-cards>`_
         """
-        assert archived_state is NotSet or isinstance(archived_state, str), archived_state
+        assert archived_state is NotSet or isinstance(
+            archived_state, str
+        ), archived_state
 
         url_parameters = dict()
         if archived_state is not NotSet:

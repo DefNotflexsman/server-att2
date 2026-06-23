@@ -38,8 +38,7 @@ if TYPE_CHECKING:
 
 
 class RateLimitOverview(NonCompletableGithubObject):
-    """
-    This class represents RateLimitOverview.
+    """This class represents RateLimitOverview.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/rate-limit
@@ -47,7 +46,6 @@ class RateLimitOverview(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/rate-limit-overview
-
     """
 
     def _initAttributes(self) -> None:
@@ -74,6 +72,8 @@ class RateLimitOverview(NonCompletableGithubObject):
         if "rate" in attributes:  # pragma no branch
             self._rate = self._makeClassAttribute(github.Rate.Rate, attributes["rate"])
         if "resources" in attributes:  # pragma no branch
-            self._resources = self._makeClassAttribute(github.RateLimit.RateLimit, attributes["resources"])
+            self._resources = self._makeClassAttribute(
+                github.RateLimit.RateLimit, attributes["resources"]
+            )
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])

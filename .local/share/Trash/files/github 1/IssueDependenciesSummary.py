@@ -31,8 +31,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class IssueDependenciesSummary(NonCompletableGithubObject):
-    """
-    This class represents IssueDependenciesSummary.
+    """This class represents IssueDependenciesSummary.
 
     The reference can be found here
     https://docs.github.com/en/rest/issues/issues
@@ -40,7 +39,6 @@ class IssueDependenciesSummary(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/issue-dependencies-summary
-
     """
 
     def _initAttributes(self) -> None:
@@ -71,6 +69,8 @@ class IssueDependenciesSummary(NonCompletableGithubObject):
         if "blocking" in attributes:  # pragma no branch
             self._blocking = self._makeIntAttribute(attributes["blocking"])
         if "total_blocked_by" in attributes:  # pragma no branch
-            self._total_blocked_by = self._makeIntAttribute(attributes["total_blocked_by"])
+            self._total_blocked_by = self._makeIntAttribute(
+                attributes["total_blocked_by"]
+            )
         if "total_blocking" in attributes:  # pragma no branch
             self._total_blocking = self._makeIntAttribute(attributes["total_blocking"])

@@ -211,14 +211,22 @@ class PaginatedList(PaginatedListBase[T]):
         if firstUrl is not None and graphql_query is not None:
             raise ValueError("Only one of firstUrl or graphql_query can be given")
         if graphql_query is not None:
-            if not (isinstance(list_item, list) and all(isinstance(item, str) for item in list_item)):
-                raise ValueError("With graphql_query given, item_list must be a list of strings")
+            if not (
+                isinstance(list_item, list)
+                and all(isinstance(item, str) for item in list_item)
+            ):
+                raise ValueError(
+                    "With graphql_query given, item_list must be a list of strings"
+                )
 
         firstParams = firstParams or {}
 
         # we add the per_page parameter if that value is not the default
         # but only if there is no per_page parameter in the firstParams
-        if "per_page" not in firstParams and requester.per_page != Consts.DEFAULT_PER_PAGE:
+        if (
+            "per_page" not in firstParams
+            and requester.per_page != Consts.DEFAULT_PER_PAGE
+        ):
             firstParams["per_page"] = requester.per_page
 
         self.__requester = requester
@@ -280,7 +288,9 @@ class PaginatedList(PaginatedListBase[T]):
 
             # update totalCount
             if lastUrl:
-                self.__totalCount = int(Requester.get_parameters_of_url(lastUrl)["page"][0])
+                self.__totalCount = int(
+                    Requester.get_parameters_of_url(lastUrl)["page"][0]
+                )
             elif data and "total_count" in data:
                 self.__totalCount = data["total_count"]
             elif data:
@@ -364,7 +374,10 @@ class PaginatedList(PaginatedListBase[T]):
                         self.__nextParams = {
                             k: v
                             for k, v in self.__nextParams.items()
-                            if k not in Requester.get_parameters_of_url(self.__nextUrl).keys()
+                            if k
+                            not in Requester.get_parameters_of_url(
+                                self.__nextUrl
+                            ).keys()
                         }
             super()._reverse()
 
@@ -386,10 +399,14 @@ class PaginatedList(PaginatedListBase[T]):
             )
         )
 
-    def _get_graphql_pagination(self, data: dict[str, Any], path: list[str]) -> dict[str, Any]:
+    def _get_graphql_pagination(
+        self, data: dict[str, Any], path: list[str]
+    ) -> dict[str, Any]:
         for item in path:
             if item not in data:
-                raise RuntimeError(f"Pagination path {path} not found in data: {self.paths_of_dict(data)}")
+                raise RuntimeError(
+                    f"Pagination path {path} not found in data: {self.paths_of_dict(data)}"
+                )
             data = data[item]
         return data
 
@@ -446,18 +463,29 @@ class PaginatedList(PaginatedListBase[T]):
             return content
         else:
             if "pageInfo" not in data:
-                raise RuntimeError(f"Query must provide pagination with pageInfo:\n{self.__graphql_query}")
+                raise RuntimeError(
+                    f"Query must provide pagination with pageInfo:\n{self.__graphql_query}"
+                )
 
             self.__page_info = data["pageInfo"]
             if any(
                 item not in self.__page_info  # type: ignore
-                for item in ["startCursor", "endCursor", "hasNextPage", "hasPreviousPage"]
+                for item in [
+                    "startCursor",
+                    "endCursor",
+                    "hasNextPage",
+                    "hasPreviousPage",
+                ]
             ):
-                raise RuntimeError(f"Query must provide pagination with pageInfo\n{self.__graphql_query}")
+                raise RuntimeError(
+                    f"Query must provide pagination with pageInfo\n{self.__graphql_query}"
+                )
 
             if self.__totalCount is None:
                 if "totalCount" not in data:
-                    raise RuntimeError(f"Query must provide totalCount\n{self.__graphql_query}")
+                    raise RuntimeError(
+                        f"Query must provide totalCount\n{self.__graphql_query}"
+                    )
                 self.__totalCount = data["totalCount"]
 
             if "nodes" not in data:
@@ -468,7 +496,11 @@ class PaginatedList(PaginatedListBase[T]):
             nodes = data["nodes"]
             if self._reversed:
                 nodes = nodes[::-1]
-            return [self.__contentClass(self.__requester, {}, element) for element in nodes if element is not None]
+            return [
+                self.__contentClass(self.__requester, {}, element)
+                for element in nodes
+                if element is not None
+            ]
 
     def __parseLinkHeader(self, headers: dict[str, str | int]) -> dict[str, str]:
         links = {}
@@ -499,10 +531,17 @@ class PaginatedList(PaginatedListBase[T]):
             if "incomplete_results" in data:
                 self.__incomplete_results = data.get("incomplete_results")
             data = data[self.__list_item]
-        return [self.__contentClass(self.__requester, headers, self._transformAttributes(element)) for element in data]
+        return [
+            self.__contentClass(
+                self.__requester, headers, self._transformAttributes(element)
+            )
+            for element in data
+        ]
 
     @classmethod
-    def override_attributes(cls, overrides: dict[str, Any]) -> Callable[[dict[str, Any]], dict[str, Any]]:
+    def override_attributes(
+        cls, overrides: dict[str, Any]
+    ) -> Callable[[dict[str, Any]], dict[str, Any]]:
         def attributes_transformer(element: dict[str, Any]) -> dict[str, Any]:
             # Recursively merge overrides with attributes, overriding attributes with overrides
             element = cls.merge_dicts(element, overrides)
@@ -523,4 +562,7 @@ class PaginatedList(PaginatedListBase[T]):
 
     @classmethod
     def paths_of_dict(cls, d: dict) -> dict:
-        return {key: cls.paths_of_dict(val) if isinstance(val, dict) else None for key, val in d.items()}
+        return {
+            key: cls.paths_of_dict(val) if isinstance(val, dict) else None
+            for key, val in d.items()
+        }

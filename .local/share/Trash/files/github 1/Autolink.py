@@ -48,8 +48,7 @@ from github.GithubObject import Attribute, NonCompletableGithubObject, NotSet
 
 
 class Autolink(NonCompletableGithubObject):
-    """
-    This class represents Repository autolinks.
+    """This class represents Repository autolinks.
 
     The reference can be found here
     https://docs.github.com/en/rest/repos/autolinks?apiVersion=2022-11-28
@@ -57,7 +56,6 @@ class Autolink(NonCompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/autolink
-
     """
 
     def _initAttributes(self) -> None:
@@ -94,7 +92,9 @@ class Autolink(NonCompletableGithubObject):
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "is_alphanumeric" in attributes:  # pragma no branch
-            self._is_alphanumeric = self._makeBoolAttribute(attributes["is_alphanumeric"])
+            self._is_alphanumeric = self._makeBoolAttribute(
+                attributes["is_alphanumeric"]
+            )
         if "key_prefix" in attributes:  # pragma no branch
             self._key_prefix = self._makeStringAttribute(attributes["key_prefix"])
         if "updated_at" in attributes:  # pragma no branch

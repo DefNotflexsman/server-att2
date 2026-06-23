@@ -42,8 +42,7 @@ if TYPE_CHECKING:
 
 
 class WorkflowJob(CompletableGithubObject):
-    """
-    This class represents Workflow Jobs.
+    """This class represents Workflow Jobs.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/actions#workflow-jobs
@@ -51,7 +50,6 @@ class WorkflowJob(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/job
-
     """
 
     def _initAttributes(self) -> None:
@@ -231,9 +229,13 @@ class WorkflowJob(CompletableGithubObject):
         if "run_url" in attributes:  # pragma no branch
             self._run_url = self._makeStringAttribute(attributes["run_url"])
         if "runner_group_id" in attributes:  # pragma no branch
-            self._runner_group_id = self._makeIntAttribute(attributes["runner_group_id"])
+            self._runner_group_id = self._makeIntAttribute(
+                attributes["runner_group_id"]
+            )
         if "runner_group_name" in attributes:  # pragma no branch
-            self._runner_group_name = self._makeStringAttribute(attributes["runner_group_name"])
+            self._runner_group_name = self._makeStringAttribute(
+                attributes["runner_group_name"]
+            )
         if "runner_id" in attributes:  # pragma no branch
             self._runner_id = self._makeIntAttribute(attributes["runner_id"])
         if "runner_name" in attributes:  # pragma no branch
@@ -243,7 +245,9 @@ class WorkflowJob(CompletableGithubObject):
         if "status" in attributes:  # pragma no branch
             self._status = self._makeStringAttribute(attributes["status"])
         if "steps" in attributes:  # pragma no branch
-            self._steps = self._makeListOfClassesAttribute(github.WorkflowStep.WorkflowStep, attributes["steps"])
+            self._steps = self._makeListOfClassesAttribute(
+                github.WorkflowStep.WorkflowStep, attributes["steps"]
+            )
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "workflow_name" in attributes:  # pragma no branch

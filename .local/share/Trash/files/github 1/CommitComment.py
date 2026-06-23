@@ -61,8 +61,7 @@ if TYPE_CHECKING:
 
 
 class CommitComment(CompletableGithubObject):
-    """
-    This class represents CommitComments.
+    """This class represents CommitComments.
 
     The reference can be found here
     https://docs.github.com/en/rest/reference/repos#comments
@@ -70,7 +69,6 @@ class CommitComment(CompletableGithubObject):
     The OpenAPI schema can be found at
 
     - /components/schemas/commit-comment
-
     """
 
     def _initAttributes(self) -> None:
@@ -177,7 +175,9 @@ class CommitComment(CompletableGithubObject):
         post_parameters = {
             "body": body,
         }
-        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url, input=post_parameters)
+        headers, data = self._requester.requestJsonAndCheck(
+            "PATCH", self.url, input=post_parameters
+        )
         self._useAttributes(data)
         self._set_complete()
 
@@ -229,7 +229,9 @@ class CommitComment(CompletableGithubObject):
 
     def _useAttributes(self, attributes: dict[str, Any]) -> None:
         if "author_association" in attributes:  # pragma no branch
-            self._author_association = self._makeStringAttribute(attributes["author_association"])
+            self._author_association = self._makeStringAttribute(
+                attributes["author_association"]
+            )
         if "body" in attributes:  # pragma no branch
             self._body = self._makeStringAttribute(attributes["body"])
         if "commit_id" in attributes:  # pragma no branch
