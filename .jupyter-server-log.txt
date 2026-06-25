@@ -54,3 +54,14 @@ Launching jupyter-lab
 [I 2026-06-25 17:21:44.636 ServerApp] Saving file at /githubrepos.py
 [I 2026-06-25 17:21:59.276 ServerApp] Saving file at /githubrepos.py
 [I 2026-06-25 17:23:35.529 ServerApp] Saving file at /githubrepos.py
+[W 2026-06-25 17:24:39.330 ServerApp] delete /ssh key for GitHub and PAT tooken.txt
+[I 2026-06-25 17:35:03.583 ServerApp] Saving file at /main.py
+[I 2026-06-25 17:35:38.303 ServerApp] Uploading file to /websocket_client.html
+[I 2026-06-25 17:37:04.280 ServerApp] Saving file at /main.py
+[I 2026-06-25 17:37:38.170 ServerApp] Uploading file to /cookie.html
+[I 2026-06-25 17:37:38.174 ServerApp] Uploading file to /controller.html
+[I 2026-06-25 17:39:04.947 ServerApp] Saving file at /main.py
+[I 2026-06-25 17:39:40.383 ServerApp] Saving file at /main.py
+[W 2026-06-25 17:39:45.325 ServerApp] delete /cookie
+[W 2026-06-25 17:39:48.963 ServerApp] delete /controller
+[W 2026-06-25 17:39:53.165 ServerApp] delete /websocket_client.txt
