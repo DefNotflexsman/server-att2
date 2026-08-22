@@ -1148,11 +1148,6 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
             raise HTTPException(status_code=503, detail=f"Network error trying to fetch upstream data: {exc}")
 
 # Fallback runner for local execution outside of Render environment
-# Flask automatically handles HEAD requests if GET is specified
-from flask import Flask, request, jsonify, make_response
-
-app = Flask(__name__)
-
 # Register the route to accept standard and custom HTTP verbs
 @app.route("/api/endpoint", methods=["GET", "POST", "CREATE"])
 def handle_api():
