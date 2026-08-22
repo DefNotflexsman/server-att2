@@ -1,10 +1,17 @@
+import subprocess
+import flask
 import os
 import httpx
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import HTMLResponse
 
 app = FastAPI(title="UUID Generator Site")
-
+@app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
+async def get_style():
+    css_content = """
+    body { background-color: #121214; color: #f4f4f6; }
+    """
+    return css_content
 @app.get("/controllerempt", response_class=HTMLResponse)
 async def server_page():
     # Insert your custom layout details inside this multi-line string variable
@@ -202,28 +209,155 @@ async def server_page():
 async def home_page():
     html_content = """
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Python UUID Portal</title>
             <style>
-                body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; line-height: 1.6; }
-                code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-                .box { border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #fafafa; }
+                /* CSS Variables for Universal Theme Management */
+                :root {
+                    --bg-primary: #121214;
+                    --bg-secondary: #1a1a1e;
+                    --bg-card: #232329;
+                    --text-primary: #f4f4f6;
+                    --text-secondary: #a1a1aa;
+                    --accent: #6366f1;
+                    --accent-hover: #4f46e5;
+                    --border: #3f3f46;
+                    --code-bg: #09090b;
+                    --radius: 8px;
+                    --transition: all 0.2s ease;
+                }
+
+                /* Base Reset & Typography */
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                body {
+                    background-color: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    line-height: 1.6;
+                    padding: 3rem 1rem;
+                }
+
+                .container {
+                    max-width: 700px;
+                    margin: 0 auto;
+                }
+
+                /* Header Elements */
+                header {
+                    margin-bottom: 2.5rem;
+                }
+
+                h1 {
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    margin-bottom: 0.75rem;
+                    letter-spacing: -0.025em;
+                }
+
+                p {
+                    color: var(--text-secondary);
+                    margin-bottom: 1.25rem;
+                    font-size: 1.05rem;
+                }
+
+                /* Card Styling for Content Sections */
+                .box {
+                    background-color: var(--bg-card);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius);
+                    padding: 2rem;
+                    margin: 2rem 0;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+                }
+
+                h3 {
+                    font-size: 1.3rem;
+                    margin-bottom: 1.25rem;
+                    border-bottom: 1px solid var(--border);
+                    padding-bottom: 0.5rem;
+                    color: var(--text-primary);
+                }
+
+                .box p {
+                    color: var(--text-secondary);
+                    margin-bottom: 0.75rem;
+                    font-size: 1rem;
+                }
+
+                .box p:last-child {
+                    margin-bottom: 0;
+                }
+
+                /* Code Block Elements */
+                code {
+                    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+                    font-size: 0.9rem;
+                    color: #e2e8f0;
+                    background-color: var(--code-bg);
+                    border: 1px solid var(--border);
+                    padding: 0.2rem 0.5rem;
+                    border-radius: 4px;
+                }
+
+                /* Navigation Links / Buttons */
+                .nav-link {
+                    display: inline-block;
+                    background-color: var(--bg-secondary);
+                    color: var(--text-primary);
+                    text-decoration: none;
+                    padding: 0.6rem 1.2rem;
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius);
+                    font-weight: 500;
+                    transition: var(--transition);
+                    margin-top: 0.25rem;
+                }
+
+                .nav-link:hover {
+                    background-color: var(--accent);
+                    border-color: var(--accent);
+                    transform: translateY(-1px);
+                }
+
+                /* Mobile Responsiveness */
+                @media (max-width: 640px) {
+                    body {
+                        padding: 1.5rem 0.5rem;
+                    }
+                    h1 {
+                        font-size: 1.8rem;
+                    }
+                    .box {
+                        padding: 1.25rem;
+                    }
+                }
             </style>
         </head>
         <body>
-            <h1>Welcome to the Python UUID Web Portal</h1>
-            <p>This entire platform is built natively using 100% Python.</p>
-            
-            <div class="box">
-                <h3>API Endpoint Documentation</h3>
-                <p><strong>Route:</strong> <code>/API/status/</code></p>
-                <p><strong>Method:</strong> <code>GET</code></p>
-                <p><strong>Required Header:</strong> <code>amount</code> (Integer specifying how many UUIDs to pull)</p>
+            <div class="container">
+                <header>
+                    <h1>Welcome to the Python UUID Web Portal</h1>
+                    <p>This entire platform is built natively using 100% Python.</p>
+                </header>
+                
+                <div class="box">
+                    <h3>API Endpoint Documentation</h3>
+                    <p><strong>Route:</strong> <code>/API/status/</code></p>
+                    <p><strong>Method:</strong> <code>GET</code></p>
+                    <p><strong>Required Header:</strong> <code>amount</code> (Integer specifying how many UUIDs to pull)</p>
+                </div>
+                
+                <p>To pull data, request the route using a tool like cURL or a local script by specifying your desired count value inside the request headers.</p>
+                <p>Visit the new page layout here: <a href="/server" class="nav-link">/server</a></p>
             </div>
-            
-            <p>To pull data, request the route using a tool like cURL or a local script by specifying your desired count value inside the request headers.</p>
-            <p>Visit the new page layout here: <a href="/server">/server</a></p>
         </body>
     </html>
     """
@@ -986,7 +1120,7 @@ async def server_page():
     return HTMLResponse(content=custom_html_layout, status_code=200)
 
 # API Route to pull and grab external UUID data
-@app.get("/API/status/")
+@app.get("/api/status/")
 async def get_uuid_status(amount: int = Header(..., description="The amount of UUIDs requested")):
     if amount <= 0:
         raise HTTPException(status_code=400, detail="The 'amount' header must be a positive integer greater than 0.")
@@ -1015,7 +1149,52 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
             raise HTTPException(status_code=503, detail=f"Network error trying to fetch upstream data: {exc}")
 
 # Fallback runner for local execution outside of Render environment
+# Flask automatically handles HEAD requests if GET is specified
+from flask import Flask, request, jsonify, make_response
+
+app = Flask(__name__)
+
+# Register the route to accept standard and custom HTTP verbs
+@app.route("/api/endpoint", methods=["GET", "POST", "CREATE"])
+def handle_api():
+    # 1. Read and normalize the incoming HTTP method string
+    current_method = request.method.upper()
+
+    # 2. Check if the method is "CREATE"
+    if current_method == "CREATE":
+        return make_response(jsonify({"message": "Resource created via custom CREATE method"}), 200)
+
+    # 3. Handle standard POST requests
+    if current_method == "POST":
+        return jsonify({"message": "Resource created via POST"})
+
+    # 4. Handle fallthrough mapping logic (treating GET requests as POST logic)
+    if current_method == "GET":
+        # Execute your internal POST logic block here directly
+        return make_response(
+            jsonify({"message": "Processed GET request via internal POST fallback"}), 
+            200
+        )
+
+    # Default fallback for unhandled or unexpected methods
+    return jsonify({"error": "Method not allowed"}), 405
+
 if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 10000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    app.run(port=5000, debug=True)
+try:
+    # Run the 'ls' command and capture its output text
+    result = subprocess.run(
+        ["ls", "-la"], 
+        capture_output=True, 
+        text=True, 
+        check=True
+    )
+    
+    # Print the standard output directly to the console
+    print(result.stdout)
+
+except subprocess.CalledProcessError as e:
+    print(f"Command failed with error code {e.returncode}")
+    print(f"Error output: {e.stderr}")
+except FileNotFoundError:
+    print("The 'ls' command is not available on this operating system (e.g., Windows).")
