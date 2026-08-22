@@ -1,11 +1,10 @@
 import subprocess
-import flask
 import os
 import httpx
 from fastapi import FastAPI, Header, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse  # Added PlainTextResponse
 
-app = FastAPI(title="UUID Generator Site")
+app = FastAPI()
 @app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
 async def get_style():
     css_content = """
