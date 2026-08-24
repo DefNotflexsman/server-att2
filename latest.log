@@ -1,1 +1,29 @@
-this is a test log
+from flask import Flask, request
+import requests
+app = Flask(__name__)
+@app.get("/gitify")
+def gitify():
+    # 1. Forward the incoming request to your second layer on port 8081
+    second_layer_url = "http://localhost:8081/gitify"
+    try:
+        layer_response = requests.get(second_layer_url, params=request.args)
+        layer_data = layer_response.text
+    except requests.exceptions.RequestException as e:
+        return f"Second layer connection failed: {e}", 502
+    try:
+        api_url = f"{API_BASE}/user"  # Example endpoint
+        api_headers = {"Authorization": "token YOUR_ACTUAL_TOKEN_VARIABLE"}
+
+        api_response = requests.get(api_url, headers=api_headers)
+        api_content = api_response.text
+    except requests.exceptions.RequestException as e:
+        return f"API Base connection failed: {e}", 502
+    with open("file.txt", "a", encoding="utf-8") as file:
+        file.write(f"--- New Request Stream ---\n")
+        file.write(f"Layer 2 Output: {layer_data}\n")
+        file.write(f"API Base Output: {api_content}\n\n")
+    return {"status": "success", "message": "Processed through layers and logged."}
+
+
+if __name__ == "__main__":
+    app.run(port=5000)
