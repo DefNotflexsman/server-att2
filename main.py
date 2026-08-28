@@ -1149,32 +1149,22 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
 
 # Fallback runner for local execution outside of Render environment
 # Register the route to accept standard and custom HTTP verbs
-@app.route("/api/endpoint", methods=["GET", "POST", "CREATE"])
+from flask import Flask, request, jsonify, make_response
+
+app = Flask(__name__)
+
+@app.route("/api/endpoint/test", methods=["GET", "POST"])
 def handle_api():
-    # 1. Read and normalize the incoming HTTP method string
     current_method = request.method.upper()
 
-    # 2. Check if the method is "CREATE"
-    if current_method == "CREATE":
-        return make_response(jsonify({"message": "Resource created via custom CREATE method"}), 200)
-
-    # 3. Handle standard POST requests
     if current_method == "POST":
-        return jsonify({"message": "Resource created via POST"})
+        return jsonify({"message": "Resource created via POST"}), 201
 
-    # 4. Handle fallthrough mapping logic (treating GET requests as POST logic)
     if current_method == "GET":
-        # Execute your internal POST logic block here directly
-        return make_response(
-            jsonify({"message": "Processed GET request via internal POST fallback"}), 
-            200
-        )
+        # Handle GET as read-only or fetch
+        return jsonify({"message": "Retrieved endpoint status via GET"}), 200
 
-    # Default fallback for unhandled or unexpected methods
     return jsonify({"error": "Method not allowed"}), 405
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=True)
 try:
     # Run the 'ls' command and capture its output text
     result = subprocess.run(
@@ -1192,3 +1182,5 @@ except subprocess.CalledProcessError as e:
     print(f"Error output: {e.stderr}")
 except FileNotFoundError:
     print("The 'ls' command is not available on this operating system (e.g., Windows).")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
