@@ -1,8 +1,10 @@
-import subprocess
 import os
+import subprocess
+from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 import httpx
-from fastapi import FastAPI, Header, HTTPException
-from fastapi.responses import HTMLResponse, PlainTextResponse  # Added PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+app = FastAPI()
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
@@ -22,11 +24,10 @@ async def custom_404_handler(request: Request, exc: StarletteHTTPException):
             status_code=404
         )
         
-        # Option B: Render a separate HTML file instead (uncomment line below):
-         return FileResponse("404.html", status_code=404)
+        # Option B: Render a separate HTML file (swap with Option A above)
+        # return FileResponse("404.html", status_code=404)
 
     return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
-app = FastAPI()
 @app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
 async def get_style():
     css_content = """
@@ -386,7 +387,23 @@ async def home_page():
 
 
 # NEW ROUTE: Custom HTML layout endpoint for /server
-@app.websocket("/server", response_class=HTMLResponse)
+@app.websocket("/server")
+async def server_websocket_endpoint(websocket: WebSocket):
+    # 1. Accept the incoming WebSocket connection request
+    await websocket.accept()
+    
+    try:
+        while True:
+            # 2. Wait for incoming data from the client
+            data = await websocket.receive_text()
+            
+            # 3. Send data back to the client
+            await websocket.send_text(f"Server received: {data}")
+            
+    except WebSocketDisconnect:
+        # Handle disconnects cleanly
+        print("Client disconnected from /server")
+@app.get("/server", response_class=HTMLResponse)
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
