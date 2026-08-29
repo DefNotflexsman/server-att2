@@ -11,7 +11,8 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 GITHUB_API_BASE = "https://api.github.com"
-
+question = ";-; Enter commit reason: "
+commit_context = input(question).strip()
 @dataclass
 class GitHubRepo:
     name: str
@@ -105,9 +106,9 @@ class GitHubClient:
 
         # Build the upload instructions payload
         payload = {
-            "message": f"Upload {file_path} via Python Web Script",
-            "content": encoded_content
-        }
+    "message": commit_context,  # GitHub API requires key named 'message'
+    "content": encoded_content
+}
         if sha:
             payload["sha"] = sha
 
