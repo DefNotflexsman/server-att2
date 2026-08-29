@@ -3,7 +3,29 @@ import os
 import httpx
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import HTMLResponse, PlainTextResponse  # Added PlainTextResponse
+@app.exception_handler(StarletteHTTPException)
+async def custom_404_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        # Option A: Return custom HTML directly
+        return HTMLResponse(
+            content="""
+            <!DOCTYPE html>
+            <html>
+                <head><title>404 Not Found</title></head>
+                <body>
+                    <h1>404 - Page Not Found</h1>
+                    <p>The page you requested does not exist.</p>
+                    <a href="/">Go back home</a>
+                </body>
+            </html>
+            """,
+            status_code=404
+        )
+        
+        # Option B: Render a separate HTML file instead (uncomment line below):
+         return FileResponse("404.html", status_code=404)
 
+    return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
 app = FastAPI()
 @app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
 async def get_style():
@@ -364,7 +386,17 @@ async def home_page():
 
 
 # NEW ROUTE: Custom HTML layout endpoint for /server
-@app.get("/server", response_class=HTMLResponse)
+@app.websocket("/server", response_class=HTMLResponse)
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            # Receive text from client
+            data = await websocket.receive_text()
+            # Send response back to client
+            await websocket.send_text(f"Message received: {data}")
+    except WebSocketDisconnect:
+        print("Client disconnected")
 async def server_page():
     # Insert your custom layout details inside this multi-line string variable
     custom_html_layout = """
@@ -1119,7 +1151,7 @@ async def server_page():
     return HTMLResponse(content=custom_html_layout, status_code=200)
 
 # API Route to pull and grab external UUID data
-@app.get("/api/status/")
+@app.api_route("/api/status/")
 async def get_uuid_status(amount: int = Header(..., description="The amount of UUIDs requested")):
     if amount <= 0:
         raise HTTPException(status_code=400, detail="The 'amount' header must be a positive integer greater than 0.")
@@ -1149,6 +1181,65 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
 
 # Fallback runner for local execution outside of Render environment
 # Register the route to accept standard and custom HTTP verbs
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
+
+@app.get("/FastAPI.example", response_class=HTMLResponse)
+async def read_root():
+    return """
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>My App</title>
+        </head>
+        <body>
+            <h1>Welcome to my API</h1>
+        </body>
+    </html>
+    """
+import time
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    
+    # Process the request
+    response = await call_next(request)
+    
+    # Calculate execution time and attach a custom header
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    
+    return response
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+# Custom Exception Class
+class ItemNotFoundException(Exception):
+    def __init__(self, item_id: int):
+        self.item_id = item_id
+
+# Register handler for the custom exception
+@app.exception_handler(ItemNotFoundException)
+async def item_not_found_handler(request: Request, exc: ItemNotFoundException):
+    return JSONResponse(
+        status_code=404,
+        content={"message": f"Item with ID {exc.item_id} does not exist."},
+    )
+
+# Route that triggers the exception
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    if item_id > 100:
+        raise ItemNotFoundException(item_id=item_id)
+    return {"item_id": item_id, "name": "Sample Item"}
 from flask import Flask, request, jsonify, make_response
 
 app = Flask(__name__)
