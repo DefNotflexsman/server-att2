@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 import httpx
 from starlette.exceptions import HTTPException as StarletteHTTPException
 app = FastAPI()
+dev-port = "25565"
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
@@ -1202,7 +1203,13 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
-
+@app.get("/proxy/{$dev-port}", responese_class=HTMLResponse)
+async def 404page():
+    <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
 @app.get("/FastAPI.example", response_class=HTMLResponse)
 async def read_root():
     return """
@@ -1300,4 +1307,4 @@ except subprocess.CalledProcessError as e:
 except FileNotFoundError:
     print("The 'ls' command is not available on this operating system (e.g., Windows).")
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
