@@ -1260,7 +1260,16 @@ async def read_item(item_id: int):
 from flask import Flask, request, jsonify, make_response
 
 app = Flask(__name__)
+API_KEY = os.environ.get("api_key")
 
+@app.get("/api/authentication")
+def get_status(x_api_key: str = Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key"
+        )
+    return {"status": "ok", "message": "Service is running"}
 @app.route("/api/endpoint/test", methods=["GET", "POST"])
 def handle_api():
     current_method = request.method.upper()
