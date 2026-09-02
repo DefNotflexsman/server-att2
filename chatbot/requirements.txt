@@ -1,0 +1,4 @@
+g4f>=0.3.4.0
+fastapi
+uvicorn
+pydantic
