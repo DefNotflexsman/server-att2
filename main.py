@@ -1,3 +1,4 @@
+import uvicorn
 import os
 import django
 from django.conf import settings
@@ -20,10 +21,13 @@ if not settings.configured:
     django.setup()
 
 # 2. Now you can safely import Django models, forms, and views
+import time
+from fastapi import FastAPI, Request
 from django.contrib.auth.forms import AuthenticationForm
 from my_views import admin_login_view
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
-# Rest of your script...
 import os
 import subprocess
 from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -35,9 +39,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from my_views import admin_login_view
-app = FastAPI()
+app = FastAPI(debug=True)
 @app.get("/", response_class=HTMLResponse)
 async def home_page():
     html_content = """
@@ -1305,10 +1311,6 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
 
 # Fallback runner for local execution outside of Render environment
 # Register the route to accept standard and custom HTTP verbs
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-
-app = FastAPI()
 @app.get("/proxy/{$dev_port}", response_class=HTMLResponse)
 async def page_404(dev_port: int):
     html_content = """
@@ -1339,9 +1341,6 @@ async def read_root():
     """
 import time
 from fastapi import FastAPI, Request
-
-app = FastAPI()
-
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
@@ -1354,11 +1353,6 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     
     return response
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-
-app = FastAPI()
-
 # Custom Exception Class
 class ItemNotFoundException(Exception):
     def __init__(self, item_id: int):
@@ -1378,9 +1372,6 @@ async def read_item(item_id: int):
     if item_id > 100:
         raise ItemNotFoundException(item_id=item_id)
     return {"item_id": item_id, "name": "Sample Item"}
-from flask import Flask, request, jsonify, make_response
-
-app = Flask(__name__)
 API_KEY = os.environ.get("api_key")
 
 @app.get("/api/authentication")
@@ -1391,7 +1382,7 @@ def get_status(x_api_key: str = Header(None)):
             detail="Invalid or missing API key"
         )
     return {"status": "ok", "message": "Service is running"}
-@app.route("/api/endpoint/test", methods=["GET", "POST"])
+@app.get("/api/endpoint/test")
 def handle_api():
     current_method = request.method.upper()
 
@@ -1421,4 +1412,4 @@ except subprocess.CalledProcessError as e:
 except FileNotFoundError:
     print("The 'ls' command is not available on this operating system (e.g., Windows).")
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
