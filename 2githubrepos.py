@@ -129,11 +129,9 @@ def main() -> int:
         token = load_token_from_env()
         client = GitHubClient(token=token)
 
-        # 1. Ask the interactive query
         user_response = input("Do you want to update a repo? [yes,no]: ").strip().lower()
 
         if user_response == "yes":
-            # 2. Parse target layout format: username/repo-name
             target = input("Enter target repository as <username>/<repo-name>: ").strip()
             if "/" not in target:
                 print("Error: Format must be exactly 'username/repo-name'")
@@ -141,39 +139,54 @@ def main() -> int:
                 
             owner, repo_name = target.split("/", 1)
 
-            # 3. Read all files in the current workspace directory (the 'ls' logic)
             current_directory = os.getcwd()
             print(f"\nScanning workspace files in: {current_directory}")
             
-            files_to_upload = []
-            for item in os.listdir(current_directory):
-                item_path = os.path.join(current_directory, item)
-                # Only grab files, skip sub-directories to prevent infinite loops
-                if os.path.isfile(item_path):
-                    files_to_upload.append(item)
+            # Map of relative path -> absolute path
+            files_to_upload: Dict[str, str] = {}
+
+            # Recursively walk through current_directory and all subfolders
+            for root, dirs, files in os.walk(current_directory):
+                # Ignore hidden directories like .git or .venv
+                dirs[:] = [d for d in dirs if not d.startswith(".")]
+
+                for file_name in files:
+                    # Skip hidden files if desired
+                    if file_name.startswith("."):
+                        continue
+
+                    full_path = os.path.join(root, file_name)
+                    
+                    # Calculate the relative path from the current working directory
+                    rel_path = os.path.relpath(full_path, start=current_directory)
+                    
+                    # Ensure path separator is '/' for GitHub API compatibility (crucial on Windows)
+                    github_path = rel_path.replace(os.sep, "/")
+                    
+                    files_to_upload[github_path] = full_path
 
             if not files_to_upload:
-                print("No files found in the current directory to upload.")
+                print("No files found in the current directory or subdirectories to upload.")
                 return 0
 
-            print(f"Found {len(files_to_upload)} files to push: {files_to_upload}\n")
+            print(f"Found {len(files_to_upload)} file(s) across directory tree to push.\n")
             
-            # 4. Push every file sequentially over the network
-            for file_name in files_to_upload:
-                print(f"Uploading: {file_name} ...")
+            # Push every file sequentially maintaining folder paths
+            for github_path, full_path in files_to_upload.items():
+                print(f"Uploading: {github_path} ...")
                 try:
-                    with open(file_name, "rb") as f:
+                    with open(full_path, "rb") as f:
                         binary_data = f.read()
                     
                     client.upload_file_to_repo(
                         owner=owner,
                         repo=repo_name,
-                        file_path=file_name,
+                        file_path=github_path,
                         file_content=binary_data
                     )
-                    print(f"✅ Successfully pushed {file_name}")
+                    print(f"✅ Successfully pushed {github_path}")
                 except Exception as file_err:
-                    print(f"❌ Failed to upload {file_name}: {file_err}")
+                    print(f"❌ Failed to upload {github_path}: {file_err}")
 
             print("\nAll operations finalized.")
         else:
@@ -184,6 +197,5 @@ def main() -> int:
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
-
 if __name__ == "__main__":
     raise SystemExit(main())
