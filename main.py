@@ -1,11 +1,39 @@
+from django.urls import path
+from .views import admin_login_view
 import os
 import subprocess
 from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 import httpx
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 app = FastAPI()
 dev-port = "25565"
+urlpatterns = [
+    path('custom-login/', admin_login_view, name='custom_login'),
+]
+def admin_login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            
+            if user is not None and user.is_staff:
+                login(request, user)
+                return redirect('/admin-dashboard/')  # Redirect to target page
+            else:
+                messages.error(request, "Invalid credentials or unauthorized access.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form})
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
