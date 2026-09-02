@@ -1,17 +1,44 @@
-from django.urls import path
-from .views import admin_login_view
+import os
+import django
+from django.conf import settings
+
+# 1. Configure settings before importing Django modules
+if not settings.configured:
+    settings.configure(
+        SECRET_KEY='scriptkey',
+        INSTALLED_APPS=[
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+        ],
+        DATABASES={
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            }
+        }
+    )
+    django.setup()
+
+# 2. Now you can safely import Django models, forms, and views
+from django.contrib.auth.forms import AuthenticationForm
+from my_views import admin_login_view
+
+# Rest of your script...
 import os
 import subprocess
 from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 import httpx
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from django.urls import path
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
+
+from my_views import admin_login_view
 app = FastAPI()
-dev-port = "25565"
+dev_port = "25565"
 urlpatterns = [
     path('custom-login/', admin_login_view, name='custom_login'),
 ]
@@ -1231,13 +1258,21 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
-@app.get("/proxy/{$dev-port}", responese_class=HTMLResponse)
-async def 404page():
+@app.get("/proxy/{$dev_port}", response_class=HTMLResponse)
+async def page_404(dev_port: int):
+    html_content = """
     <!doctype html>
-<html lang=en>
-<title>404 Not Found</title>
-<h1>Not Found</h1>
-<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+    <html lang="en">
+    <head>
+        <title>404 Not Found</title>
+    </head>
+    <body>
+        <h1>Not Found</h1>
+        <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content, status_code=404)
 @app.get("/FastAPI.example", response_class=HTMLResponse)
 async def read_root():
     return """
