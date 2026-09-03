@@ -1,9 +1,8 @@
 import importlib
-
-# 1. INITIALIZE SETTINGS & SETUP DJANGO FIRST
 import django
 from django.conf import settings
 
+# 1. INITIALIZE DJANGO SETTINGS
 if not settings.configured:
     settings.configure(
         DEBUG=True,
@@ -30,54 +29,126 @@ if not settings.configured:
         },
     )
     django.setup()
-
-# 2. DEFINE MODULE/ATTRIBUTE MAP IN AN ARRAY
+from django.contrib.admin.views.decorators import staff_member_required
+from fastapi import WebSocket
+from fastapi.responses import HTMLResponse
+from fastapi.responses import PlainTextResponse
+from fastapi import Depends
+from fastapi.responses import JSONResponse
+from django.contrib.auth import get_user_model
+from django.shortcuts import render
+from fastapi import Request, HTTPException, status
+from asgiref.sync import sync_to_async
+# 2. DYNAMIC IMPORTS
 imports_list = [
-    # Standard library
     ("asyncio", None),
     ("os", None),
     ("subprocess", None),
     ("sys", None),
     ("time", None),
-    # ASGI & Django helpers
     ("a2wsgi", "WSGIMiddleware"),
     ("asgiref.sync", "sync_to_async"),
     ("django.contrib.admin", "ModelAdmin"),
-    ("django.contrib.admin", "StackedInline"),
-    ("django.contrib.admin", "TabularInline"),
     ("django.contrib", "messages"),
-    ("django.contrib.admin.views.decorators", "staff_member_required"),
     ("django.contrib.auth", "authenticate"),
     ("django.contrib.auth", "login"),
-    ("django.contrib.auth.forms", "AuthenticationForm"),
     ("django.contrib.auth.models", "User"),
     ("django.core.management", "call_command"),
     ("django.core.wsgi", "get_wsgi_application"),
     ("django.shortcuts", "redirect"),
     ("django.shortcuts", "render"),
+    ("django.http", "HttpResponse"),
+    ("django.http", "JsonResponse"),
     ("django.urls", "path"),
-    ("django.utils.asyncio", "async_unsafe"),
-    # FastAPI & Starlette
     ("httpx", None),
     ("uvicorn", None),
-    ("fastapi", "Depends"),
     ("fastapi", "FastAPI"),
-    ("fastapi", "Header"),
-    ("fastapi", "HTTPException"),
-    ("fastapi", "Request"),
-    ("fastapi", "WebSocket"),
-    ("fastapi", "status"),
-    ("fastapi.responses", "FileResponse"),
-    ("fastapi.responses", "HTMLResponse"),
-    ("fastapi.responses", "JSONResponse"),
-    ("fastapi.responses", "PlainTextResponse"),
-    # Aliased import (module, attribute, alias) to avoid overwriting fastapi.HTTPException
     ("starlette.exceptions", "HTTPException", "StarletteHTTPException"),
-    # Local imports
+    # Import admin handlers directly from my_views.py
     ("my_views", "admin_dashboard"),
     ("my_views", "admin_login_view"),
 ]
 
+for item in imports_list:
+    module_path = item[0]
+    attr_name = item[1]
+    alias = item[2] if len(item) > 2 else attr_name
+
+    mod = importlib.import_module(module_path)
+    if attr_name:
+        globals()[alias] = getattr(mod, attr_name)
+    else:
+        top_level_name = module_path.split(".")[0]
+        globals()[top_level_name] = importlib.import_module(top_level_name)
+
+# 3. DEFINE EMBEDDED HTML VIEWS INLINE
+def home_view(request):
+    html = "<html><body><h1>Home Page</h1></body></html>"
+    return HttpResponse(html)
+
+def front_page_view(request):
+    html = "<html><body><h1>Front Page</h1></body></html>"
+    return HttpResponse(html)
+
+def style_css_view(request):
+    css = "body { background-color: #f0f0f0; }"
+    return HttpResponse(css, content_type="text/css")
+
+def custom_404_view(request):
+    return HttpResponse("Page Not Found", status=404)
+
+def cookie_view(request):
+    return HttpResponse("Cookie Handler")
+
+def server_view(request):
+    return HttpResponse("Server Info")
+
+def controllerempt_view(request):
+    return HttpResponse("Controller Endpoint")
+
+def item_detail_view(request, item_id):
+    return JsonResponse({"item_id": item_id})
+
+def api_request_view(request):
+    return JsonResponse({"status": "request received"})
+
+def api_server_mc_view(request):
+    return JsonResponse({"status": "mc server online"})
+
+def api_status_view(request):
+    return JsonResponse({"status": "ok"})
+
+def api_authentication_view(request):
+    return JsonResponse({"authenticated": True})
+
+def api_endpoint_test_view(request):
+    return JsonResponse({"test": "passed"})
+
+def proxy_stream_view(request):
+    return HttpResponse("Proxy Stream Response")
+
+# 4. REGISTER URL PATTERNS
+urlpatterns = [
+    # Admin routes (from my_views.py)
+    path("admin-dashboard/", admin_dashboard, name="admin_dashboard"),
+    path("admin-login/", admin_login_view, name="admin_login"),
+    
+    # Embedded HTML & API routes (defined inline in main.py)
+    path("", home_view, name="home"),
+    path("FrontPage/", front_page_view, name="front_page"),
+    path("style.css", style_css_view, name="style_css"),
+    path("page404/", custom_404_view, name="page404"),
+    path("cookie/", cookie_view, name="cookie"),
+    path("server/", server_view, name="server"),
+    path("controllerempt/", controllerempt_view, name="controllerempt"),
+    path("items/<int:item_id>/", item_detail_view, name="item_detail"),
+    path("api/request/", api_request_view, name="api_request"),
+    path("api/server/mc/", api_server_mc_view, name="api_server_mc"),
+    path("api/status/", api_status_view, name="api_status"),
+    path("api/authentication/", api_authentication_view, name="api_authentication"),
+    path("api/endpoint/test/", api_endpoint_test_view, name="api_endpoint_test"),
+    path("proxy/25565/", proxy_stream_view, name="proxy_stream"),
+]
 # 3. DYNAMICALLY LOAD IMPORTS INTO GLOBAL SCOPE
 for item in imports_list:
     module_path = item[0]
@@ -93,46 +164,60 @@ for item in imports_list:
 
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
 def ice():
-    print("connected")
-    return 1
+    print(f".")
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import get_user_model
+from django.shortcuts import render
+from fastapi import Request, HTTPException, status
+from asgiref.sync import sync_to_async
+User = get_user_model()
 @staff_member_required
 def admin_dashboard(request):
     context = {
-        'total_users': User.objects.count(),
-        'recent_users': User.objects.order_by('-date_joined')[:5],
+        "total_users": User.objects.count(),
+        "recent_users": User.objects.order_by("-date_joined")[:5],
     }
-    # Renders template/dashboard.html directly
-    return render(request, 'dashboard.html', context)
-# Helper function to check if the current session user has admin/staff permissions
+    return render(request, "dashboard.html", context)
+
+
+# Helper function to check Django session auth inside FastAPI routes
 async def verify_admin_permission(request: Request):
-    # Retrieve user ID stored in session (managed by Django session middleware)
-    user_id = request.session.get("_auth_user_id") if hasattr(request, "session") else None
-    
-    if not user_id:
+    # Extract sessionid from request cookies
+    session_key = request.cookies.get("sessionid")
+
+    if not session_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required."
+            detail="Authentication cookie required.",
         )
 
-    # Fetch user asynchronously from Django ORM
+    # Validate Django session and fetch user asynchronously
     @sync_to_async
-    def get_staff_user(uid):
+    def get_staff_user(key):
+        from django.contrib.sessions.models import Session
+
         try:
+            session = Session.objects.get(session_key=key)
+            uid = session.get_decoded().get("_auth_user_id")
+            if not uid:
+                return None
             user = User.objects.get(pk=uid)
-            return user if user.is_staff or user.is_superuser else None
-        except User.DoesNotExist:
+            return user if (user.is_staff or user.is_superuser) else None
+        except (Session.DoesNotExist, User.DoesNotExist):
             return None
 
-    user = await get_staff_user(user_id)
+    user = await get_staff_user(session_key)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access restricted to authorized admin personnel only."
+            detail="Access restricted to authorized admin personnel only.",
         )
     return user
 @app.get("/api/request", response_class=JSONResponse)
-async def get_admin_statistics(admin_user: User = Depends(verify_admin_permission)):
-    # Async database queries using sync_to_async
+async def get_admin_statistics(
+    admin_user: User = Depends(verify_admin_permission),
+):
     @sync_to_async
     def fetch_metrics():
         return {
@@ -148,14 +233,13 @@ async def get_admin_statistics(admin_user: User = Depends(verify_admin_permissio
         content={
             "status": "success",
             "requested_by": admin_user.username,
-            "data": stats
+            "data": stats,
         },
-        status_code=200
+        status_code=200,
     )
 @app.get("/", response_class=HTMLResponse)
 async def home_page():
-    html_content = """
-    <!DOCTYPE html>
+    html_content = """<!DOCTYPE html>
     <html lang="en">
         <head>
             <meta charset="UTF-8">
@@ -356,8 +440,8 @@ async def home_page():
                 <p>To access API endpoints programmatically, send HTTP requests using <code>cURL</code> or your client application with the appropriate headers configured.</p>
             </div>
         </body>
-    </html>
-    """
+    </html>"""
+    
     return HTMLResponse(content=html_content, status_code=200)
 dev_port = "25565"
 def admin_login_view(request):
@@ -382,8 +466,8 @@ def admin_login_view(request):
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        html_content = """
-        <!DOCTYPE html>
+        # Wrap the raw HTML block in triple quotes:
+        html_content = """<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
@@ -563,22 +647,23 @@ async def custom_404_handler(request: Request, exc: StarletteHTTPException):
                 <a href="/" class="btn-home">Return to Home</a>
             </div>
         </body>
-        </html>
-        """
+        </html>"""
         return HTMLResponse(content=html_content, status_code=404)
 
     return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
-@app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
+@app.get("/style.css", response_class=PlainTextResponse)
 async def get_style():
     css_content = """
-    body { background-color: #121214; color: #f4f4f6; }
+    body { 
+        background-color: #121214; 
+        color: #f4f4f6; 
+    }
     """
-    return css_content
+    return PlainTextResponse(content=css_content, media_type="text/css")
 @app.get("/controllerempt", response_class=HTMLResponse)
 async def server_page():
-    # Insert your custom layout details inside this multi-line string variable
-    custom_html_layout = """
-    <!DOCTYPE html>
+    # Enclose the multi-line HTML string inside triple quotes (""")
+    custom_html_layout = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -678,7 +763,7 @@ async def server_page():
             <input type="text" id="terminal-cmd" placeholder="Type /register, /login, or server chat commands here..." onkeydown="checkKey(event)">
             <button onclick="injectCommand()">Send to Client</button>
         </div>
-        <div id="status-log" id="log">Ready to bridge payloads...</div>
+        <div id="status-log">Ready to bridge payloads...</div>
     </div>
 
     <script>
@@ -693,24 +778,13 @@ async def server_page():
             statusLog.textContent = `Processing packet transmission: "${commandText}"`;
 
             try {
-                // Cross-Origin / Same-Origin Context Execution Check
-                // Attempt direct pipeline injection into TeaVM runtime engine via the iframe window context
                 const iframeWindow = frame.contentWindow;
 
-                /* 
-                  TECHNICAL EXPLANATION:
-                  Eaglercraft 1.8.8 uses an asset package where JavaScript keyboard event hooks handle strings.
-                  Instead of interacting with internal networking objects, we simulate the actual user opening 
-                  the game's chat window ('t' key), pasting the command string, and hitting 'Enter'.
-                */
-                
                 // 1. Simulate pressing 'T' key to open the in-game chat prompt inside Minecraft
                 simulateKey(iframeWindow, 84, 't');
 
                 // 2. Wait 150ms for the UI animation frame delay inside Minecraft, then type out and push the string
                 setTimeout(() => {
-                    // Injecting text characters sequentially or directly altering the clipboard cache if hooks are present
-                    // For headless execution environments or local deployments:
                     if(iframeWindow.main && iframeWindow.main.arguments) {
                          // Alternate path if running a custom local unpack:
                          // iframeWindow.EaglercraftX.sendChat(commandText);
@@ -732,7 +806,6 @@ async def server_page():
                 }, 150);
 
             } catch (e) {
-                // Browser Cross-Origin Resource Sharing (CORS) Security Catch
                 statusLog.textContent = "Security Warning: Embed requires running locally or on the same domain deployment to pass window payloads.";
                 console.error("CORS blocking window injection:", e);
             }
@@ -763,13 +836,9 @@ async def server_page():
         }
     </script>
 </body>
-</html>
-    """
+</html>"""
+
     return HTMLResponse(content=custom_html_layout, status_code=200)
-# Base landing page: Pure Python website rendering HTML response
-
-
-
 # NEW ROUTE: Custom HTML layout endpoint for /server
 @app.websocket("/server")
 async def server_websocket_endpoint(websocket: WebSocket):
@@ -827,7 +896,7 @@ async def launch_minecraft_server():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to launch server.py: {str(err)}"
         )
-@app.get("/server", response_class=HTMLResponse)
+@app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
@@ -838,10 +907,12 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_text(f"Message received: {data}")
     except WebSocketDisconnect:
         print("Client disconnected")
+
+# HTTP Endpoint returning HTML
+@app.get("/server", response_class=HTMLResponse)
 async def server_page():
-    # Insert your custom layout details inside this multi-line string variable
-    custom_html_layout = """
-    <!DOCTYPE html>
+    # Multi-line string properly enclosed in triple quotes (""")
+    custom_html_layout = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -972,14 +1043,13 @@ async def server_page():
 </script>
 
 </body>
-</html>
-    """
+</html>"""
+    
     return HTMLResponse(content=custom_html_layout, status_code=200)
 @app.get("/cookie", response_class=HTMLResponse)
 async def server_page():
-    # Insert your custom layout details inside this multi-line string variable
-    custom_html_layout = """
-    <!DOCTYPE html>
+    # Multi-line string properly enclosed in triple quotes (""")
+    custom_html_layout = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -1010,9 +1080,9 @@ async def server_page():
             display: grid;
             grid-template-columns: 1.2fr 1.2fr 1fr;
             height: 100vh;
+            margin-top: 24px;
         }
 
-        /* Left panel: stats + big cookie */
         #left-panel {
             background: rgba(0, 0, 0, 0.4);
             padding: 10px;
@@ -1080,7 +1150,6 @@ async def server_page():
             }
         }
 
-        /* Middle panel: upgrades / buildings */
         #middle-panel {
             background: var(--panel-color);
             border-right: 2px solid #000;
@@ -1154,7 +1223,6 @@ async def server_page():
             margin-left: 8px;
         }
 
-        /* Right panel: log / info */
         #right-panel {
             background: #1f1f1f;
             display: flex;
@@ -1181,7 +1249,6 @@ async def server_page():
             color: #ccc;
         }
 
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -1198,7 +1265,6 @@ async def server_page():
             background: #666;
         }
 
-        /* Top bar */
         #top-bar {
             position: fixed;
             top: 0;
@@ -1218,11 +1284,6 @@ async def server_page():
             margin-right: 16px;
         }
 
-        #game-container {
-            margin-top: 24px;
-        }
-
-        /* Responsive tweak */
         @media (max-width: 1000px) {
             #game-container {
                 grid-template-columns: 1fr;
@@ -1258,7 +1319,7 @@ async def server_page():
         <div id="middle-panel">
             <div id="upgrades-header">Buildings</div>
             <div id="buildings-list">
-                <!-- Buildings will be injected here -->
+                <!-- Buildings injected dynamically -->
             </div>
         </div>
 
@@ -1270,20 +1331,6 @@ async def server_page():
     </div>
 
     <script>
-        // -----------------------------
-        // Core game state
-        // -----------------------------
-        type GameBuilding = {
-            id: string;
-            name: string;
-            baseCost: number;
-            cost: number;
-            cps: number;
-            amount: number;
-            icon: string;
-        };
-
-        // Using JSDoc types for browsers (since TS types aren't compiled here)
         /**
          * @typedef {Object} Building
          * @property {string} id
@@ -1295,9 +1342,7 @@ async def server_page():
          * @property {string} icon
          */
 
-        /**
-         * @type {Building[]}
-         */
+        /** @type {Building[]} */
         const buildings = [
             {
                 id: "cursor",
@@ -1349,9 +1394,6 @@ async def server_page():
         const logEl = document.getElementById("log");
         const saveStatusEl = document.getElementById("save-status");
 
-        // -----------------------------
-        // Utility functions
-        // -----------------------------
         function formatNumber(value) {
             if (value >= 1_000_000_000) {
                 return (value / 1_000_000_000).toFixed(2) + " billion";
@@ -1479,9 +1521,6 @@ async def server_page():
             }, 800);
         }
 
-        // -----------------------------
-        // Click handling
-        // -----------------------------
         bigCookieEl.addEventListener("click", (event) => {
             cookies += cookiesPerClick;
             updateStatsDisplay();
@@ -1493,9 +1532,6 @@ async def server_page():
             spawnFloatingText("+" + cookiesPerClick, x, y);
         });
 
-        // -----------------------------
-        // Game loop
-        // -----------------------------
         let lastFrameTime = performance.now();
 
         function gameLoop(timestamp) {
@@ -1509,9 +1545,6 @@ async def server_page():
             requestAnimationFrame(gameLoop);
         }
 
-        // -----------------------------
-        // Save / Load
-        // -----------------------------
         const SAVE_KEY = "cookie_clicker_offline_clone_save";
 
         function saveGame() {
@@ -1570,12 +1603,8 @@ async def server_page():
             }
         }
 
-        // Autosave every 15 seconds
         setInterval(saveGame, 15000);
 
-        // -----------------------------
-        // Init
-        // -----------------------------
         function init() {
             createBuildingsUI();
             loadGame();
@@ -1587,8 +1616,8 @@ async def server_page():
         window.addEventListener("load", init);
     </script>
 </body>
-</html>
-    """
+</html>"""
+
     return HTMLResponse(content=custom_html_layout, status_code=200)
 
 # API Route to pull and grab external UUID data
@@ -1622,10 +1651,9 @@ async def get_uuid_status(amount: int = Header(..., description="The amount of U
 
 # Fallback runner for local execution outside of Render environment
 # Register the route to accept standard and custom HTTP verbs
-@app.get("/proxy/{$dev_port}", response_class=HTMLResponse)
+@app.get("/proxy/{dev_port}", response_class=HTMLResponse)
 async def page_404(dev_port: int):
-    html_content = """
-    <!doctype html>
+    html_content = """<!doctype html>
     <html lang="en">
     <head>
         <title>404 Not Found</title>
@@ -1634,13 +1662,12 @@ async def page_404(dev_port: int):
         <h1>Not Found</h1>
         <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
     </body>
-    </html>
-    """
+    </html>"""
+    
     return HTMLResponse(content=html_content, status_code=404)
 @app.get("/FrontPage", response_class=HTMLResponse)
 async def read_root():
-    return """
-    <!DOCTYPE html>
+    html_content = """<!DOCTYPE html>
     <html>
         <head>
             <title>My App</title>
@@ -1648,8 +1675,8 @@ async def read_root():
         <body>
             <h1>Welcome to my API</h1>
         </body>
-    </html>
-    """
+    </html>"""
+    return HTMLResponse(content=html_content, status_code=200)
 import time
 from fastapi import FastAPI, Request
 @app.middleware("http")
