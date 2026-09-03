@@ -1,10 +1,3 @@
-from django.urls import path
-from .views import admin_dashboard, admin_login_view
-
-urlpatterns = [
-    path('custom-login/', admin_login_view, name='custom_login'),
-    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
-]
 import uvicorn
 import os
 import django
@@ -34,7 +27,13 @@ from django.contrib.auth.forms import AuthenticationForm
 from my_views import admin_login_view
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from django.urls import path
+from my_views import admin_dashboard, admin_login_view
 
+urlpatterns = [
+    path('custom-login/', admin_login_view, name='custom_login'),
+    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
+]
 import os
 import subprocess
 from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -48,9 +47,21 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from django.shortcuts import render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
 
 from my_views import admin_login_view
 app = FastAPI(debug=True)
+# myapp/views.py
+@staff_member_required
+def admin_dashboard(request):
+    context = {
+        'total_users': User.objects.count(),
+        'recent_users': User.objects.order_by('-date_joined')[:5],
+    }
+    # Renders template/dashboard.html directly
+    return render(request, 'dashboard.html', context)
 @app.get("/", response_class=HTMLResponse)
 async def home_page():
     html_content = """
