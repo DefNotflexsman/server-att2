@@ -49,6 +49,8 @@ if not settings.configured:
     django.setup()
 from django.contrib.admin.views.decorators import staff_member_required
 from my_views import front_page_view
+from django.contrib import admin
+from django.urls import path
 from my_views import cookie_page
 from my_views import server_page
 import time
@@ -98,7 +100,7 @@ imports_list = [
     ("my_views", "admin_dashboard"),
     ("my_views", "admin_login_view"),
 ]
-
+owner_ip = "47.158.31.28"
 for item in imports_list:
     module_path = item[0]
     attr_name = item[1]
@@ -202,18 +204,27 @@ from django.shortcuts import render
 from fastapi import Request, HTTPException, status
 from asgiref.sync import sync_to_async
 User = get_user_model()
+@app.middleware("http")
+async def log_requests_middleware(request: Request, call_next):
+    user_ip = request.client.host if request.client else "Unknown"
+    requested_path = request.url.path
+
+    # Custom logging function
+    print(f"Request from IP: {user_ip} to Path: {requested_path}")
+
+    response = await call_next(request)
+    return response
 @staff_member_required
 def admin_dashboard(request):
     context = {
         "total_users": User.objects.count(),
         "recent_users": User.objects.order_by("-date_joined")[:5],
     }
-    return render(request, "dashboard.html", context)
+    return render(request, "admin-dashboard.html", context)
 
 
-# Helper function to check Django session auth inside FastAPI routes
+# --- FASTAPI DEPENDENCY ---
 async def verify_admin_permission(request: Request):
-    # Extract sessionid from request cookies
     session_key = request.cookies.get("sessionid")
 
     if not session_key:
@@ -222,16 +233,15 @@ async def verify_admin_permission(request: Request):
             detail="Authentication cookie required.",
         )
 
-    # Validate Django session and fetch user asynchronously
     @sync_to_async
     def get_staff_user(key):
-        from django.contrib.sessions.models import Session
-
         try:
             session = Session.objects.get(session_key=key)
             uid = session.get_decoded().get("_auth_user_id")
+
             if not uid:
                 return None
+
             user = User.objects.get(pk=uid)
             return user if (user.is_staff or user.is_superuser) else None
         except (Session.DoesNotExist, User.DoesNotExist):
@@ -244,6 +254,7 @@ async def verify_admin_permission(request: Request):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access restricted to authorized admin personnel only.",
         )
+
     return user
 @app.get("/api/request", response_class=JSONResponse)
 async def get_admin_statistics(
