@@ -12,7 +12,9 @@ from django.conf import settings
 # 1. INITIALIZE SETTINGS FIRST
 if not settings.configured:
     settings.configure(
+        DEBUG=True,  # Set Django debug to True
         SECRET_KEY='scriptkey',
+        ALLOWED_HOSTS=['*'],  # Allow requests from any host/curl
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
@@ -26,7 +28,6 @@ if not settings.configured:
         }
     )
     django.setup()
-
 # 2. ALL DJANGO IMPORTS MUST BE HERE (STRICTLY BELOW django.setup())
 from django.urls import path
 from django.shortcuts import render, redirect
