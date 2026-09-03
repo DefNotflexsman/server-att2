@@ -1,15 +1,22 @@
-import uvicorn
 import os
+import sys
+import time
+import subprocess
+import asyncio
+import httpx
+import uvicorn
+
 import django
 from django.conf import settings
 
-# 1. Configure settings before importing Django modules
+# 1. INITIALIZE SETTINGS FIRST
 if not settings.configured:
     settings.configure(
         SECRET_KEY='scriptkey',
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
+            'django.contrib.sessions',
         ],
         DATABASES={
             'default': {
@@ -20,40 +27,23 @@ if not settings.configured:
     )
     django.setup()
 
-# 2. Now you can safely import Django models, forms, and views
-import time
-from fastapi import FastAPI, Request
-from django.contrib.auth.forms import AuthenticationForm
-from my_views import admin_login_view
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from django.urls import path
-from my_views import admin_dashboard, admin_login_view
-
-urlpatterns = [
-    path('custom-login/', admin_login_view, name='custom_login'),
-    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
-]
-import os
-import subprocess
-from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
-import httpx
-from starlette.exceptions import HTTPException as StarletteHTTPException
+# 2. ALL DJANGO IMPORTS MUST BE HERE (STRICTLY BELOW django.setup())
 from django.urls import path
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
+from asgiref.sync import sync_to_async
 
-from my_views import admin_login_view
-app = FastAPI(debug=True)
-# myapp/views.py
+from my_views import admin_dashboard, admin_login_view
+
+# 3. FASTAPI IMPORTS & INITIALIZATION
+from fastapi import FastAPI, Depends, Header, HTTPException, Request, WebSocket, status
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+app = FastAPI(debug=True, title="a massive portal that has been discovered")
 @staff_member_required
 def admin_dashboard(request):
     context = {
@@ -62,6 +52,55 @@ def admin_dashboard(request):
     }
     # Renders template/dashboard.html directly
     return render(request, 'dashboard.html', context)
+# Helper function to check if the current session user has admin/staff permissions
+async def verify_admin_permission(request: Request):
+    # Retrieve user ID stored in session (managed by Django session middleware)
+    user_id = request.session.get("_auth_user_id") if hasattr(request, "session") else None
+    
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required."
+        )
+
+    # Fetch user asynchronously from Django ORM
+    @sync_to_async
+    def get_staff_user(uid):
+        try:
+            user = User.objects.get(pk=uid)
+            return user if user.is_staff or user.is_superuser else None
+        except User.DoesNotExist:
+            return None
+
+    user = await get_staff_user(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted to authorized admin personnel only."
+        )
+    return user
+@app.get("/api/request", response_class=JSONResponse)
+async def get_admin_statistics(admin_user: User = Depends(verify_admin_permission)):
+    # Async database queries using sync_to_async
+    @sync_to_async
+    def fetch_metrics():
+        return {
+            "total_users": User.objects.count(),
+            "active_users": User.objects.filter(is_active=True).count(),
+            "staff_members": User.objects.filter(is_staff=True).count(),
+            "superusers": User.objects.filter(is_superuser=True).count(),
+        }
+
+    stats = await fetch_metrics()
+
+    return JSONResponse(
+        content={
+            "status": "success",
+            "requested_by": admin_user.username,
+            "data": stats
+        },
+        status_code=200
+    )
 @app.get("/", response_class=HTMLResponse)
 async def home_page():
     html_content = """
@@ -292,24 +331,190 @@ def admin_login_view(request):
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        # Option A: Return custom HTML directly
-        return HTMLResponse(
-            content="""
-            <!DOCTYPE html>
-            <html>
-                <head><title>404 Not Found</title></head>
-                <body>
-                    <h1>404 - Page Not Found</h1>
-                    <p>The page you requested does not exist.</p>
-                    <a href="/">Go back home</a>
-                </body>
-            </html>
-            """,
-            status_code=404
-        )
-        
-        # Option B: Render a separate HTML file (swap with Option A above)
-        # return FileResponse("404.html", status_code=404)
+        html_content = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>404 - Page Not Found</title>
+            <style>
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #0f172a;
+                    color: #f8fafc;
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .bg-glow {
+                    position: absolute;
+                    width: 300px;
+                    height: 300px;
+                    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(15, 23, 42, 0) 70%);
+                    border-radius: 50%;
+                    animation: float 6s ease-in-out infinite alternate;
+                }
+
+                .bg-glow-1 {
+                    top: 10%;
+                    left: 15%;
+                }
+
+                .bg-glow-2 {
+                    bottom: 10%;
+                    right: 15%;
+                    animation-delay: -3s;
+                }
+
+                @keyframes float {
+                    0% { transform: translateY(0) scale(1); }
+                    100% { transform: translateY(-20px) scale(1.05); }
+                }
+
+                .error-container {
+                    position: relative;
+                    z-index: 10;
+                    text-align: center;
+                    max-width: 520px;
+                    width: 100%;
+                    padding: 40px 30px;
+                    background: rgba(30, 41, 59, 0.85);
+                    backdrop-filter: blur(12px);
+                    border: 1px solid #334155;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
+                }
+
+                .error-code {
+                    font-size: 6.5rem;
+                    font-weight: 900;
+                    line-height: 1;
+                    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    letter-spacing: -3px;
+                    margin-bottom: 12px;
+                    animation: pulse 3s infinite;
+                }
+
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.85; }
+                }
+
+                .error-title {
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    color: #ffffff;
+                }
+
+                .error-message {
+                    font-size: 0.95rem;
+                    color: #94a3b8;
+                    line-height: 1.6;
+                    margin-bottom: 28px;
+                }
+
+                .search-form {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 28px;
+                }
+
+                .search-input {
+                    flex: 1;
+                    padding: 12px 16px;
+                    background-color: #0f172a;
+                    border: 1px solid #334155;
+                    border-radius: 8px;
+                    color: #f8fafc;
+                    font-size: 0.95rem;
+                    outline: none;
+                    transition: border-color 0.2s ease;
+                }
+
+                .search-input:focus {
+                    border-color: #6366f1;
+                }
+
+                .search-btn {
+                    padding: 12px 20px;
+                    background-color: #334155;
+                    border: none;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background-color 0.2s ease;
+                }
+
+                .search-btn:hover {
+                    background-color: #475569;
+                }
+
+                .btn-home {
+                    display: inline-block;
+                    width: 100%;
+                    padding: 14px 0;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: #ffffff;
+                    background-color: #6366f1;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    transition: background-color 0.2s ease, transform 0.1s ease;
+                }
+
+                .btn-home:hover {
+                    background-color: #4f46e5;
+                }
+
+                .btn-home:active {
+                    transform: scale(0.98);
+                }
+
+                @media (max-width: 480px) {
+                    .error-code { font-size: 5rem; }
+                    .error-title { font-size: 1.4rem; }
+                    .search-form { flex-direction: column; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="bg-glow bg-glow-1"></div>
+            <div class="bg-glow bg-glow-2"></div>
+
+            <div class="error-container">
+                <h1 class="error-code">404</h1>
+                <h2 class="error-title">Page Not Found</h2>
+                <p class="error-message">
+                    The link you followed might be broken, or the page may have been moved.
+                </p>
+
+                <form action="/search/" method="GET" class="search-form">
+                    <input type="text" name="q" class="search-input" placeholder="Search the website..." required>
+                    <button type="submit" class="search-btn">Search</button>
+                </form>
+
+                <a href="/" class="btn-home">Return to Home</a>
+            </div>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content, status_code=404)
 
     return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
 @app.get("/style.css", response_class=PlainTextResponse(media_type="text/css"))
@@ -531,6 +736,46 @@ async def server_websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         # Handle disconnects cleanly
         print("Client disconnected from /server")
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import JSONResponse
+import sys
+import asyncio
+from utils import ensure_java_installed
+
+app = FastAPI()
+
+@app.post("/api/server/mc", response_class=JSONResponse)
+async def launch_minecraft_server():
+    # 1. Verify/Ensure Java is available on the host system
+    has_java = await ensure_java_installed()
+    if not has_java:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Java is not installed on the server and dynamic installation failed."
+        )
+
+    # 2. Trigger server.py as an asynchronous background subprocess
+    try:
+        process = await asyncio.create_subprocess_exec(
+            sys.executable, "server.py",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        
+        # Returns early while server.py runs independently in background
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "success",
+                "message": "server.py process initiated successfully.",
+                "pid": process.pid
+            }
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to launch server.py: {str(err)}"
+        )
 @app.get("/server", response_class=HTMLResponse)
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
