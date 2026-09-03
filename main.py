@@ -1,6 +1,9 @@
 import importlib
+from pathlib import Path
 import django
 from django.conf import settings
+
+BASE_DIR = Path(__file__).resolve().parent
 
 # 1. INITIALIZE DJANGO SETTINGS
 if not settings.configured:
@@ -27,6 +30,21 @@ if not settings.configured:
                 "NAME": ":memory:",
             }
         },
+        TEMPLATES=[
+            {
+                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "DIRS": [BASE_DIR / "templates"],
+                "APP_DIRS": True,
+                "OPTIONS": {
+                    "context_processors": [
+                        "django.template.context_processors.debug",
+                        "django.template.context_processors.request",
+                        "django.contrib.auth.context_processors.auth",
+                        "django.contrib.messages.context_processors.messages",
+                    ],
+                },
+            },
+        ],
     )
     django.setup()
 from django.contrib.admin.views.decorators import staff_member_required
@@ -133,7 +151,7 @@ def proxy_stream_view(request):
 urlpatterns = [
     # Admin routes (from my_views.py)
     path("admindashboard/", admin_dashboard, name="admin_dashboard"),
-    path("admin-login/", admin_login_view, name="admin_login"),
+    path("adminlogin/", admin_login_view, name="admin_login"),
     
     # Embedded HTML & API routes (defined inline in main.py)
     path("", home_view, name="home"),
