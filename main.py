@@ -5,20 +5,23 @@ import subprocess
 import asyncio
 import httpx
 import uvicorn
-
 import django
 from django.conf import settings
-
 # 1. INITIALIZE SETTINGS FIRST
 if not settings.configured:
     settings.configure(
-        DEBUG=True,  # Set Django debug to True
+        DEBUG=True,
         SECRET_KEY='scriptkey',
-        ALLOWED_HOSTS=['*'],  # Allow requests from any host/curl
+        ALLOWED_HOSTS=['*'],
+        ROOT_URLCONF=__name__,  # <-- Set ROOT_URLCONF directly here
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
             'django.contrib.sessions',
+        ],
+        MIDDLEWARE=[
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
         ],
         DATABASES={
             'default': {
@@ -30,6 +33,7 @@ if not settings.configured:
     django.setup()
 # 2. ALL DJANGO IMPORTS MUST BE HERE (STRICTLY BELOW django.setup())
 from django.urls import path
+from django.utils.asyncio import allow_async_unsafe
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -40,6 +44,7 @@ from asgiref.sync import sync_to_async
 from django.core.wsgi import get_wsgi_application
 from a2wsgi import WSGIMiddleware
 from django.core.wsgi import get_wsgi_application
+from django.core.management import call_command
 
 from my_views import admin_dashboard, admin_login_view
 
@@ -47,7 +52,16 @@ from my_views import admin_dashboard, admin_login_view
 from fastapi import FastAPI, Depends, Header, HTTPException, Request, WebSocket, status
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+@allow_async_unsafe
+def run_migrations():
+    call_command('migrate', verbosity=0)
+
+# Run migrations safely during import
+run_migrations()
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
+def ice():
+    print("connected")
+    return 1
 @staff_member_required
 def admin_dashboard(request):
     context = {
@@ -1660,24 +1674,21 @@ def handle_api():
     return jsonify({"error": "Method not allowed"}), 405
 try:
     # Run the 'ls' command and capture its output text
-    result = subprocess.run(
-        ["ls", "-la"], 
-        capture_output=True, 
-        text=True, 
-        check=True
-    )
-    
-    # Print the standard output directly to the console
-    print(result.stdout)
-
-except subprocess.CalledProcessError as e:
-    print(f"Command failed with error code {e.returncode}")
-    print(f"Error output: {e.stderr}")
-except FileNotFoundError:
-    print("The 'ls' command is not available on this operating system (e.g., Windows).")
+    result = ice()
+    print(result)  # Outputs: 1
+except Exception as e:
+    print({e})
+    pass
 # 1. Ensure ROOT_URLCONF points to this module so Django finds `urlpatterns`
+# Clean setup without orphaned try blocks
 settings.ROOT_URLCONF = __name__
-
+django_wsgi_app = get_wsgi_application()
+app.mount("/", WSGIMiddleware(django_wsgi_app))
+urlpatterns = [
+    path('', lambda request: redirect('admin_dashboard')),  # Redirects / to /admin-dashboard/
+    path('custom-login/', admin_login_view, name='custom_login'),
+    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
+]
 # 2. Get the Django WSGI application
 django_wsgi_app = get_wsgi_application()
 
