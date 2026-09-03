@@ -132,7 +132,7 @@ def proxy_stream_view(request):
 # 4. REGISTER URL PATTERNS
 urlpatterns = [
     # Admin routes (from my_views.py)
-    path("admin-dashboard/", admin_dashboard, name="admin_dashboard"),
+    path("admindashboard/", admin_dashboard, name="admin_dashboard"),
     path("admin-login/", admin_login_view, name="admin_login"),
     
     # Embedded HTML & API routes (defined inline in main.py)
@@ -432,7 +432,7 @@ async def home_page():
                         <li class="route-item">
                             <div class="route-item-header">
                                 <span class="method-badge">GET</span>
-                                <code>/admin-dashboard/</code>
+                                <code>/admindashboard/</code>
                             </div>
                             <p class="route-desc">Administrative interface managed via Django authentication views.</p>
                         </li>
@@ -1750,7 +1750,7 @@ app.mount("/", WSGIMiddleware(django_wsgi_app))
 django_wsgi_app = get_wsgi_application()
 
 # 3. Mount the Django application BEFORE starting the Uvicorn server
-# FastAPI will check its own /api routes first, and fall back to Django for /admin-dashboard/
+# FastAPI will check its own /api routes first, and fall back to Django for /admindashboard/
 app.mount("/", WSGIMiddleware(django_wsgi_app))
 
 # 4. Run the server AT THE VERY END
