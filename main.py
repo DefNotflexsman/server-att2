@@ -1,60 +1,73 @@
+import asyncio
 import os
+import subprocess
 import sys
 import time
-import subprocess
-import asyncio
-import httpx
-import uvicorn
+
+# 1. INITIALIZE SETTINGS FIRST
 import django
 from django.conf import settings
-# 1. INITIALIZE SETTINGS FIRST
+
 if not settings.configured:
     settings.configure(
         DEBUG=True,
-        SECRET_KEY='scriptkey',
-        ALLOWED_HOSTS=['*'],
-        ROOT_URLCONF=__name__,  # <-- Set ROOT_URLCONF directly here
+        SECRET_KEY="scriptkey",
+        ALLOWED_HOSTS=["*"],
+        ROOT_URLCONF=__name__,
         INSTALLED_APPS=[
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.sessions",
         ],
         MIDDLEWARE=[
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            "django.contrib.sessions.middleware.SessionMiddleware",
+            "django.contrib.auth.middleware.AuthenticationMiddleware",
         ],
         DATABASES={
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": ":memory:",
             }
-        }
+        },
     )
     django.setup()
-# 2. ALL DJANGO IMPORTS MUST BE HERE (STRICTLY BELOW django.setup())
-from django.urls import path
-from django.utils.asyncio import async_unsafe
-from django.shortcuts import render, redirect
+
+# 2. DJANGO & ASGI IMPORTS (AFTER django.setup())
+from a2wsgi import WSGIMiddleware
+from asgiref.sync import sync_to_async
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
-from asgiref.sync import sync_to_async
-from django.core.wsgi import get_wsgi_application
-from a2wsgi import WSGIMiddleware
-from django.core.wsgi import get_wsgi_application
 from django.core.management import call_command
-
-from my_views import admin_dashboard, admin_login_view
-
-# 3. FASTAPI IMPORTS & INITIALIZATION
-from asgiref.sync import sync_to_async
-from fastapi import FastAPI, Depends, Header, HTTPException, Request, WebSocket, status
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, PlainTextResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from django.core.management import call_command
+from django.core.wsgi import get_wsgi_application
+from django.shortcuts import redirect, render
+from django.urls import path
 from django.utils.asyncio import async_unsafe
+
+# 3. FASTAPI & THIRD-PARTY IMPORTS
+import httpx
+import uvicorn
+from fastapi import (
+    Depends,
+    FastAPI,
+    Header,
+    HTTPException,
+    Request,
+    WebSocket,
+    status,
+)
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+)
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+# 4. LOCAL MODULE IMPORTS
+from my_views import admin_dashboard, admin_login_view
 
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
 def ice():
