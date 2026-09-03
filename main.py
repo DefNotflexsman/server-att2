@@ -36,6 +36,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from asgiref.sync import sync_to_async
+from django.core.wsgi import get_wsgi_application
 
 from my_views import admin_dashboard, admin_login_view
 
@@ -43,6 +44,7 @@ from my_views import admin_dashboard, admin_login_view
 from fastapi import FastAPI, Depends, Header, HTTPException, Request, WebSocket, status
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.middleware.wsgi import WSGIMiddleware
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
 @staff_member_required
 def admin_dashboard(request):
@@ -1671,5 +1673,16 @@ except subprocess.CalledProcessError as e:
     print(f"Error output: {e.stderr}")
 except FileNotFoundError:
     print("The 'ls' command is not available on this operating system (e.g., Windows).")
+# 1. Ensure ROOT_URLCONF points to this module so Django finds `urlpatterns`
+settings.ROOT_URLCONF = __name__
+
+# 2. Get the Django WSGI application
+django_wsgi_app = get_wsgi_application()
+
+# 3. Mount the Django application BEFORE starting the Uvicorn server
+# FastAPI will check its own /api routes first, and fall back to Django for /admin-dashboard/
+app.mount("/", WSGIMiddleware(django_wsgi_app))
+
+# 4. Run the server AT THE VERY END
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
