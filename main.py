@@ -166,6 +166,7 @@ urlpatterns = [
     # Embedded HTML & API routes (defined inline in main.py)
     path("", home_view, name="home"),
     path("FrontPage/", front_page_view, name="front_page"),
+    path("admin/", admin.site.urls),
     path("style.css", style_css_view, name="style_css"),
     path("page404/", custom_404_view, name="page404"),
     path("cookie/", cookie_view, name="cookie"),
