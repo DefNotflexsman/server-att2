@@ -30,6 +30,8 @@ if not settings.configured:
     )
     django.setup()
 from django.contrib.admin.views.decorators import staff_member_required
+from my_views import admin_dashboard
+from fastapi import Header
 from fastapi import WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.responses import PlainTextResponse
@@ -1744,32 +1746,6 @@ except Exception as e:
 settings.ROOT_URLCONF = __name__
 django_wsgi_app = get_wsgi_application()
 app.mount("/", WSGIMiddleware(django_wsgi_app))
-urlpatterns = [
-    path("", views.home_view, name="home"),  # Changed home_view -> views.home_view
-    path("FrontPage/", views.front_page_view, name="front_page"),
-    path("style.css", views.style_css_view, name="style_css"),
-    path("page404/", views.custom_404_view, name="page404"),
-    path("cookie/", views.cookie_view, name="cookie"),
-    path("server/", views.server_view, name="server"),
-    path("controllerempt/", views.controllerempt_view, name="controllerempt"),
-    path("items/<int:item_id>/", views.item_detail_view, name="item_detail"),
-    # API Routes
-    path("api/request/", views.api_request_view, name="api_request"),
-    path("api/server/mc/", views.api_server_mc_view, name="api_server_mc"),
-    path("api/status/", views.api_status_view, name="api_status"),
-    path(
-        "api/authentication/",
-        views.api_authentication_view,
-        name="api_authentication",
-    ),
-    path(
-        "api/endpoint/test/",
-        views.api_endpoint_test_view,
-        name="api_endpoint_test",
-    ),
-    # Media Proxy Route
-    path("proxy/25565/", views.proxy_stream_view, name="proxy_stream"),
-]
 # 2. Get the Django WSGI application
 django_wsgi_app = get_wsgi_application()
 
