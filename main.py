@@ -33,7 +33,7 @@ if not settings.configured:
     django.setup()
 # 2. ALL DJANGO IMPORTS MUST BE HERE (STRICTLY BELOW django.setup())
 from django.urls import path
-from django.utils.asyncio import allow_async_unsafe
+from django.utils.asyncio import async_unsafe
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -49,15 +49,13 @@ from django.core.management import call_command
 from my_views import admin_dashboard, admin_login_view
 
 # 3. FASTAPI IMPORTS & INITIALIZATION
+from asgiref.sync import sync_to_async
 from fastapi import FastAPI, Depends, Header, HTTPException, Request, WebSocket, status
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
-@allow_async_unsafe
-def run_migrations():
-    call_command('migrate', verbosity=0)
+from django.core.management import call_command
+from django.utils.asyncio import async_unsafe
 
-# Run migrations safely during import
-run_migrations()
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
 def ice():
     print("connected")
