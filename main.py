@@ -112,53 +112,6 @@ for item in imports_list:
     else:
         top_level_name = module_path.split(".")[0]
         globals()[top_level_name] = importlib.import_module(top_level_name)
-
-# 3. DEFINE EMBEDDED HTML VIEWS INLINE
-def home_view(request):
-    html = "<html><body><h1>Home Page</h1></body></html>"
-    return HttpResponse(html)
-
-def front_page_view(request):
-    html = "<html><body><h1>Front Page</h1></body></html>"
-    return HttpResponse(html)
-
-def style_css_view(request):
-    css = "body { background-color: #f0f0f0; }"
-    return HttpResponse(css, content_type="text/css")
-
-def custom_404_view(request):
-    return HttpResponse("Page Not Found", status=404)
-
-def cookie_view(request):
-    return HttpResponse("Cookie Handler")
-
-def server_view(request):
-    return HttpResponse("Server Info")
-
-def controllerempt_view(request):
-    return HttpResponse("Controller Endpoint")
-
-def item_detail_view(request, item_id):
-    return JsonResponse({"item_id": item_id})
-
-def api_request_view(request):
-    return JsonResponse({"status": "request received"})
-
-def api_server_mc_view(request):
-    return JsonResponse({"status": "mc server online"})
-
-def api_status_view(request):
-    return JsonResponse({"status": "ok"})
-
-def api_authentication_view(request):
-    return JsonResponse({"authenticated": True})
-
-def api_endpoint_test_view(request):
-    return JsonResponse({"test": "passed"})
-
-def proxy_stream_view(request):
-    return HttpResponse("Proxy Stream Response")
-
 # 4. REGISTER URL PATTERNS
 urlpatterns = [
     # Admin routes (from my_views.py)
