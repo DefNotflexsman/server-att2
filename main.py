@@ -1718,7 +1718,7 @@ settings.ROOT_URLCONF = __name__
 django_wsgi_app = get_wsgi_application()
 app.mount("/", WSGIMiddleware(django_wsgi_app))
 urlpatterns = [
-    path("", views.home_view, name="home"),
+    path("", views.home_view, name="home"),  # Changed home_view -> views.home_view
     path("FrontPage/", views.front_page_view, name="front_page"),
     path("style.css", views.style_css_view, name="style_css"),
     path("page404/", views.custom_404_view, name="page404"),
@@ -1741,9 +1741,7 @@ urlpatterns = [
         name="api_endpoint_test",
     ),
     # Media Proxy Route
-    path(
-        "proxy/25565/", views.proxy_stream_view, name="proxy_stream"
-    ),  # Handles target stream/header proxying
+    path("proxy/25565/", views.proxy_stream_view, name="proxy_stream"),
 ]
 # 2. Get the Django WSGI application
 django_wsgi_app = get_wsgi_application()
