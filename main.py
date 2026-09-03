@@ -192,7 +192,7 @@ for item in imports_list:
         top_level_name = module_path.split(".")[0]
         globals()[top_level_name] = importlib.import_module(top_level_name)
 
-app = FastAPI(debug=True, title="a massive portal that has been discovered")
+app = FastAPI(debug=False, title="a massive portal that has been discovered")
 def ice():
     print(f".")
 from django.contrib.admin.views.decorators import staff_member_required
