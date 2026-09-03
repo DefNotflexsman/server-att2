@@ -1,3 +1,10 @@
+from django.urls import path
+from .views import admin_dashboard, admin_login_view
+
+urlpatterns = [
+    path('custom-login/', admin_login_view, name='custom_login'),
+    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
+]
 import uvicorn
 import os
 import django
@@ -252,9 +259,6 @@ async def home_page():
     """
     return HTMLResponse(content=html_content, status_code=200)
 dev_port = "25565"
-urlpatterns = [
-    path('custom-login/', admin_login_view, name='custom_login'),
-]
 def admin_login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
