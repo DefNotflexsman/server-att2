@@ -1,10 +1,6 @@
-import asyncio
-import os
-import subprocess
-import sys
-import time
+import importlib
 
-# 1. INITIALIZE SETTINGS FIRST
+# 1. INITIALIZE SETTINGS & SETUP DJANGO FIRST
 import django
 from django.conf import settings
 
@@ -15,13 +11,16 @@ if not settings.configured:
         ALLOWED_HOSTS=["*"],
         ROOT_URLCONF=__name__,
         INSTALLED_APPS=[
+            "django.contrib.admin",
             "django.contrib.auth",
             "django.contrib.contenttypes",
             "django.contrib.sessions",
+            "django.contrib.messages",
         ],
         MIDDLEWARE=[
             "django.contrib.sessions.middleware.SessionMiddleware",
             "django.contrib.auth.middleware.AuthenticationMiddleware",
+            "django.contrib.messages.middleware.MessageMiddleware",
         ],
         DATABASES={
             "default": {
@@ -32,42 +31,65 @@ if not settings.configured:
     )
     django.setup()
 
-# 2. DJANGO & ASGI IMPORTS (AFTER django.setup())
-from a2wsgi import WSGIMiddleware
-from asgiref.sync import sync_to_async
-from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.core.wsgi import get_wsgi_application
-from django.shortcuts import redirect, render
-from django.urls import path
-from django.utils.asyncio import async_unsafe
+# 2. DEFINE MODULE/ATTRIBUTE MAP IN AN ARRAY
+imports_list = [
+    # Standard library
+    ("asyncio", None),
+    ("os", None),
+    ("subprocess", None),
+    ("sys", None),
+    ("time", None),
+    # ASGI & Django helpers
+    ("a2wsgi", "WSGIMiddleware"),
+    ("asgiref.sync", "sync_to_async"),
+    ("django.contrib.admin", "ModelAdmin"),
+    ("django.contrib.admin", "StackedInline"),
+    ("django.contrib.admin", "TabularInline"),
+    ("django.contrib", "messages"),
+    ("django.contrib.admin.views.decorators", "staff_member_required"),
+    ("django.contrib.auth", "authenticate"),
+    ("django.contrib.auth", "login"),
+    ("django.contrib.auth.forms", "AuthenticationForm"),
+    ("django.contrib.auth.models", "User"),
+    ("django.core.management", "call_command"),
+    ("django.core.wsgi", "get_wsgi_application"),
+    ("django.shortcuts", "redirect"),
+    ("django.shortcuts", "render"),
+    ("django.urls", "path"),
+    ("django.utils.asyncio", "async_unsafe"),
+    # FastAPI & Starlette
+    ("httpx", None),
+    ("uvicorn", None),
+    ("fastapi", "Depends"),
+    ("fastapi", "FastAPI"),
+    ("fastapi", "Header"),
+    ("fastapi", "HTTPException"),
+    ("fastapi", "Request"),
+    ("fastapi", "WebSocket"),
+    ("fastapi", "status"),
+    ("fastapi.responses", "FileResponse"),
+    ("fastapi.responses", "HTMLResponse"),
+    ("fastapi.responses", "JSONResponse"),
+    ("fastapi.responses", "PlainTextResponse"),
+    # Aliased import (module, attribute, alias) to avoid overwriting fastapi.HTTPException
+    ("starlette.exceptions", "HTTPException", "StarletteHTTPException"),
+    # Local imports
+    ("my_views", "admin_dashboard"),
+    ("my_views", "admin_login_view"),
+]
 
-# 3. FASTAPI & THIRD-PARTY IMPORTS
-import httpx
-import uvicorn
-from fastapi import (
-    Depends,
-    FastAPI,
-    Header,
-    HTTPException,
-    Request,
-    WebSocket,
-    status,
-)
-from fastapi.responses import (
-    FileResponse,
-    HTMLResponse,
-    JSONResponse,
-    PlainTextResponse,
-)
-from starlette.exceptions import HTTPException as StarletteHTTPException
+# 3. DYNAMICALLY LOAD IMPORTS INTO GLOBAL SCOPE
+for item in imports_list:
+    module_path = item[0]
+    attr_name = item[1]
+    alias = item[2] if len(item) > 2 else attr_name
 
-# 4. LOCAL MODULE IMPORTS
-from my_views import admin_dashboard, admin_login_view
+    mod = importlib.import_module(module_path)
+    if attr_name:
+        globals()[alias] = getattr(mod, attr_name)
+    else:
+        top_level_name = module_path.split(".")[0]
+        globals()[top_level_name] = importlib.import_module(top_level_name)
 
 app = FastAPI(debug=True, title="a massive portal that has been discovered")
 def ice():
@@ -1615,7 +1637,7 @@ async def page_404(dev_port: int):
     </html>
     """
     return HTMLResponse(content=html_content, status_code=404)
-@app.get("/FastAPI.example", response_class=HTMLResponse)
+@app.get("/FrontPage", response_class=HTMLResponse)
 async def read_root():
     return """
     <!DOCTYPE html>
@@ -1696,9 +1718,32 @@ settings.ROOT_URLCONF = __name__
 django_wsgi_app = get_wsgi_application()
 app.mount("/", WSGIMiddleware(django_wsgi_app))
 urlpatterns = [
-    path('', lambda request: redirect('admin_dashboard')),  # Redirects / to /admin-dashboard/
-    path('custom-login/', admin_login_view, name='custom_login'),
-    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
+    path("", views.home_view, name="home"),
+    path("FrontPage/", views.front_page_view, name="front_page"),
+    path("style.css", views.style_css_view, name="style_css"),
+    path("page404/", views.custom_404_view, name="page404"),
+    path("cookie/", views.cookie_view, name="cookie"),
+    path("server/", views.server_view, name="server"),
+    path("controllerempt/", views.controllerempt_view, name="controllerempt"),
+    path("items/<int:item_id>/", views.item_detail_view, name="item_detail"),
+    # API Routes
+    path("api/request/", views.api_request_view, name="api_request"),
+    path("api/server/mc/", views.api_server_mc_view, name="api_server_mc"),
+    path("api/status/", views.api_status_view, name="api_status"),
+    path(
+        "api/authentication/",
+        views.api_authentication_view,
+        name="api_authentication",
+    ),
+    path(
+        "api/endpoint/test/",
+        views.api_endpoint_test_view,
+        name="api_endpoint_test",
+    ),
+    # Media Proxy Route
+    path(
+        "proxy/25565/", views.proxy_stream_view, name="proxy_stream"
+    ),  # Handles target stream/header proxying
 ]
 # 2. Get the Django WSGI application
 django_wsgi_app = get_wsgi_application()
