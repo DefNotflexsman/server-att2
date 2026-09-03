@@ -15,7 +15,7 @@ def admin_login_view(request):
             
             if user is not None and user.is_staff:
                 login(request, user)
-                return redirect('/admin-dashboard/')
+                return redirect('/admindashboard/')
             else:
                 messages.error(request, "Invalid credentials or unauthorized access.")
         else:
