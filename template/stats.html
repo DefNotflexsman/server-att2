@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin System Statistics</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .stats-card {
+            width: 100%;
+            max-width: 600px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 20px; }
+        .metric-box {
+            background-color: #0f172a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .metric-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
+        .metric-value { font-size: 1.75rem; font-weight: bold; color: #6366f1; }
+        .error-msg { color: #f87171; display: none; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="stats-card">
+    <h1>System Statistics</h1>
+    <div id="error" class="error-msg"></div>
+    <div class="grid" id="stats-grid">
+        <div class="metric-box">
+            <div class="metric-title">Total Users</div>
+            <div class="metric-value" id="total-users">--</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">Active Users</div>
+            <div class="metric-value" id="active-users">--</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">Staff Members</div>
+            <div class="metric-value" id="staff-members">--</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">Superusers</div>
+            <div class="metric-value" id="superusers">--</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/request');
+            if (!response.ok) {
+                if (response.status === 403 || response.status === 401) {
+                    throw new Error("Access Denied: You do not have permission to view this page.");
+                }
+                throw new Error("Failed to load statistics.");
+            }
+            const result = await response.json();
+            const data = result.data;
+
+            document.getElementById('total-users').innerText = data.total_users;
+            document.getElementById('active-users').innerText = data.active_users;
+            document.getElementById('staff-members').innerText = data.staff_members;
+            document.getElementById('superusers').innerText = data.superusers;
+        } catch (err) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerText = err.message;
+            errorDiv.style.display = 'block';
+            document.getElementById('stats-grid').style.opacity = '0.3';
+        }
+    }
+
+    loadStats();
+</script>
+
+</body>
+</html>
