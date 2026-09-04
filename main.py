@@ -4,6 +4,37 @@ def read_item():
         raise ItemNotFoundException(item_id=item_id)
     return {"item_id": item_id, "name": "Sample Item"}
 API_KEY = os.environ.get("api_key")
+def launch_minecraft_server():
+    # 1. Verify/Ensure Java is available on the host system
+    has_java = await ensure_java_installed()
+    if not has_java:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Java is not installed on the server and dynamic installation failed."
+        )
+
+    # 2. Trigger server.py as an asynchronous background subprocess
+    try:
+        process = await asyncio.create_subprocess_exec(
+            sys.executable, "server.py",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        
+        # Returns early while server.py runs independently in background
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "success",
+                "message": "server.py process initiated successfully.",
+                "pid": process.pid
+            }
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to launch server.py: {str(err)}"
+        )
 
 import importlib
 from pathlib import Path
