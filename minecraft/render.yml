@@ -1,0 +1,17 @@
+services:
+  - type: pserv
+    name: minecraft-paper-1-21-1
+    env: docker
+    plan: starter # Starter tier offers ~512MB-1GB RAM. Use 'standard' if OOM crashes occur.
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: EULA
+        value: "true"
+      - key: ONLINE_MODE
+        value: "false"
+      - key: MAX_RAM
+        value: "1024M"
+    disk:
+      name: mc-world-data
+      mountPath: /data
+      sizeGB: 10
