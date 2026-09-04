@@ -1,0 +1,15 @@
+FROM eclipse-temurin:21-jre-alpine
+
+# Install curl and bash for the startup script
+RUN apk add --no-mkdir --no-cache bash curl
+
+WORKDIR /app
+
+# Copy and prepare startup script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Expose Minecraft default TCP port
+EXPOSE 25565
+
+ENTRYPOINT ["/app/entrypoint.sh"]
