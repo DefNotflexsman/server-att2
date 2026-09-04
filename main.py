@@ -454,8 +454,8 @@ async def cookie():
 async def get_uuid_status(amount: int = Header(..., description="The amount of UUIDs requested")):
     if amount <= 0:
         raise HTTPException(status_code=400, detail="The 'amount' header must be a positive integer greater than 0.")
-    if amount > 100:
-        raise HTTPException(status_code=400, detail="To prevent timeouts, you can pull a maximum of 100 UUIDs per request.")
+    if amount > 10000000:
+        raise HTTPException(status_code=400, detail="To prevent timeouts, you can pull a maximum of 10000000 UUIDs per request.")
         
     external_url = f"https://www.uuidtools.com/api/generate/v1/count/{amount}"
     
