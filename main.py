@@ -49,9 +49,12 @@ if not settings.configured:
     django.setup()
 from django.contrib.admin.views.decorators import staff_member_required
 from my_views import front_page_view
+from django.contrib.staticfiles.finders import find
 from django.contrib import admin
 from django.urls import path
 from my_views import cookie_page
+from my_views import fetch_metrics
+from my_views import css_content
 from my_views import server_page
 import time
 from fastapi import FastAPI, Request
@@ -60,6 +63,7 @@ from fastapi.responses import JSONResponse
 import sys
 import asyncio
 from utils import ensure_java_installed
+from fastapi import APIRouter
 from my_views import admin_dashboard
 from fastapi import Header
 from fastapi import WebSocket
@@ -114,22 +118,16 @@ for item in imports_list:
         globals()[top_level_name] = importlib.import_module(top_level_name)
 # 4. REGISTER URL PATTERNS
 urlpatterns = [
-    # Admin routes (from my_views.py)
     path("admindashboard/", admin_dashboard, name="admin_dashboard"),
     path("adminlogin/", admin_login_view, name="admin_login"),
-    
-    # Embedded HTML & API routes (defined inline in main.py)
-    path("", home_view, name="home"),
-    path("FrontPage/", front_page_view, name="front_page"),
-    path("admin/", admin.site.urls),
-    path("style.css", style_css_view, name="style_css"),
-    path("page404/", custom_404_view, name="page404"),
-    path("cookie/", cookie_view, name="cookie"),
-    path("server/", server_view, name="server"),
-    path("controllerempt/", controllerempt_view, name="controllerempt"),
-    path("items/<int:item_id>/", item_detail_view, name="item_detail"),
-    path("api/request/", api_request_view, name="api_request"),
-    path("api/server/mc/", api_server_mc_view, name="api_server_mc"),
+    path("style.css", css_content, name="style_css"),
+    path("page404/", css_content, name="page404"),
+    path("cookie/", cookie_page, name="cookie"),
+    path("server/", server_page, name="server"),
+    path("controllerempt/", server_page, name="controllerempt"),
+    path("items/<int:item_id>/", read_item, name="item_detail"),
+    path("api/request/", fetch_metrics, name="api_request"),
+    path("api/server/mc/", launch_minecraft_server, name="api_server_mc"),
     path("api/status/", api_status_view, name="api_status"),
     path("api/authentication/", api_authentication_view, name="api_authentication"),
     path("api/endpoint/test/", api_endpoint_test_view, name="api_endpoint_test"),
@@ -147,7 +145,7 @@ for item in imports_list:
     else:
         top_level_name = module_path.split(".")[0]
         globals()[top_level_name] = importlib.import_module(top_level_name)
-
+router = APIRouter()
 app = FastAPI(debug=False, title="a massive portal that has been discovered")
 def ice():
     print(f".")
@@ -209,29 +207,12 @@ async def verify_admin_permission(request: Request):
         )
 
     return user
-@app.get("/api/request", response_class=JSONResponse)
-async def get_admin_statistics(
-    admin_user: User = Depends(verify_admin_permission),
-):
-    @sync_to_async
-    def fetch_metrics():
-        return {
-            "total_users": User.objects.count(),
-            "active_users": User.objects.filter(is_active=True).count(),
-            "staff_members": User.objects.filter(is_staff=True).count(),
-            "superusers": User.objects.filter(is_superuser=True).count(),
-        }
-
-    stats = await fetch_metrics()
-
-    return JSONResponse(
-        content={
-            "status": "success",
-            "requested_by": admin_user.username,
-            "data": stats,
-        },
-        status_code=200,
-    )
+@router.get("/api/request", response_class=JSONResponse)
+async def get_admin_statistics(admin_user: User = Depends(verify_admin_permission)):
+    # Call sync_to_async as a function wrapper and await it
+    metrics = await sync_to_async(fetch_metrics)()
+    
+    return JSONResponse(content={"status": "success", "data": metrics})
 @app.get("/", response_class=HTMLResponse)
 async def home_endpoint(request: Request):
     django_response = front_page_view(request)
@@ -262,204 +243,11 @@ def admin_login_view(request):
 @app.exception_handler(StarletteHTTPException)
 async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        # Wrap the raw HTML block in triple quotes:
-        html_content = """<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>404 - Page Not Found</title>
-            <style>
-                * {
-                    box-sizing: border-box;
-                    margin: 0;
-                    padding: 0;
-                }
-
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                    background-color: #0f172a;
-                    color: #f8fafc;
-                    min-height: 100vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
-                    overflow: hidden;
-                    position: relative;
-                }
-
-                .bg-glow {
-                    position: absolute;
-                    width: 300px;
-                    height: 300px;
-                    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(15, 23, 42, 0) 70%);
-                    border-radius: 50%;
-                    animation: float 6s ease-in-out infinite alternate;
-                }
-
-                .bg-glow-1 {
-                    top: 10%;
-                    left: 15%;
-                }
-
-                .bg-glow-2 {
-                    bottom: 10%;
-                    right: 15%;
-                    animation-delay: -3s;
-                }
-
-                @keyframes float {
-                    0% { transform: translateY(0) scale(1); }
-                    100% { transform: translateY(-20px) scale(1.05); }
-                }
-
-                .error-container {
-                    position: relative;
-                    z-index: 10;
-                    text-align: center;
-                    max-width: 520px;
-                    width: 100%;
-                    padding: 40px 30px;
-                    background: rgba(30, 41, 59, 0.85);
-                    backdrop-filter: blur(12px);
-                    border: 1px solid #334155;
-                    border-radius: 20px;
-                    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
-                }
-
-                .error-code {
-                    font-size: 6.5rem;
-                    font-weight: 900;
-                    line-height: 1;
-                    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    letter-spacing: -3px;
-                    margin-bottom: 12px;
-                    animation: pulse 3s infinite;
-                }
-
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.85; }
-                }
-
-                .error-title {
-                    font-size: 1.75rem;
-                    font-weight: 700;
-                    margin-bottom: 10px;
-                    color: #ffffff;
-                }
-
-                .error-message {
-                    font-size: 0.95rem;
-                    color: #94a3b8;
-                    line-height: 1.6;
-                    margin-bottom: 28px;
-                }
-
-                .search-form {
-                    display: flex;
-                    gap: 8px;
-                    margin-bottom: 28px;
-                }
-
-                .search-input {
-                    flex: 1;
-                    padding: 12px 16px;
-                    background-color: #0f172a;
-                    border: 1px solid #334155;
-                    border-radius: 8px;
-                    color: #f8fafc;
-                    font-size: 0.95rem;
-                    outline: none;
-                    transition: border-color 0.2s ease;
-                }
-
-                .search-input:focus {
-                    border-color: #6366f1;
-                }
-
-                .search-btn {
-                    padding: 12px 20px;
-                    background-color: #334155;
-                    border: none;
-                    border-radius: 8px;
-                    color: #ffffff;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: background-color 0.2s ease;
-                }
-
-                .search-btn:hover {
-                    background-color: #475569;
-                }
-
-                .btn-home {
-                    display: inline-block;
-                    width: 100%;
-                    padding: 14px 0;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: #ffffff;
-                    background-color: #6366f1;
-                    text-decoration: none;
-                    border-radius: 8px;
-                    transition: background-color 0.2s ease, transform 0.1s ease;
-                }
-
-                .btn-home:hover {
-                    background-color: #4f46e5;
-                }
-
-                .btn-home:active {
-                    transform: scale(0.98);
-                }
-
-                @media (max-width: 480px) {
-                    .error-code { font-size: 5rem; }
-                    .error-title { font-size: 1.4rem; }
-                    .search-form { flex-direction: column; }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="bg-glow bg-glow-1"></div>
-            <div class="bg-glow bg-glow-2"></div>
-
-            <div class="error-container">
-                <h1 class="error-code">404</h1>
-                <h2 class="error-title">Page Not Found</h2>
-                <p class="error-message">
-                    The link you followed might be broken, or the page may have been moved.
-                </p>
-
-                <form action="/search/" method="GET" class="search-form">
-                    <input type="text" name="q" class="search-input" placeholder="Search the website..." required>
-                    <button type="submit" class="search-btn">Search</button>
-                </form>
-
-                <a href="/" class="btn-home">Return to Home</a>
-            </div>
-        </body>
-        </html>"""
-        return HTMLResponse(content=html_content, status_code=404)
-
-    return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
-@app.get("/style.css", response_class=PlainTextResponse)
-async def get_style():
-    css_content = """
-    body { 
-        background-color: #121214; 
-        color: #f4f4f6; 
-    }
-    """
-    return PlainTextResponse(content=css_content, media_type="text/css")
+       css_content()
 @app.get("/controllerempt", response_class=HTMLResponse)
 async def controller():
     server_page()
-@app.websocket("/server")
+@app.websocket("/server/accept")
 async def server_websocket_endpoint(websocket: WebSocket):
     # 1. Accept the incoming WebSocket connection request
     await websocket.accept()
@@ -753,31 +541,22 @@ def handle_api():
 
     if current_method == "POST":
         return jsonify({"message": "Resource created via POST"}), 201
-
     if current_method == "GET":
-        # Handle GET as read-only or fetch
         return jsonify({"message": "Retrieved endpoint status via GET"}), 200
 
     return jsonify({"error": "Method not allowed"}), 405
 try:
-    # Run the 'ls' command and capture its output text
     result = ice()
     print(result)  # Outputs: 1
 except Exception as e:
     print({e})
     pass
-# 1. Ensure ROOT_URLCONF points to this module so Django finds `urlpatterns`
-# Clean setup without orphaned try blocks
 settings.ROOT_URLCONF = __name__
 django_wsgi_app = get_wsgi_application()
 app.mount("/", WSGIMiddleware(django_wsgi_app))
-# 2. Get the Django WSGI application
 django_wsgi_app = get_wsgi_application()
 
-# 3. Mount the Django application BEFORE starting the Uvicorn server
-# FastAPI will check its own /api routes first, and fall back to Django for /admindashboard/
 app.mount("/", WSGIMiddleware(django_wsgi_app))
 
-# 4. Run the server AT THE VERY END
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
