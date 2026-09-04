@@ -1,3 +1,10 @@
+import os
+def read_item():
+    if item_id > 100:
+        raise ItemNotFoundException(item_id=item_id)
+    return {"item_id": item_id, "name": "Sample Item"}
+API_KEY = os.environ.get("api_key")
+
 import importlib
 from pathlib import Path
 import django
@@ -125,7 +132,7 @@ urlpatterns = [
     path("cookie/", cookie_page, name="cookie"),
     path("server/", server_page, name="server"),
     path("controllerempt/", server_page, name="controllerempt"),
-    path("items/<int:item_id>/", read_item, name="item_detail"),
+    path("items/{item_id}/", read_item, name="item_detail"),
     path("api/request/", fetch_metrics, name="api_request"),
     path("api/server/mc/", launch_minecraft_server, name="api_server_mc"),
     path("api/status/", api_status_view, name="api_status"),
@@ -147,6 +154,12 @@ for item in imports_list:
         globals()[top_level_name] = importlib.import_module(top_level_name)
 router = APIRouter()
 app = FastAPI(debug=False, title="a massive portal that has been discovered")
+def read_item():
+    if item_id > 100:
+        raise ItemNotFoundException(item_id=item_id)
+    return {"item_id": item_id, "name": "Sample Item"}
+API_KEY = os.environ.get("api_key")
+
 def ice():
     print(f".")
 from django.contrib.admin.views.decorators import staff_member_required
