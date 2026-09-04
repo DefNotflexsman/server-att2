@@ -1,10 +1,90 @@
 import os
+from fastapi import FastAPI, Header
+def ice():
+    print(f".")
+async def page_404():
+    html = """<!doctype html>
+    <html lang="en">
+    <head>
+        <title>404 Not Found</title>
+    </head>
+    <body>
+        <h1>Not Found</h1>
+        <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+    </body>
+    </html>"""
+def handle_api():
+    current_method = request.method.upper()
+
+    if current_method == "POST":
+        return jsonify({"message": "Resource created via POST"}), 201
+    if current_method == "GET":
+        return jsonify({"message": "Retrieved endpoint status via GET"}), 200
+
+    return jsonify({"error": "Method not allowed"}), 405
+try:
+    result = ice()
+    print(result)  # Outputs: 1
+except Exception as e:
+    print({e})
+    pass
+app = FastAPI(debug=False, title="a massive portal that has been discovered")
+def get_status(x_api_key: str = Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key"
+        )
+    return {"status": "ok", "message": "Service is running"}
+async def fetch_uuids_from_api(amount: int) -> list:
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be greater than 0.")
+    if amount > 10000000:
+        raise HTTPException(status_code=400, detail="Amount exceeds maximum limit.")
+        
+    external_url = f"https://www.uuidtools.com/api/generate/v1/count/{amount}"
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(external_url)
+            if response.status_code != 200:
+                raise HTTPException(status_code=502, detail="Failed to retrieve upstream UUIDs.")
+            return response.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail=f"Network error: {exc}")
+@app.api_route("/api/status/")
+async def get_uuid_status(amount: int = Header(..., description="The amount of UUIDs requested")):
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="The 'amount' header must be a positive integer greater than 0.")
+    if amount > 10000000:
+        raise HTTPException(status_code=400, detail="To prevent timeouts, you can pull a maximum of 10000000 UUIDs per request.")
+        
+    external_url = f"https://www.uuidtools.com/api/generate/v1/count/{amount}"
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(external_url)
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=502, detail="Failed to retrieve data from the upstream UUID engine.")
+                
+            uuids_list = response.json()
+            
+            return {
+                "status": "success",
+                "requested_amount": amount,
+                "data_type": "render_payload",
+                "uuids": uuids_list
+            }
+            
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail=f"Network error trying to fetch upstream data: {exc}")
 def read_item():
     if item_id > 100:
         raise ItemNotFoundException(item_id=item_id)
     return {"item_id": item_id, "name": "Sample Item"}
 API_KEY = os.environ.get("api_key")
-def launch_minecraft_server():
+async def launch_minecraft_server():
     # 1. Verify/Ensure Java is available on the host system
     has_java = await ensure_java_installed()
     if not has_java:
@@ -166,10 +246,10 @@ urlpatterns = [
     path("items/{item_id}/", read_item, name="item_detail"),
     path("api/request/", fetch_metrics, name="api_request"),
     path("api/server/mc/", launch_minecraft_server, name="api_server_mc"),
-    path("api/status/", api_status_view, name="api_status"),
-    path("api/authentication/", api_authentication_view, name="api_authentication"),
-    path("api/endpoint/test/", api_endpoint_test_view, name="api_endpoint_test"),
-    path("proxy/25565/", proxy_stream_view, name="proxy_stream"),
+    path("api/status/", fetch_uuids_from_api, name="api_status"),
+    path("api/authentication/", get_status, name="api_authentication"),
+    path("api/endpoint/test/", handle_api, name="api_endpoint_test"),
+    path("proxy/25565/", page_404, name="proxy_stream"),
 ]
 # 3. DYNAMICALLY LOAD IMPORTS INTO GLOBAL SCOPE
 for item in imports_list:
@@ -184,15 +264,11 @@ for item in imports_list:
         top_level_name = module_path.split(".")[0]
         globals()[top_level_name] = importlib.import_module(top_level_name)
 router = APIRouter()
-app = FastAPI(debug=False, title="a massive portal that has been discovered")
 def read_item():
     if item_id > 100:
         raise ItemNotFoundException(item_id=item_id)
     return {"item_id": item_id, "name": "Sample Item"}
 API_KEY = os.environ.get("api_key")
-
-def ice():
-    print(f".")
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
@@ -494,33 +570,6 @@ async def cookie():
     return HTMLResponse(content=html_content, status_code=200)
 
 # API Route to pull and grab external UUID data
-@app.api_route("/api/status/")
-async def get_uuid_status(amount: int = Header(..., description="The amount of UUIDs requested")):
-    if amount <= 0:
-        raise HTTPException(status_code=400, detail="The 'amount' header must be a positive integer greater than 0.")
-    if amount > 10000000:
-        raise HTTPException(status_code=400, detail="To prevent timeouts, you can pull a maximum of 10000000 UUIDs per request.")
-        
-    external_url = f"https://www.uuidtools.com/api/generate/v1/count/{amount}"
-    
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(external_url)
-            
-            if response.status_code != 200:
-                raise HTTPException(status_code=502, detail="Failed to retrieve data from the upstream UUID engine.")
-                
-            uuids_list = response.json()
-            
-            return {
-                "status": "success",
-                "requested_amount": amount,
-                "data_type": "render_payload",
-                "uuids": uuids_list
-            }
-            
-        except httpx.RequestError as exc:
-            raise HTTPException(status_code=503, detail=f"Network error trying to fetch upstream data: {exc}")
 
 # Fallback runner for local execution outside of Render environment
 # Register the route to accept standard and custom HTTP verbs
