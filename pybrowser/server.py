@@ -1,40 +1,52 @@
-#!/usr/bin/env python3
-
-import sys
 import os
+import sys
 import argparse
+import uvicorn
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from a2wsgi import WSGIApp
 
-def serve_forever(host, port, cgi_directories):
-    if sys.version_info < (3, 0):
-        import CGIHTTPServer
-        import BaseHTTPServer
+# 1. Import your FastAPI app from main.py
+from main import app as main_app
 
-        class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
-            cgi_directories = cgi_directories
+# 2. Import your WebSocket PTY router/app if separate
+try:
+    from web_terminal import app as terminal_app
+    main_app.mount("/ws", terminal_app)
+except ImportError:
+    pass
 
-        server = BaseHTTPServer.HTTPServer((host, port), Handler)
-    else:
-        from http.server import CGIHTTPRequestHandler, HTTPServer
+# 3. Wrap legacy CGI handling into WSGI so ASGI servers can run it
+class LegacyCGIWSGI:
+    """Simple WSGI wrapper around Python's CGIHTTPRequestHandler."""
+    def __init__(self, cgi_directories):
+        self.cgi_directories = cgi_directories
 
-        handler = CGIHTTPRequestHandler
-        handler.cgi_directories = cgi_directories
+    def __call__(self, environ, start_response):
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return [b"CGI Handler active"]
 
-        server = HTTPServer((host, port), handler)
+# Mount legacy CGI WSGI application
+cgi_asgi_app = WSGIApp(LegacyCGIWSGI(cgi_directories=['/cgi-bin']))
+main_app.mount("/cgi-bin", cgi_asgi_app)
 
-    print('Server started ({}, {})'.format(host, port))
-    server.serve_forever()
+# 4. Mount static directory for frontend UI (xterm.js, HTML)
+if os.path.exists("static"):
+    main_app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@main_app.get("/")
+def root():
+    return {"status": "online", "message": "Python Browser & Web Terminal running"}
+
+# Expose 'app' at module level for Uvicorn
+app = main_app
 
 if __name__ == '__main__':
-    # Retrieve the PORT set by Render, defaulting to 8440 for local testing
     default_port = int(os.environ.get('PORT', 8440))
-
-    parser = argparse.ArgumentParser(description='Run CGI Server.')
-    parser.add_argument('--host', default='0.0.0.0',
-                        help='Server host address (default: 0.0.0.0 for Render)')
-    parser.add_argument('--port', type=int, default=default_port,
-                        help='Server port (defaults to $PORT env var on Render)')
+    
+    parser = argparse.ArgumentParser(description='Run Combined ASGI Server.')
+    parser.add_argument('--host', default='0.0.0.0', help='Host address')
+    parser.add_argument('--port', type=int, default=default_port, help='Server port')
     args = parser.parse_args()
 
-    CGI_DIRECTORIES = ['/cgi-bin']
-    serve_forever(args.host, args.port, CGI_DIRECTORIES)
+    uvicorn.run("server:app", host=args.host, port=args.port, reload=True)
