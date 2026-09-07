@@ -1,6 +1,7 @@
 # No external dependencies required
 fastapi
-uvicorn
+uvicorn[standard]
+a2wsgi
 celery
 redis
 websockets
