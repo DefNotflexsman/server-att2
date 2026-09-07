@@ -30,13 +30,27 @@ class LegacyCGIWSGI:
 cgi_asgi_app = WSGIApp(LegacyCGIWSGI(cgi_directories=['/cgi-bin']))
 main_app.mount("/cgi-bin", cgi_asgi_app)
 
-# 4. Mount static directory for frontend UI (xterm.js, HTML)
-if os.path.exists("static"):
-    main_app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# =====================================================================
+# ADD YOUR EXPLICIT API / APPLICATION ROUTES HERE (BEFORE STATIC MOUNT)
+# =====================================================================
 
 @main_app.get("/")
 def root():
     return {"status": "online", "message": "Python Browser & Web Terminal running"}
+
+# Add any additional custom endpoints here so they are processed first:
+# @main_app.get("/api/my-endpoint")
+# def my_endpoint():
+#     return {"data": "success"}
+
+
+# =====================================================================
+# 4. MOUNT STATIC DIRECTORY LAST
+# =====================================================================
+# Mounting this last ensures defined routes take priority over static file checks
+if os.path.exists("static"):
+    main_app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Expose 'app' at module level for Uvicorn
 app = main_app
