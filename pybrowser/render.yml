@@ -1,0 +1,31 @@
+services:
+  # 1. Main Web Application (FastAPI / Uvicorn)
+  - type: web
+    name: pybrowser-web
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: pybrowser-redis
+          property: connectionString
+
+  # 2. Celery Background Worker
+  - type: worker
+    name: pybrowser-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A tasks.celery_app worker --loglevel=info
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: pybrowser-redis
+          property: connectionString
+
+  # 3. Redis Instance (Message Broker)
+  - type: redis
+    name: pybrowser-redis
+    ipAllowList: [] # Internal access only
