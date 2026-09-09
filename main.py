@@ -35,10 +35,183 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI(
-    debug=False,
+    debug=True,
     title="Asynchronous Portal Engine",
     description="Clean, fully standardized FastAPI service",
 )
+
+# --- LANDING PAGE HTML & INLINE CSS ---
+LANDING_PAGE_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Directory - Asynchronous Portal Engine</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --get-bg: #0284c7;
+      --post-bg: #16a34a;
+      --ws-bg: #d97706;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    .route-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge {
+      font-weight: bold;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    .badge.get { background-color: var(--get-bg); }
+    .badge.post { background-color: var(--post-bg); }
+    .badge.ws { background-color: var(--ws-bg); }
+
+    .endpoint {
+      font-family: monospace;
+      font-size: 1rem;
+      color: var(--text-main);
+      flex-grow: 1;
+    }
+
+    .description {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Asynchronous Portal Engine</h1>
+      <p style="color: #94a3b8; margin: 0;">Service API Route Directory</p>
+    </header>
+
+    <main>
+      <div class="section-title">General & UI</div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/</span>
+        <span class="description">API Directory (This Page)</span>
+      </div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/admindashboard</span>
+        <span class="description">Native Control Panel</span>
+      </div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/docs</span>
+        <span class="description">Interactive OpenAPI (Swagger) UI</span>
+      </div>
+
+      <div class="section-title">Authentication</div>
+      <div class="route-card">
+        <span class="badge post">POST</span>
+        <span class="endpoint">/token</span>
+        <span class="description">Obtain OAuth2 Bearer Token</span>
+      </div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/api/authentication</span>
+        <span class="description">Validate X-API-Key Header</span>
+      </div>
+
+      <div class="section-title">Core APIs</div>
+      <div class="route-card">
+        <span class="badge post">POST</span>
+        <span class="endpoint">/api/request</span>
+        <span class="description">Inspect Request Metadata</span>
+      </div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/api/items/{item_id}</span>
+        <span class="description">Retrieve Item Details</span>
+      </div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/api/status</span>
+        <span class="description">Fetch Generated UUIDs</span>
+      </div>
+
+      <div class="section-title">Admin Routes (Protected)</div>
+      <div class="route-card">
+        <span class="badge get">GET</span>
+        <span class="endpoint">/api/admin/metrics</span>
+        <span class="description">Get Server Statistics</span>
+      </div>
+      <div class="route-card">
+        <span class="badge post">POST</span>
+        <span class="endpoint">/api/server/mc</span>
+        <span class="description">Launch Background Process</span>
+      </div>
+
+      <div class="section-title">WebSockets</div>
+      <div class="route-card">
+        <span class="badge ws">WS</span>
+        <span class="endpoint">/ws</span>
+        <span class="description">WebSocket Gateway</span>
+      </div>
+      <div class="route-card">
+        <span class="badge ws">WS</span>
+        <span class="endpoint">/server/accept</span>
+        <span class="description">Secondary WebSocket Endpoint</span>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
+"""
 
 # --- PYDANTIC MODELS ---
 class Token(BaseModel):
@@ -174,7 +347,6 @@ async def process_performance_and_log_middleware(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
-
 # --- API ENDPOINTS ---
 
 @app.post("/api/request", tags=["API Parser"])
@@ -186,7 +358,6 @@ async def inspect_request_endpoint(
         "status": "success",
         "parsed_request": parsed
     }
-
 
 @app.post("/token", response_model=Token, tags=["Auth"])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -205,14 +376,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @app.get("/api/items/{item_id}", response_model=ItemResponse, tags=["Items"])
 async def read_item(item_id: int = Path(..., ge=1, description="The ID of the item to retrieve")):
     """Get item details by ID."""
     if item_id > 100:
         raise ItemNotFoundException(item_id=item_id)
     return {"item_id": item_id, "name": f"Sample Item #{item_id}"}
-
 
 @app.get("/api/status", response_model=UUIDResponse, tags=["External APIs"])
 async def get_uuid_status(
@@ -240,24 +409,20 @@ async def get_uuid_status(
                 detail=f"Network error: {exc}"
             )
 
-
 @app.get("/api/authentication", response_model=StatusResponse, tags=["Auth"])
 async def get_auth_status(api_key: str = Depends(verify_api_key)):
     """Validate header-based API key authentication."""
     return {"status": "ok", "message": "Service authentication valid."}
-
 
 @app.get("/api/endpoint/test", tags=["Testing"])
 async def handle_api_get():
     """Handled GET status endpoint."""
     return {"message": "Retrieved endpoint status via GET"}
 
-
 @app.post("/api/endpoint/test", status_code=status.HTTP_201_CREATED, tags=["Testing"])
 async def handle_api_post():
     """Handled POST creation endpoint."""
     return {"message": "Resource created via POST"}
-
 
 @app.get("/api/admin/metrics", tags=["Admin"])
 async def get_admin_statistics(current_user: User = Depends(get_current_user)):
@@ -267,7 +432,6 @@ async def get_admin_statistics(current_user: User = Depends(get_current_user)):
         "requested_by": current_user.username,
         "metrics": {"uptime": "99.9%", "active_nodes": 4, "requests_processed": 1024},
     }
-
 
 @app.post("/api/server/mc", response_model=ProcessResponse, tags=["Admin"])
 async def launch_minecraft_server(current_user: User = Depends(get_current_user)):
@@ -290,13 +454,12 @@ async def launch_minecraft_server(current_user: User = Depends(get_current_user)
             detail=f"Failed to launch background process: {str(err)}",
         )
 
-
 # --- HTML & WEBSOCKET ENDPOINTS ---
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def home_endpoint():
-    return HTMLResponse(content="<h1>Welcome to the Portal Service</h1>", status_code=200)
-
+    """Serves the styled HTML API Directory dashboard."""
+    return HTMLResponse(content=LANDING_PAGE_HTML, status_code=200)
 
 @app.get("/admindashboard", response_class=HTMLResponse, include_in_schema=False)
 async def admin_dashboard():
@@ -314,7 +477,6 @@ async def admin_dashboard():
         status_code=200,
     )
 
-
 @app.websocket("/ws")
 @app.websocket("/server/accept")
 async def websocket_endpoint(websocket: WebSocket):
@@ -325,7 +487,6 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_text(f"Server received: {data}")
     except WebSocketDisconnect:
         print("[WS] Client disconnected")
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
