@@ -17,9 +17,11 @@ from fastapi import (
     WebSocket,
     WebSocketDisconnect,
     Depends,
+    Form,
+    Cookie,
     status,
 )
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -33,6 +35,36 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# --- github cred --- #
+github_creds = {
+    "info": {
+        "user": "DefNotflexsman/server-att2"
+    }
+}
+# --- ADMIN CREDITALS CONFIRMATION --- #
+fake_users_db = {
+    "admin": {
+        "username": "admin",
+        "full_name": "Portal Admin",
+        "hashed_password": pwd_context.hash("secret123"), # Default admin
+        "is_admin": True,
+    },
+    "new_admin": {
+        "username": "new_admin",
+        "full_name": "Second Admin",
+        "hashed_password": "$2b$12$eImiTXuWVxfM37uY4JANjO...your_hashed_string...", 
+        "is_admin": True, # Gives access to /admindashboard
+    },
+    "regular_user": {
+        "username": "johndoe",
+        "full_name": "John Doe",
+        "hashed_password": pwd_context.hash("userpassword123"),
+        "is_admin": False, # Blocked from /admindashboard (redirects to YouTube)
+    }
+}
+
+
+
 
 app = FastAPI(
     debug=True,
@@ -40,7 +72,7 @@ app = FastAPI(
     description="Clean, fully standardized FastAPI service",
 )
 
-# --- LANDING PAGE HTML & INLINE CSS ---
+# --- HTML TEMPLATES ---
 LANDING_PAGE_HTML = """
 <!DOCTYPE html>
 <html lang="en">
@@ -209,6 +241,48 @@ LANDING_PAGE_HTML = """
       </div>
     </main>
   </div>
+</body>
+</html>
+"""
+
+ADMIN_LOGIN_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 2rem; border-radius: 8px; width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    h2 { margin-top: 0; color: #38bdf8; }
+    input { width: 100%; padding: 0.5rem; margin: 0.5rem 0 1rem -0.5rem; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff; }
+    button { width: 100%; padding: 0.6rem; background: #0284c7; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #0369a1; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Admin Access</h2>
+    <form action="/admindashboard/login" method="POST">
+      <label>Username</label>
+      <input type="text" name="username" required>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <button type="submit">Log In</button>
+    </form>
+  </div>
+</body>
+</html>
+"""
+
+ADMIN_PANEL_HTML = """
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title></head>
+<body style="font-family: system-ui, sans-serif; background: #0f172a; color: #fff; padding: 40px;">
+    <h1 style="color: #38bdf8;">Native FastAPI Control Panel</h1>
+    <p>Status: Authenticated as Admin.</p>
+    <a href="/admindashboard/logout" style="color: #ef4444;">Log Out</a>
 </body>
 </html>
 """
@@ -462,21 +536,58 @@ async def home_endpoint():
     return HTMLResponse(content=LANDING_PAGE_HTML, status_code=200)
 
 @app.get("/admindashboard", response_class=HTMLResponse, include_in_schema=False)
-async def admin_dashboard():
-    return HTMLResponse(
-        content="""
-        <!DOCTYPE html>
-        <html>
-        <head><title>Admin Dashboard</title></head>
-        <body style="font-family: sans-serif; background: #121214; color: #fff; padding: 40px;">
-            <h1>Native FastAPI Control Panel</h1>
-            <p>Status: All API routes structured and verified.</p>
-        </body>
-        </html>
-        """,
-        status_code=200,
-    )
+async def admin_dashboard_page(admin_session: Optional[str] = Cookie(None)):
+    if admin_session == "authenticated":
+        return HTMLResponse(content=ADMIN_PANEL_HTML, status_code=200)
+    return HTMLResponse(content=ADMIN_LOGIN_HTML, status_code=200)
 
+@app.post("/admindashboard/login", include_in_schema=False)
+async def admin_login_submit(
+    username: str = Form(...), 
+    password: str = Form(...)
+):
+    user_dict = fake_users_db.get(username)
+    
+    if user_dict and verify_password(password, user_dict["hashed_password"]) and user_dict.get("is_admin"):
+        response = RedirectResponse(url="/admindashboard", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="admin_session", value="authenticated", httponly=True)
+        return response
+
+    return RedirectResponse(url="https://www.youtube.com", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/admindashboard/logout", include_in_schema=False)
+async def admin_logout():
+    response = RedirectResponse(url="/admindashboard", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("admin_session")
+    return response
+@app.get("/api/github/info", tags=["External APIs"])
+async def get_github_repo_info():
+    """Fetch metadata for the configured GitHub repository."""
+    repo = github_creds["info"]["user"]
+    url = f"https://api.github.com/repos/{repo}"
+    
+    headers = {"User-Agent": "FastAPI-Portal-Engine"}
+    if "token" in github_creds["info"] and github_creds["info"]["token"]:
+        headers["Authorization"] = f"token {github_creds['info']['token']}"
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, headers=headers, timeout=10.0)
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail=f"Failed to fetch repository details from GitHub (HTTP {response.status_code})."
+                )
+            return {
+                "status": "success",
+                "repository": repo,
+                "data": response.json()
+            }
+        except httpx.RequestError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Network error while connecting to GitHub: {exc}"
+            )
 @app.websocket("/ws")
 @app.websocket("/server/accept")
 async def websocket_endpoint(websocket: WebSocket):
